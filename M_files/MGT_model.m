@@ -2,7 +2,7 @@
 % MGT model
 % 
 % Xu Yi, 23rd March 2018
-% Xu Yi, 25th March 2018, revised
+% Xu Yi, 22nd April 2018, revised
 
 %%
 function MGT_model(fileID)
@@ -79,15 +79,15 @@ iEL = 0;    % 单元号初始化
 car_num = 8;    % 圆塔每层停车数
 % 10个塔楼的圆心 % centre of a circle
 CoC_towerC = [58800,37800]; % centre parking tower
-CoC_towerS1 = [25200,29400]; % side parking tower 1
-CoC_towerS2 = [96600,12600]; % side parking tower 2
-CoC_stairs = [37800,46200;79800,33600;
-                76550,58935;31880,6775]; % 4 stairs 后两个是角上的楼梯
+CoC_towerS1 = [27300,29400]; % side parking tower 1
+CoC_towerS2 = [88200,13800]; % side parking tower 2
+CoC_stairs = [37000,44400;79800,33600;
+                76550,58935;32050,7450]; % 4 stairs 后两个是角上的楼梯
 CoC_elevator = [63000,12600]; % 1 elevator
 CoC_side = [8400,40000;113970,8165]; % 2 side
 
-tube_innerR = 4450;
-tube_outerR = 9100;
+tube_innerR = 3950;
+tube_outerR = 8500;
 levelZaxis = -2100:2100:23100;  % 楼层标高
 levelPstart = [3,length(levelZaxis(:))-2]; % 停车的楼层，与楼层数有关。第一个为大筒，后两个为小筒。
 
