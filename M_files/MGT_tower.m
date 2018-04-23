@@ -11,8 +11,22 @@ fprintf(fileID,'*NODE    ; Nodes\n');
 fprintf(fileID,'; iNO, X, Y, Z\n');
 
 iNO_init = iNO;
-XYcor = zeros(car_num,4);   % 内筒XoY坐标第1(X)、2(Y)列，外筒XoY坐标第3(X)、4(Y)列。
+XYcor_i = zeros(car_num,2);     % 内筒XoY坐标第1(X)、2(Y)列。
+XYcor_o = zeros(car_num*2,2);	% 外筒XoY坐标第1(X)、2(Y)列。
+
 car_num2pi = 2*pi/car_num;  % speed up
+
+XYcor_i_1(1,1) = tube_innerR * cos(car_num2pi/2);   % 单个模块内筒一点 X
+XYcor_i_1(1,2) = tube_innerR * sin(car_num2pi/2);   % Y
+tube_car_l = (tube_outerR - tube_innerR) * cos(car_num2pi/2);   % 停车筒内停车区域的长
+XYcor_o_1(1,1) = XYcor_i_1(1,1) + tube_car_l;   % 单个模块外筒一点 X1
+XYcor_o_1(1,2) = XYcor_i_1(1,2);                % Y1
+XYcor_o_1(2,1) = XYcor_i_1(1,1) + tube_car_l * cos(car_num2pi); % X2 注意这里是car_num2pi
+XYcor_o_1(2,2) = XYcor_i_1(1,2) + tube_car_l * sin(car_num2pi); % Y2
+
+
+XYcor = zeros(car_num,4);   % 内筒XoY坐标第1(X)、2(Y)列，外筒XoY坐标第3(X)、4(Y)列。
+
 for i = 0:(car_num-1)   % 尝试向量化
     XYcor(i+1,1) = tube_innerR * cos(car_num2pi*i);
     XYcor(i+1,2) = tube_innerR * sin(car_num2pi*i);
