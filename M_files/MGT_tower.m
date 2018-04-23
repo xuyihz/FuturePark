@@ -5,7 +5,7 @@
 % Xu Yi, 23rd April 2018, revised
 
 %%
-function [iNO_end, iEL_end] = MGT_tower(fileID, iNO, iEL, car_num, CoC_tower, tube_innerR, tube_outerR, levelZaxis, levelPstart, CAR, ~, ~)
+function [iNO_end, iEL_end] = MGT_tower(fileID, iNO, iEL, car_num, CoC_tower, Deg_tower, tube_innerR, tube_outerR, levelZaxis, levelPstart, CAR, ~, ~)
 %% NODE
 fprintf(fileID,'*NODE    ; Nodes\n');
 fprintf(fileID,'; iNO, X, Y, Z\n');
@@ -22,10 +22,10 @@ XYcor_o_1(1,1) = sqrt(tube_outerR^2 - XYcor_i_1(1,2)^2);        % µ¥¸öYÐÍÄ£¿éÍâÍ
 XYcor_o_1(1,2) = XYcor_i_1(1,2);                                % Y1
 XYcor_o_1(2,:) = coorMir(XYcor_o_1(1,:), [0,0], XYcor_i_1);     % X2,Y2
 
-for i = 0:(car_num-1)   % ³¢ÊÔÏòÁ¿»¯
-    [XYcor_i(i+1,:), XYcor_i(i+1,2)] = coorTrans(XYcor_i_1(1), XYcor_i_1(2), -car_num2pi*i);       % ÄÚÍ²µã×ø±ê
-    [XYcor_o(i*2+1,1), XYcor_o(i*2+1,2)] = coorTrans(XYcor_o_1(1,1), XYcor_o_1(1,2), -car_num2pi*i); % ÍâÍ²µã×ø±ê1
-    [XYcor_o(i*2+2,1), XYcor_o(i*2+2,2)] = coorTrans(XYcor_o_1(2,1), XYcor_o_1(2,2), -car_num2pi*i); % ÍâÍ²µã×ø±ê2
+for i = 0:(car_num-1)   % ³¢ÊÔÏòÁ¿»¯ % Ðý×ª¾Ö²¿½Ç¶È+ÕûÌå½Ç¶È
+    [XYcor_i(i+1,1), XYcor_i(i+1,2)] = coorTrans(XYcor_i_1(1), XYcor_i_1(2), -car_num2pi*i-Deg_tower);       % ÄÚÍ²µã×ø±ê
+    [XYcor_o(i*2+1,1), XYcor_o(i*2+1,2)] = coorTrans(XYcor_o_1(1,1), XYcor_o_1(1,2), -car_num2pi*i-Deg_tower); % ÍâÍ²µã×ø±ê1
+    [XYcor_o(i*2+2,1), XYcor_o(i*2+2,2)] = coorTrans(XYcor_o_1(2,1), XYcor_o_1(2,2), -car_num2pi*i-Deg_tower); % ÍâÍ²µã×ø±ê2
 end
 % ¾Ö²¿×ø±êÏµ ×ª»»ÖÁ ÕûÌå×ø±êÏµ
 XYcor_i(:,1) = XYcor_i(:,1) + CoC_tower(1);

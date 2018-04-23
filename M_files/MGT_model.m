@@ -85,6 +85,9 @@ CoC_stairs = [37000,44400;79800,33600;
                 76550,58935;32050,7450]; % 4 stairs 后两个是角上的楼梯
 CoC_elevator = [63000,12600]; % 1 elevator
 CoC_side = [8400,40000;113970,8165]; % 2 side
+Deg_towerC = -atan( (CoC_elevator(1)-CoC_towerC(1))/(CoC_elevator(2)-CoC_towerC(2)) ); % degree of centre tower 由电梯圆心与主塔圆心连线确定
+Deg_towerS1 = acot( (CoC_stairs(1,1)-CoC_towerS1(1))/(CoC_stairs(1,2)-CoC_towerS1(2)) ); % degree of side tower 1 由中上楼梯圆心与左边塔圆心连线确定
+Deg_towerS2 = 0; % degree of side tower 2 右边塔
 
 tube_innerR = 3950;
 tube_outerR = 8500;
@@ -97,11 +100,11 @@ stairW = 3250; % 楼梯宽
 
 %% 10 towers
 iNO_towerC_init = iNO;
-[iNO, iEL] = MGT_tower(fileID, iNO, iEL, car_num, CoC_towerC, tube_innerR, tube_outerR, levelZaxis, levelPstart(1), CAR, OFFICE, ROOF);
+[iNO, iEL] = MGT_tower(fileID, iNO, iEL, car_num, CoC_towerC, Deg_towerC, tube_innerR, tube_outerR, levelZaxis, levelPstart(1), CAR, OFFICE, ROOF);
 iNO_towerS1_init = iNO;
-[iNO, iEL] = MGT_tower(fileID, iNO, iEL, car_num, CoC_towerS1, tube_innerR, tube_outerR, levelZaxis, levelPstart(2), CAR, OFFICE, ROOF);
+[iNO, iEL] = MGT_tower(fileID, iNO, iEL, car_num, CoC_towerS1, Deg_towerS1, tube_innerR, tube_outerR, levelZaxis, levelPstart(2), CAR, OFFICE, ROOF);
 iNO_towerS2_init = iNO;
-[iNO, iEL] = MGT_tower(fileID, iNO, iEL, car_num, CoC_towerS2, tube_innerR, tube_outerR, levelZaxis, levelPstart(2), CAR, OFFICE, ROOF);
+[iNO, iEL] = MGT_tower(fileID, iNO, iEL, car_num, CoC_towerS2, Deg_towerS2, tube_innerR, tube_outerR, levelZaxis, levelPstart(2), CAR, OFFICE, ROOF);
 
 [iNO, iEL] = MGT_stair(fileID, iNO, iEL, CoC_stairs(1,:), levelZaxis, levelPstart(1), stairN_num, stairL, stairW, CAR, OFFICE, ROOF);
 [iNO, iEL] = MGT_stair(fileID, iNO, iEL, CoC_stairs(2,:), levelZaxis, levelPstart(1), stairN_num, stairL, stairW, CAR, OFFICE, ROOF);
