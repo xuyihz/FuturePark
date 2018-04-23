@@ -5,57 +5,52 @@
 % Xu Yi, 28th March 2018, revised
 
 %%
-function [iNO_end, iEL_end] = MGT_stair(fileID, iNO, iEL, CoC_tower, levelZaxis, levelPstart, stairN_num, stairL, stairW, CAR, ~, ROOF)
+function [iNO_end, iEL_end] = MGT_stair(fileID, iNO, iEL, CoC_stair, Deg_stair, levelZaxis, levelPstart, stairColu_num, stairL, stairW, ~, ~, ROOF)
 %% NODE
 fprintf(fileID,'*NODE    ; Nodes\n');
 fprintf(fileID,'; iNO, X, Y, Z\n');
 
-stairN_num = 8;
 iNO_init = iNO;
-XYcor = zeros(stairN_num,4);   % 内筒XoY坐标第1(X)、2(Y)列(1~4行)(注：5~8行均为0，不使用)，外表皮XoY坐标第3(X)、4(Y)列(1~8行)。
 
-stairL = 3150; % 楼梯长，即沿踏步前进方向长
-stairW = 3250; % 楼梯宽
+XYcor_i = zeros(stairColu_num,2);   % 内筒XoY坐标第1(X)、2(Y)列。
+XYcor_o = zeros(stairColu_num*2,2); % 外表皮XoY坐标第1(X)、2(Y)列。
+
 stairXY = [stairL/2, stairW/2; -stairL/2, stairW/2; -stairL/2, -stairW/2; stairL/2, -stairW/2]; % 原始坐标，未旋转，未转到整体坐标系
-stairDeg = -pi/6; % 楼梯旋转角度，暂定 顺时针转30(pi/6)
-% 坐标系转换 function coorTrans
-% x' = xcos(a) + ysin(a);
-% y' = ycos(a) - xsin(a);
-for i = 1:stairN_num/2   % 尝试向量化
-    [XYcor(i,1), XYcor(i,2)] = coorTrans(stairXY(i,1), stairXY(i,2), stairDeg); % 内筒
+for i = 1:stairColu_num   % 尝试向量化
+    [XYcor_i(i,1), XYcor_i(i,2)] = coorTrans(stairXY(i,1), stairXY(i,2), Deg_stair); % 内筒
 end
 % 外筒待定stairXY2 暂定从内筒外伸2000.
 m2 = 2000;
 stairXY2 = [stairL/2+m2, stairW/2; stairL/2, stairW/2+m2; -stairL/2, stairW/2+m2; -stairL/2-m2, stairW/2;...
     -stairL/2-m2, -stairW/2; -stairL/2, -stairW/2-m2; stairL/2, -stairW/2-m2; stairL/2+m2, -stairW/2];
-for i = 1:stairN_num   % 尝试向量化
-    [XYcor(i,3), XYcor(i,4)] = coorTrans(stairXY2(i,1), stairXY2(i,2), stairDeg); % 内筒
+for i = 1:stairColu_num*2   % 尝试向量化
+    [XYcor_o(i,3), XYcor_o(i,4)] = coorTrans(stairXY2(i,1), stairXY2(i,2), Deg_stair); % 内筒
 end
 % 局部坐标系 转换至 整体坐标系
-XYcor(:,1) = XYcor(:,1) + CoC_tower(1);
-XYcor(:,2) = XYcor(:,2) + CoC_tower(2);
-XYcor(:,3) = XYcor(:,3) + CoC_tower(1);
-XYcor(:,4) = XYcor(:,4) + CoC_tower(2);
+XYcor_i(:,1) = XYcor_i(:,1) + CoC_stair(1);
+XYcor_i(:,2) = XYcor_i(:,2) + CoC_stair(2);
+XYcor_o(:,1) = XYcor_o(:,1) + CoC_stair(1);
+XYcor_o(:,2) = XYcor_o(:,2) + CoC_stair(2);
 lengthlevelZaxis = length(levelZaxis(:));
 
 for i = 1:lengthlevelZaxis  % length(A(:)) A向量元素个数
     for k = 1:2 % 内筒，外筒
         if k == 1 % 节点编号规则：从0度角开始逆时针；先每层内筒，再每层外筒；从下到上。
-            for j = 1:stairN_num/2 % 内部4个柱子
+            for j = 1:stairColu_num % 内部4个柱子
                 iNO = iNO+1;
                 fprintf(fileID,'   %d, %.4f, %.4f, %.4f\n',...
-                    iNO,XYcor(j,1),XYcor(j,2),levelZaxis(i));
+                    iNO,XYcor_i(j,1),XYcor_i(j,2),levelZaxis(i));
             end
         else
-            for j = 1:stairN_num % 外部8个柱子
+            for j = 1:stairColu_num*2 % 外部8个柱子
                 iNO = iNO+1;
                 fprintf(fileID,'   %d, %.4f, %.4f, %.4f\n',...
-                    iNO,XYcor(j,3),XYcor(j,4),levelZaxis(i));
+                    iNO,XYcor_o(j,3),XYcor_o(j,4),levelZaxis(i));
             end
         end
     end
 end
-lengthXYcor2 = stairN_num/2+stairN_num;  % 每层的节点数，其中内部4个点，外部8个点。
+lengthXYcor2 = stairColu_num+stairColu_num*2;  % 每层的节点数，其中内部4个点，外部8个点。
 iNO_end = iNO;
 fprintf(fileID,'\n');
 
@@ -71,7 +66,7 @@ fprintf(fileID,'; 内筒柱\n');
 ELE_iPRO = 2;
 iNO = iNO_init; % 初始化iNO
 for i = 1:(lengthlevelZaxis-1)	% length(A(:)) A向量元素个数
-    for j = 1:stairN_num/2	% 每层内筒的节点数 stairN_num/2
+    for j = 1:stairColu_num	% 每层内筒的节点数
         iEL = iEL+1;
         iN1 = iNO+j+lengthXYcor2*(i-1);
         iN2 = iN1+lengthXYcor2;
@@ -87,9 +82,9 @@ fprintf(fileID,'; 外筒柱\n');
 ELE_iPRO = 1;
 iNO = iNO_init; % 初始化iNO
 for i = levelPstart:(lengthlevelZaxis-1)	% length(A(:)) A向量元素个数 % levelPstart 第几层开始停车，即下几层开敞
-    for j = 1:stairN_num	% 每层外筒的节点数
+    for j = 1:stairColu_num*2	% 每层外筒的节点数
         iEL = iEL+1;
-        iN1 = iNO+(stairN_num/2+j)+lengthXYcor2*(i-1); % 此行与内筒不同，多了 +stairN_num/2
+        iN1 = iNO+(stairColu_num+j)+lengthXYcor2*(i-1); % 此行与内筒不同，多了 +stairN_num/2
         iN2 = iN1+lengthXYcor2;
         fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
             iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
@@ -106,57 +101,117 @@ fprintf(fileID,'; iEL, TYPE, iMAT, iPRO, iN1, iN2, ANGLE, iSUB, EXVAL, iOPT(EXVA
 % iEL_init_beam = iEL;
 ELE_TYPE = 'BEAM'; ELE_iMAT = 1; ELE_ANGLE = 0; ELE_iSUB = 0;  % iMAT = 1材料钢结构Q345
 
-% 横向主梁；iPRO = 3 截面编号3。
-fprintf(fileID,'; 横向主梁\n');
+% 主梁；iPRO = 3 截面编号3。
+fprintf(fileID,'; 楼梯长向主梁\n');
 ELE_iPRO = 3;
 iNO = iNO_init; % 初始化iNO
-for i = levelPstart:lengthlevelZaxis	% 此行与柱单元不同，柱单元为i-1
-    for j = 1:stairN_num/2	% 每层内筒的节点数
-        iN1 = iNO+j+lengthXYcor2*(i-1);
-        for k = 1:2
-            iN2 = iN1+stairN_num/2-(j-1)+(j-1)*2+(k-1); % 与停车筒的区别在这一行
-            iEL = iEL+1;
-            fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
-                iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
-                iN1, iN2,...    % 梁单元的两个节点号
-                ELE_ANGLE, ELE_iSUB);
-        end
+for i = 1:lengthlevelZaxis	% 此行与柱单元不同，柱单元为i-1
+    if rem(i,0) ~= 0    % 奇数层 % 控制点，即两个斜段起点
+        iNcon1 = iNO+1+lengthXYcor2*(i-1);
+        iNcon2 = iNcon1+3;
+        iNcon3 = iNcon1+lengthXYcor2+1;
+        iNcon4 = iNcon1+lengthXYcor2+2;
+        iNcon5 = iNcon3+6;
+        iNcon6 = iNcon5+1;
+    else % 偶数层
+        iNcon1 = iNO+2+lengthXYcor2*(i-1);
+        iNcon2 = iNcon1+1;
+        iNcon3 = iNcon1+lengthXYcor2-1;
+        iNcon4 = iNcon1+lengthXYcor2+2;
+        iNcon5 = iNcon3+4;
+        iNcon6 = iNcon5+stairColu_num*2-1;
     end
-end
-
-% 环形次梁；iPRO = 4 截面编号4。
-fprintf(fileID,'; 环形次梁\n');
-ELE_iPRO = 4;
-iNO = iNO_init; % 初始化iNO
-% 内环梁
-fprintf(fileID,';   内环梁\n');
-for i = 2:lengthlevelZaxis	% 此行与柱单元不同，柱单元为i-1; 此行与主梁不同，i起始为2.即二层开始有。
-    for j = 1:stairN_num/2	% 每层内筒的节点数
-        iEL = iEL+1;
-        iN1 = iNO+j+lengthXYcor2*(i-1);
-        if j ~= stairN_num/2
-            iN2 = iN1+1;
-        else % j = car_num 时， 连接的是本环的第一个点，而不是外环的第一个点。
-            iN2 = iN1+1-stairN_num/2;
+    if i < levelPstart % 考虑底层无幕墙
+        k_end = 2;
+    else
+        k_end = 4;
+    end
+    for k = 1:k_end % 梁有两根各两段 % 斜段+平段
+        if k == 1
+            iN1 = iNcon1; iN2 = iNcon3;
+        elseif k == 2
+            iN1 = iNcon2; iN2 = iNcon4;
+        elseif k == 3
+            iN1 = iNcon3; iN2 = iNcon5;
+        elseif k == 4
+            iN1 = iNcon4; iN2 = iNcon6;
         end
+        iEL = iEL+1;
         fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
             iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
             iN1, iN2,...    % 梁单元的两个节点号
             ELE_ANGLE, ELE_iSUB);
     end
 end
-fprintf(fileID,'\n');
-% 外环梁
+fprintf(fileID,'; 楼梯宽向主梁\n');
+iNO = iNO_init; % 初始化iNO
+for i = 1:lengthlevelZaxis	% 此行与柱单元不同，柱单元为i-1 % 每层一根贯穿宽向主梁
+    if rem(i,0) ~= 0    % 奇数层 % 控制点，即两个内筒悬挑起点
+        iNcon1 = iNO+1+lengthXYcor2*(i-1);
+        iNcon2 = iNcon1+3;
+    else % 偶数层
+        iNcon1 = iNO+2+lengthXYcor2*(i-1);
+        iNcon2 = iNcon1+1;
+    end
+    if i < levelPstart % 考虑底层无幕墙
+        k_end = 1;
+    else
+        k_end = 3;
+    end
+    for k = 1:k_end % 梁有三段
+        if k == 1
+            iN1 = iNcon1;
+            iN2 = iNcon2;
+        elseif k == 2
+            iN1 = iNcon1;
+            iN2 = iN1 + stairColu_num*2 - 1;
+        elseif k == 3
+            iN1 = iNcon2;
+            iN2 = iN1 + stairColu_num*2 - 1;
+        end
+        iEL = iEL+1;
+        fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
+            iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
+            iN1, iN2,...    % 梁单元的两个节点号
+            ELE_ANGLE, ELE_iSUB);
+    end
+end
+
+% 环次梁；iPRO = 4 截面编号4。
+fprintf(fileID,'; 环形次梁\n');
+ELE_iPRO = 4;
+iNO = iNO_init; % 初始化iNO
+% 外环梁 % 参考楼梯长向主梁
 fprintf(fileID,';   外环梁\n');
 for i = levelPstart:lengthlevelZaxis	% 此行与柱单元不同，柱单元为i-1;
-    for j = 1:stairN_num	% 每层外筒的节点数
-        iEL = iEL+1;
-        iN1 = iNO+stairN_num/2+j+lengthXYcor2*(i-1); % 此行与内环梁不同，多加了stairN_num/2
-        if j ~= stairN_num
-            iN2 = iN1+1;
-        else % j = car_num 时， 连接的是本环的第一个点，而不是上层内环的第一个点。
-            iN2 = iN1+1-stairN_num;
+    if rem(i,0) ~= 0    % 奇数层 % 控制点，即两个斜段起点
+        iNcon1 = iNO+6+lengthXYcor2*(i-1);
+        iNcon2 = iNcon1+5;
+        iNcon3 = iNcon1+lengthXYcor2+1;
+        iNcon4 = iNcon2+lengthXYcor2-1;
+        iNcon5 = iNcon3+1;
+        iNcon6 = iNcon4-1;
+    else % 偶数层
+        iNcon1 = iNO+7+lengthXYcor2*(i-1);
+        iNcon2 = iNcon1+3;
+        iNcon3 = iNcon1+lengthXYcor2-1;
+        iNcon4 = iNcon2+lengthXYcor2+1;
+        iNcon5 = iNcon3-1;
+        iNcon6 = iNcon4+1;
+    end
+    for k = 1:5 % 梁有长向两根各两段，宽向一根一段 % 斜段+平段
+        if k == 1
+            iN1 = iNcon1; iN2 = iNcon3;
+        elseif k == 2
+            iN1 = iNcon2; iN2 = iNcon4;
+        elseif k == 3
+            iN1 = iNcon3; iN2 = iNcon5;
+        elseif k == 4
+            iN1 = iNcon4; iN2 = iNcon6;
+        elseif k == 5
+            iN1 = iNcon5; iN2 = iNcon6;
         end
+        iEL = iEL+1;
         fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
             iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
             iN1, iN2,...    % 梁单元的两个节点号
@@ -176,16 +231,34 @@ ELE_TYPE = 'PLATE'; ELE_iMAT = 2; ELE_iSUB = 2; ELE_iWID = 0; % iMAT = 2材料混凝
 fprintf(fileID,'; 1厚板楼梯板\n');
 ELE_iPRO = 2;
 iNO = iNO_init; % 初始化iNO
-for i = 2:lengthlevelZaxis % 此行同外环梁 % 此行与主梁不同，i起始为2.即二层开始有 % 因每层只定义了一块板，故没有j的循环
-    iEL = iEL+1;
-    iN1 = iNO+1+lengthXYcor2*(i-1); % 逆时针板四周四个点
-    iN2 = iN1+1;
-    iN3 = iN2+1;
-    iN4 = iN3+1;
-    fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d, %d, %d\n',...
-        iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
-        iN1, iN2, iN3, iN4,...    % 板单元的四个节点号
-        ELE_iSUB, ELE_iWID);
+for i = 1:lengthlevelZaxis %
+    if rem(i,0) ~= 0    % 奇数层 % 控制点，即两个斜段起点
+        iNcon1 = iNO+1+lengthXYcor2*(i-1);
+        iNcon2 = iNcon1+3;
+        iNcon3 = iNcon1+lengthXYcor2+1;
+        iNcon4 = iNcon1+lengthXYcor2+2;
+        iNcon5 = iNcon3+6;
+        iNcon6 = iNcon5+1;
+    else % 偶数层
+        iNcon1 = iNO+2+lengthXYcor2*(i-1);
+        iNcon2 = iNcon1+1;
+        iNcon3 = iNcon1+lengthXYcor2-1;
+        iNcon4 = iNcon1+lengthXYcor2+2;
+        iNcon5 = iNcon3+4;
+        iNcon6 = iNcon5+stairColu_num*2-1;
+    end
+    for k = 1:2 % 两块板 % 斜段+平段
+        if k == 1
+            iN1 = iNcon1; iN2 = iNcon3; iN3 = iNcon4; iN4 = iNcon2;
+        elseif k == 2
+            iN1 = iNcon3; iN2 = iNcon5; iN3 = iNcon6; iN4 = iNcon4;
+        end
+        iEL = iEL+1;
+        fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d, %d, %d\n',...
+            iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
+            iN1, iN2, iN3, iN4,...    % 板单元的四个节点号
+            ELE_iSUB, ELE_iWID);
+    end
 end
 fprintf(fileID,'\n');
 
@@ -197,14 +270,32 @@ LTNAME = ROOF; iDIST = 2; ANGLE = 0; iSBEAM = 0; SBANG = 0; SBUW = 0; % 楼梯荷载
 DIR = 'GZ'; bPROJ = 'NO'; DESC = ''; bEX = 'NO'; bAL = 'NO'; GROUP = '';
 
 iNO = iNO_init; % 初始化iNO
-for i = 2:lengthlevelZaxis % 此行同外环梁 % 此行与主梁不同，i起始为2.即二层开始有 % 因每层只定义了一块板，故没有j的循环
-    iN1 = iNO+1+lengthXYcor2*(i-1); % 逆时针板四周四个点
-    iN2 = iN1+1;
-    iN3 = iN2+1;
-    iN4 = iN3+1;
-    fprintf(fileID,'   %s, %d, %d, %d, %d, %d, %s, %s, %s, %s, %s, %s, %d, %d, %d, %d\n',...
-        LTNAME, iDIST, ANGLE, iSBEAM, SBANG, SBUW, DIR, bPROJ, DESC, bEX, bAL, GROUP,...
-        iN1, iN2, iN3, iN4);
+for i = 1:lengthlevelZaxis %
+    if rem(i,0) ~= 0    % 奇数层 % 控制点，即两个斜段起点
+        iNcon1 = iNO+1+lengthXYcor2*(i-1);
+        iNcon2 = iNcon1+3;
+        iNcon3 = iNcon1+lengthXYcor2+1;
+        iNcon4 = iNcon1+lengthXYcor2+2;
+        iNcon5 = iNcon3+6;
+        iNcon6 = iNcon5+1;
+    else % 偶数层
+        iNcon1 = iNO+2+lengthXYcor2*(i-1);
+        iNcon2 = iNcon1+1;
+        iNcon3 = iNcon1+lengthXYcor2-1;
+        iNcon4 = iNcon1+lengthXYcor2+2;
+        iNcon5 = iNcon3+4;
+        iNcon6 = iNcon5+stairColu_num*2-1;
+    end
+    for k = 1:2 % 两块板 % 斜段+平段
+        if k == 1
+            iN1 = iNcon1; iN2 = iNcon3; iN3 = iNcon4; iN4 = iNcon2;
+        elseif k == 2
+            iN1 = iNcon3; iN2 = iNcon5; iN3 = iNcon6; iN4 = iNcon4;
+        end
+        fprintf(fileID,'   %s, %d, %d, %d, %d, %d, %s, %s, %s, %s, %s, %s, %d, %d, %d, %d\n',...
+            LTNAME, iDIST, ANGLE, iSBEAM, SBANG, SBUW, DIR, bPROJ, DESC, bEX, bAL, GROUP,...
+            iN1, iN2, iN3, iN4);
+    end
 end
 fprintf(fileID,'\n');
 
@@ -216,10 +307,10 @@ fprintf(fileID,'*CONSTRAINT    ; Supports\n');
 fprintf(fileID,'; NODE_LIST, CONST(Dx,Dy,Dz,Rx,Ry,Rz), GROUP\n');
 
 iNO = iNO_init; % 初始化iNO
-NODE_LIST = sprintf('%dto%d', iNO+1, iNO+stairN_num/2);
+NODE_LIST = sprintf('%dto%d', iNO+1, iNO+stairColu_num);
 CONSTRAINT = 111111; % 6个自由度全约束
 fprintf(fileID,'   %s, %d, \n',...
-                NODE_LIST, CONSTRAINT);
+    NODE_LIST, CONSTRAINT);
 fprintf(fileID,'\n');
 
 end

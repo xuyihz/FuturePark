@@ -23,9 +23,9 @@ XYcor_o_1(1,2) = XYcor_i_1(1,2);                                % Y1
 XYcor_o_1(2,:) = coorMir(XYcor_o_1(1,:), [0,0], XYcor_i_1);     % X2,Y2
 
 for i = 0:(car_num-1)   % 尝试向量化 % 旋转局部角度+整体角度
-    [XYcor_i(i+1,1), XYcor_i(i+1,2)] = coorTrans(XYcor_i_1(1), XYcor_i_1(2), -car_num2pi*i-Deg_tower);       % 内筒点坐标
-    [XYcor_o(i*2+1,1), XYcor_o(i*2+1,2)] = coorTrans(XYcor_o_1(1,1), XYcor_o_1(1,2), -car_num2pi*i-Deg_tower); % 外筒点坐标1
-    [XYcor_o(i*2+2,1), XYcor_o(i*2+2,2)] = coorTrans(XYcor_o_1(2,1), XYcor_o_1(2,2), -car_num2pi*i-Deg_tower); % 外筒点坐标2
+    [XYcor_i(i+1,1), XYcor_i(i+1,2)] = coorTrans(XYcor_i_1(1), XYcor_i_1(2), -car_num2pi*i+Deg_tower);       % 内筒点坐标
+    [XYcor_o(i*2+1,1), XYcor_o(i*2+1,2)] = coorTrans(XYcor_o_1(1,1), XYcor_o_1(1,2), -car_num2pi*i+Deg_tower); % 外筒点坐标1
+    [XYcor_o(i*2+2,1), XYcor_o(i*2+2,2)] = coorTrans(XYcor_o_1(2,1), XYcor_o_1(2,2), -car_num2pi*i+Deg_tower); % 外筒点坐标2
 end
 % 局部坐标系 转换至 整体坐标系
 XYcor_i(:,1) = XYcor_i(:,1) + CoC_tower(1);
