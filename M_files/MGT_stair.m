@@ -24,7 +24,7 @@ m2 = 2000;
 stairXY2 = [stairL/2+m2, stairW/2; stairL/2, stairW/2+m2; -stairL/2, stairW/2+m2; -stairL/2-m2, stairW/2;...
     -stairL/2-m2, -stairW/2; -stairL/2, -stairW/2-m2; stairL/2, -stairW/2-m2; stairL/2+m2, -stairW/2];
 for i = 1:stairColu_num*2   % ³¢ÊÔÏòÁ¿»¯
-    [XYcor_o(i,3), XYcor_o(i,4)] = coorTrans(stairXY2(i,1), stairXY2(i,2), Deg_stair); % ÄÚÍ²
+    [XYcor_o(i,1), XYcor_o(i,2)] = coorTrans(stairXY2(i,1), stairXY2(i,2), Deg_stair); % ÄÚÍ²
 end
 % ¾Ö²¿×ø±êÏµ ×ª»»ÖÁ ÕûÌå×ø±êÏµ
 XYcor_i(:,1) = XYcor_i(:,1) + CoC_stair(1);
@@ -45,7 +45,7 @@ for i = 1:lengthlevelZaxis  % length(A(:)) AÏòÁ¿ÔªËØ¸öÊı
             for j = 1:stairColu_num*2 % Íâ²¿8¸öÖù×Ó
                 iNO = iNO+1;
                 fprintf(fileID,'   %d, %.4f, %.4f, %.4f\n',...
-                    iNO,XYcor_o(j,3),XYcor_o(j,4),levelZaxis(i));
+                    iNO,XYcor_o(j,1),XYcor_o(j,2),levelZaxis(i));
             end
         end
     end
@@ -105,8 +105,8 @@ ELE_TYPE = 'BEAM'; ELE_iMAT = 1; ELE_ANGLE = 0; ELE_iSUB = 0;  % iMAT = 1²ÄÁÏ¸Ö½
 fprintf(fileID,'; Â¥Ìİ³¤ÏòÖ÷Áº\n');
 ELE_iPRO = 3;
 iNO = iNO_init; % ³õÊ¼»¯iNO
-for i = 1:lengthlevelZaxis	% ´ËĞĞÓëÖùµ¥Ôª²»Í¬£¬Öùµ¥ÔªÎªi-1
-    if rem(i,0) ~= 0    % ÆæÊı²ã % ¿ØÖÆµã£¬¼´Á½¸öĞ±¶ÎÆğµã
+for i = 1:(lengthlevelZaxis-1)	% ÓÉÓÚÓĞĞ±¶Î£¬¹ÊÕâÀïÒª-1
+    if rem(i,2) ~= 0    % ÆæÊı²ã % ¿ØÖÆµã£¬¼´Á½¸öĞ±¶ÎÆğµã
         iNcon1 = iNO+1+lengthXYcor2*(i-1);
         iNcon2 = iNcon1+3;
         iNcon3 = iNcon1+lengthXYcor2+1;
@@ -146,7 +146,7 @@ end
 fprintf(fileID,'; Â¥Ìİ¿íÏòÖ÷Áº\n');
 iNO = iNO_init; % ³õÊ¼»¯iNO
 for i = 1:lengthlevelZaxis	% ´ËĞĞÓëÖùµ¥Ôª²»Í¬£¬Öùµ¥ÔªÎªi-1 % Ã¿²ãÒ»¸ù¹á´©¿íÏòÖ÷Áº
-    if rem(i,0) ~= 0    % ÆæÊı²ã % ¿ØÖÆµã£¬¼´Á½¸öÄÚÍ²ĞüÌôÆğµã
+    if rem(i,2) ~= 0    % ÆæÊı²ã % ¿ØÖÆµã£¬¼´Á½¸öÄÚÍ²ĞüÌôÆğµã
         iNcon1 = iNO+1+lengthXYcor2*(i-1);
         iNcon2 = iNcon1+3;
     else % Å¼Êı²ã
@@ -164,10 +164,10 @@ for i = 1:lengthlevelZaxis	% ´ËĞĞÓëÖùµ¥Ôª²»Í¬£¬Öùµ¥ÔªÎªi-1 % Ã¿²ãÒ»¸ù¹á´©¿íÏòÖ÷Á
             iN2 = iNcon2;
         elseif k == 2
             iN1 = iNcon1;
-            iN2 = iN1 + stairColu_num*2 - 1;
+            iN2 = iN1 + 5;
         elseif k == 3
             iN1 = iNcon2;
-            iN2 = iN1 + stairColu_num*2 - 1;
+            iN2 = iN1 + 7;
         end
         iEL = iEL+1;
         fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
@@ -183,8 +183,8 @@ ELE_iPRO = 4;
 iNO = iNO_init; % ³õÊ¼»¯iNO
 % Íâ»·Áº % ²Î¿¼Â¥Ìİ³¤ÏòÖ÷Áº
 fprintf(fileID,';   Íâ»·Áº\n');
-for i = levelPstart:lengthlevelZaxis	% ´ËĞĞÓëÖùµ¥Ôª²»Í¬£¬Öùµ¥ÔªÎªi-1;
-    if rem(i,0) ~= 0    % ÆæÊı²ã % ¿ØÖÆµã£¬¼´Á½¸öĞ±¶ÎÆğµã
+for i = levelPstart:(lengthlevelZaxis-1)	% ÓÉÓÚÓĞĞ±¶Î£¬¹ÊÕâÀïÒª-1
+    if rem(i,2) ~= 0    % ÆæÊı²ã % ¿ØÖÆµã£¬¼´Á½¸öĞ±¶ÎÆğµã
         iNcon1 = iNO+6+lengthXYcor2*(i-1);
         iNcon2 = iNcon1+5;
         iNcon3 = iNcon1+lengthXYcor2+1;
@@ -231,8 +231,8 @@ ELE_TYPE = 'PLATE'; ELE_iMAT = 2; ELE_iSUB = 2; ELE_iWID = 0; % iMAT = 2²ÄÁÏ»ìÄı
 fprintf(fileID,'; 1ºñ°åÂ¥Ìİ°å\n');
 ELE_iPRO = 2;
 iNO = iNO_init; % ³õÊ¼»¯iNO
-for i = 1:lengthlevelZaxis %
-    if rem(i,0) ~= 0    % ÆæÊı²ã % ¿ØÖÆµã£¬¼´Á½¸öĞ±¶ÎÆğµã
+for i = 1:(lengthlevelZaxis-1) % ÓÉÓÚÓĞĞ±¶Î£¬¹ÊÕâÀïÒª-1
+    if rem(i,2) ~= 0    % ÆæÊı²ã % ¿ØÖÆµã£¬¼´Á½¸öĞ±¶ÎÆğµã
         iNcon1 = iNO+1+lengthXYcor2*(i-1);
         iNcon2 = iNcon1+3;
         iNcon3 = iNcon1+lengthXYcor2+1;
@@ -247,7 +247,12 @@ for i = 1:lengthlevelZaxis %
         iNcon5 = iNcon3+4;
         iNcon6 = iNcon5+stairColu_num*2-1;
     end
-    for k = 1:2 % Á½¿é°å % Ğ±¶Î+Æ½¶Î
+    if i < levelPstart % ¿¼ÂÇµ×²ãÎŞÄ»Ç½
+        k_end = 1;
+    else
+        k_end = 2;
+    end
+    for k = 1:k_end % Á½¿é°å % Ğ±¶Î+Æ½¶Î
         if k == 1
             iN1 = iNcon1; iN2 = iNcon3; iN3 = iNcon4; iN4 = iNcon2;
         elseif k == 2
@@ -270,8 +275,8 @@ LTNAME = ROOF; iDIST = 2; ANGLE = 0; iSBEAM = 0; SBANG = 0; SBUW = 0; % Â¥ÌİºÉÔØ
 DIR = 'GZ'; bPROJ = 'NO'; DESC = ''; bEX = 'NO'; bAL = 'NO'; GROUP = '';
 
 iNO = iNO_init; % ³õÊ¼»¯iNO
-for i = 1:lengthlevelZaxis %
-    if rem(i,0) ~= 0    % ÆæÊı²ã % ¿ØÖÆµã£¬¼´Á½¸öĞ±¶ÎÆğµã
+for i = 1:(lengthlevelZaxis-1) % ÓÉÓÚÓĞĞ±¶Î£¬¹ÊÕâÀïÒª-1
+    if rem(i,2) ~= 0    % ÆæÊı²ã % ¿ØÖÆµã£¬¼´Á½¸öĞ±¶ÎÆğµã
         iNcon1 = iNO+1+lengthXYcor2*(i-1);
         iNcon2 = iNcon1+3;
         iNcon3 = iNcon1+lengthXYcor2+1;
@@ -286,7 +291,12 @@ for i = 1:lengthlevelZaxis %
         iNcon5 = iNcon3+4;
         iNcon6 = iNcon5+stairColu_num*2-1;
     end
-    for k = 1:2 % Á½¿é°å % Ğ±¶Î+Æ½¶Î
+    if i < levelPstart % ¿¼ÂÇµ×²ãÎŞÄ»Ç½
+        k_end = 1;
+    else
+        k_end = 2;
+    end
+    for k = 1:k_end % Á½¿é°å % Ğ±¶Î+Æ½¶Î
         if k == 1
             iN1 = iNcon1; iN2 = iNcon3; iN3 = iNcon4; iN4 = iNcon2;
         elseif k == 2
