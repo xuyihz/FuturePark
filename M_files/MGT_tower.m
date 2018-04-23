@@ -2,7 +2,7 @@
 % MGT tower
 %
 % Xu Yi, 19th March 2018
-% Xu Yi, 23rd March 2018, revised
+% Xu Yi, 23rd April 2018, revised
 
 %%
 function [iNO_end, iEL_end] = MGT_tower(fileID, iNO, iEL, car_num, CoC_tower, tube_innerR, tube_outerR, levelZaxis, levelPstart, CAR, ~, ~)
@@ -12,7 +12,7 @@ fprintf(fileID,'; iNO, X, Y, Z\n');
 
 iNO_init = iNO;
 XYcor = zeros(car_num,4);   % 内筒XoY坐标第1(X)、2(Y)列，外筒XoY坐标第3(X)、4(Y)列。
-car_num2pi = 2*pi/car_num;
+car_num2pi = 2*pi/car_num;  % speed up
 for i = 0:(car_num-1)   % 尝试向量化
     XYcor(i+1,1) = tube_innerR * cos(car_num2pi*i);
     XYcor(i+1,2) = tube_innerR * sin(car_num2pi*i);
