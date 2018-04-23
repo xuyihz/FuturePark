@@ -1,3 +1,5 @@
+run MGT.m
+
 towerC 柱子已完成。
 
 梁及斜撑 ELEMENT 已完成。
