@@ -110,7 +110,7 @@ levelPstart = [3,length(levelZaxis(:))-2]; % Í£³µµÄÂ¥²ã£¬ÓëÂ¥²ãÊıÓĞ¹Ø¡£µÚÒ»¸öÎª´
 stairColu_num = 4;  % Â¥ÌİÄÚÍ²ÖùÊıÁ¿
 stairL = 2750; % Â¥Ìİ³¤£¬¼´ÑØÌ¤²½Ç°½ø·½Ïò³¤
 stairW = 3150; % Â¥Ìİ¿í
-elevatorColu_num = 7;  % µçÌİÍ²µÄÄÚÍ²ÖùÊıÁ¿
+elevatorColu_num = 8;  % µçÌİÍ²µÄÄÚÍ²ÖùÊıÁ¿ (µçÌİÖĞ¼ä»¹ÓĞÒ»¸ö½Úµã£¬¹Ê7+1=8)
 
 %% 10 towers
 iNO_towerC_init = iNO;
