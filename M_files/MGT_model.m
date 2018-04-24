@@ -110,6 +110,7 @@ levelPstart = [3,length(levelZaxis(:))-2]; % Í£³µµÄÂ¥²ã£¬ÓëÂ¥²ãÊýÓÐ¹Ø¡£µÚÒ»¸öÎª´
 stairColu_num = 4;  % Â¥ÌÝÄÚÍ²ÖùÊýÁ¿
 stairL = 2750; % Â¥ÌÝ³¤£¬¼´ÑØÌ¤²½Ç°½ø·½Ïò³¤
 stairW = 3150; % Â¥ÌÝ¿í
+elevatorColu_num = 7;  % µçÌÝÍ²µÄÄÚÍ²ÖùÊýÁ¿
 
 %% 10 towers
 iNO_towerC_init = iNO;
@@ -124,7 +125,7 @@ iNO_towerS2_init = iNO;
 [iNO, iEL] = MGT_stair(fileID, iNO, iEL, CoC_stairs7, Deg_stair7, levelZaxis, levelPstart(1), stairColu_num, stairL, stairW, CAR, OFFICE, ROOF);
 [iNO, iEL] = MGT_stair(fileID, iNO, iEL, CoC_stairs9, Deg_stair9, levelZaxis, levelPstart(1), stairColu_num, stairL, stairW, CAR, OFFICE, ROOF);
 
-[iNO, iEL] = MGT_stair(fileID, iNO, iEL, CoC_elevator4, Deg_elevator4, levelZaxis, levelPstart(1), stairColu_num, stairL, stairW, CAR, OFFICE, ROOF);
+[iNO, iEL] = MGT_elevator(fileID, iNO, iEL, CoC_elevator4, Deg_elevator4, levelZaxis, levelPstart(1), elevatorColu_num, CAR, OFFICE, ROOF);
 [iNO, iEL] = MGT_stair(fileID, iNO, iEL, CoC_side10, Deg_stair10, levelZaxis, levelPstart(1), stairColu_num, stairL, stairW, CAR, OFFICE, ROOF);
 [iNO, iEL] = MGT_stair(fileID, iNO, iEL, CoC_side8, Deg_stair8, levelZaxis, levelPstart(1), stairColu_num, stairL, stairW, CAR, OFFICE, ROOF);
 

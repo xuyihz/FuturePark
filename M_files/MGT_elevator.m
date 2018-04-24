@@ -1,48 +1,54 @@
 %% function
-% MGT stairs
+% MGT elevator
 %
-% Xu Yi, 25th March 2018
+% Xu Yi, 24th April 2018
 % Xu Yi, 24th April 2018, revised
 
 %%
-function [iNO_end, iEL_end] = MGT_stair(fileID, iNO, iEL, CoC_stair, Deg_stair, levelZaxis, levelPstart, stairColu_num, stairL, stairW, ~, ~, ROOF)
+function [iNO_end, iEL_end] = MGT_elevator(fileID, iNO, iEL, CoC_elevator, Deg_elevator, levelZaxis, levelPstart, elevatorColu_num, ~, ~, ROOF)
 %% NODE
 fprintf(fileID,'*NODE    ; Nodes\n');
 fprintf(fileID,'; iNO, X, Y, Z\n');
 
 iNO_init = iNO;
 
-XYcor_i = zeros(stairColu_num,2);   % 内筒XoY坐标第1(X)、2(Y)列。
-XYcor_o = zeros(stairColu_num*2,2); % 外表皮XoY坐标第1(X)、2(Y)列。
+elevatorColu_o_num = elevatorColu_num+3;
+XYcor_i = zeros(elevatorColu_num,2);   % 7个 内筒XoY坐标第1(X)、2(Y)列。
+XYcor_o = zeros(elevatorColu_o_num,2); % 10个 外表皮XoY坐标第1(X)、2(Y)列。
 
-stairXY = [stairL/2, stairW/2; -stairL/2, stairW/2; -stairL/2, -stairW/2; stairL/2, -stairW/2]; % 原始坐标，未旋转，未转到整体坐标系
-for i = 1:stairColu_num   % 尝试向量化
-    [XYcor_i(i,1), XYcor_i(i,2)] = coorTrans(stairXY(i,1), stairXY(i,2), Deg_stair); % 内筒
+ele_width = 2500; ele_shift = 400; ele_depth = ele_width + ele_shift; 
+str_length = 2200; str_width = 2800;
+elevatorXY = [-ele_width,ele_depth; ele_width,ele_depth; -ele_width,ele_shift; ele_width,ele_shift;...
+                -str_length,-str_width; str_length,-str_width; 0,ele_shift]; % 原始坐标，未旋转，未转到整体坐标系
+for i = 1:elevatorColu_num   % 尝试向量化
+    [XYcor_i(i,1), XYcor_i(i,2)] = coorTrans(elevatorXY(i,1), elevatorXY(i,2), Deg_elevator); % 内筒
 end
-% 外筒待定stairXY2 暂定从内筒外伸2000.
-m2 = 2000;
-stairXY2 = [stairL/2+m2, stairW/2; stairL/2, stairW/2+m2; -stairL/2, stairW/2+m2; -stairL/2-m2, stairW/2;...
-    -stairL/2-m2, -stairW/2; -stairL/2, -stairW/2-m2; stairL/2, -stairW/2-m2; stairL/2+m2, -stairW/2];
-for i = 1:stairColu_num*2   % 尝试向量化
-    [XYcor_o(i,1), XYcor_o(i,2)] = coorTrans(stairXY2(i,1), stairXY2(i,2), Deg_stair); % 内筒
+% 外筒待定stairXY2 暂按半径6000定位
+ele2_depth = 5450; ele2_width1 = 5200; ele2_width2 = 6000; ele2_width3 = 5300;
+ele2_strX = str_length*2 - ele_width; ele2_strY = str_width*2 + ele_shift;
+elevatorXY2 = [-ele_width, ele2_depth; ele_width, ele2_depth; -ele2_width1, ele_depth; ele2_width1, ele_depth;...
+                -ele2_width2, ele_shift; ele2_width2, ele_shift; -ele2_width3, -str_width; ele2_width3, -str_width;...
+                -ele2_strX, -ele2_strY; ele2_strX, -ele2_strY];
+for i = 1:elevatorColu_o_num   % 尝试向量化
+    [XYcor_o(i,1), XYcor_o(i,2)] = coorTrans(elevatorXY2(i,1), elevatorXY2(i,2), Deg_elevator); % 内筒
 end
 % 局部坐标系 转换至 整体坐标系
-XYcor_i(:,1) = XYcor_i(:,1) + CoC_stair(1);
-XYcor_i(:,2) = XYcor_i(:,2) + CoC_stair(2);
-XYcor_o(:,1) = XYcor_o(:,1) + CoC_stair(1);
-XYcor_o(:,2) = XYcor_o(:,2) + CoC_stair(2);
+XYcor_i(:,1) = XYcor_i(:,1) + CoC_elevator(1);
+XYcor_i(:,2) = XYcor_i(:,2) + CoC_elevator(2);
+XYcor_o(:,1) = XYcor_o(:,1) + CoC_elevator(1);
+XYcor_o(:,2) = XYcor_o(:,2) + CoC_elevator(2);
 lengthlevelZaxis = length(levelZaxis(:));
 
 for i = 1:lengthlevelZaxis  % length(A(:)) A向量元素个数
     for k = 1:2 % 内筒，外筒
-        if k == 1 % 节点编号规则：从0度角开始逆时针；先每层内筒，再每层外筒；从下到上。
-            for j = 1:stairColu_num % 内部4个柱子
+        if k == 1 % 节点编号规则：先每层内筒，再每层外筒；从下到上。
+            for j = 1:elevatorColu_num % 内部7个柱子
                 iNO = iNO+1;
                 fprintf(fileID,'   %d, %.4f, %.4f, %.4f\n',...
                     iNO,XYcor_i(j,1),XYcor_i(j,2),levelZaxis(i));
             end
         else
-            for j = 1:stairColu_num*2 % 外部8个柱子
+            for j = 1:elevatorColu_o_num % 外部10个柱子
                 iNO = iNO+1;
                 fprintf(fileID,'   %d, %.4f, %.4f, %.4f\n',...
                     iNO,XYcor_o(j,1),XYcor_o(j,2),levelZaxis(i));
@@ -50,7 +56,7 @@ for i = 1:lengthlevelZaxis  % length(A(:)) A向量元素个数
         end
     end
 end
-lengthXYcor2 = stairColu_num+stairColu_num*2;  % 每层的节点数，其中内部4个点，外部8个点。
+lengthXYcor2 = elevatorColu_num+elevatorColu_o_num;  % 每层的节点数，其中内部47个点，外部10个点。
 iNO_end = iNO;
 fprintf(fileID,'\n');
 
@@ -66,7 +72,7 @@ fprintf(fileID,'; 内筒柱\n');
 ELE_iPRO = 2;
 iNO = iNO_init; % 初始化iNO
 for i = 1:(lengthlevelZaxis-1)	% length(A(:)) A向量元素个数
-    for j = 1:stairColu_num	% 每层内筒的节点数
+    for j = 1:elevatorColu_num	% 每层内筒的节点数
         iEL = iEL+1;
         iN1 = iNO+j+lengthXYcor2*(i-1);
         iN2 = iN1+lengthXYcor2;
@@ -82,9 +88,9 @@ fprintf(fileID,'; 外筒柱\n');
 ELE_iPRO = 1;
 iNO = iNO_init; % 初始化iNO
 for i = levelPstart:(lengthlevelZaxis-1)	% length(A(:)) A向量元素个数 % levelPstart 第几层开始停车，即下几层开敞
-    for j = 1:stairColu_num*2	% 每层外筒的节点数
+    for j = 1:elevatorColu_o_num	% 每层外筒的节点数
         iEL = iEL+1;
-        iN1 = iNO+(stairColu_num+j)+lengthXYcor2*(i-1); % 此行与内筒不同，多了 +stairN_num/2
+        iN1 = iNO+(elevatorColu_num+j)+lengthXYcor2*(i-1); % 此行与内筒不同，多了 +elevatorColu_num
         iN2 = iN1+lengthXYcor2;
         fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
             iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
@@ -119,7 +125,7 @@ for i = 1:(lengthlevelZaxis-1)	% 由于有斜段，故这里要-1
         iNcon3 = iNcon1+lengthXYcor2-1;
         iNcon4 = iNcon1+lengthXYcor2+2;
         iNcon5 = iNcon3+4;
-        iNcon6 = iNcon5+stairColu_num*2-1;
+        iNcon6 = iNcon5+elevatorColu_o_num-1;
     end
     if i < levelPstart % 考虑底层无幕墙
         k_end = 2;
@@ -245,7 +251,7 @@ for i = 1:(lengthlevelZaxis-1) % 由于有斜段，故这里要-1
         iNcon3 = iNcon1+lengthXYcor2-1;
         iNcon4 = iNcon1+lengthXYcor2+2;
         iNcon5 = iNcon3+4;
-        iNcon6 = iNcon5+stairColu_num*2-1;
+        iNcon6 = iNcon5+elevatorColu_o_num-1;
     end
     if i < levelPstart % 考虑底层无幕墙
         k_end = 1;
@@ -289,7 +295,7 @@ for i = 1:(lengthlevelZaxis-1) % 由于有斜段，故这里要-1
         iNcon3 = iNcon1+lengthXYcor2-1;
         iNcon4 = iNcon1+lengthXYcor2+2;
         iNcon5 = iNcon3+4;
-        iNcon6 = iNcon5+stairColu_num*2-1;
+        iNcon6 = iNcon5+elevatorColu_o_num-1;
     end
     if i < levelPstart % 考虑底层无幕墙
         k_end = 1;
@@ -317,7 +323,7 @@ fprintf(fileID,'*CONSTRAINT    ; Supports\n');
 fprintf(fileID,'; NODE_LIST, CONST(Dx,Dy,Dz,Rx,Ry,Rz), GROUP\n');
 
 iNO = iNO_init; % 初始化iNO
-NODE_LIST = sprintf('%dto%d', iNO+1, iNO+stairColu_num);
+NODE_LIST = sprintf('%dto%d', iNO+1, iNO+elevatorColu_num);
 CONSTRAINT = 111111; % 6个自由度全约束
 fprintf(fileID,'   %s, %d, \n',...
     NODE_LIST, CONSTRAINT);
