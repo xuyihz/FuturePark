@@ -254,7 +254,7 @@ for i = levelPstart:lengthlevelZaxis	%
 end
 fprintf(fileID,'\n');
 
-%% ELEMENT(planner) floor
+%% ELEMENT(planner) floor 由于该4个点不在一个平面，故无法施加楼面荷载
 fprintf(fileID,'*ELEMENT    ; Elements\n');
 fprintf(fileID,'; iEL, TYPE, iMAT, iPRO, iN1, iN2, ANGLE, iSUB, EXVAL, iOPT(EXVAL2) ; Frame  Element\n; iEL, TYPE, iMAT, iPRO, iN1, iN2, ANGLE, iSUB, EXVAL, EXVAL2, bLMT ; Comp/Tens Truss\n; iEL, TYPE, iMAT, iPRO, iN1, iN2, iN3, iN4, iSUB, iWID , LCAXIS    ; Planar Element\n; iEL, TYPE, iMAT, iPRO, iN1, iN2, iN3, iN4, iN5, iN6, iN7, iN8     ; Solid  Element\n');
 
@@ -285,31 +285,31 @@ for i = 1:(lengthlevelZaxis-1) % 由于有斜段，故这里要-1
 end
 fprintf(fileID,'\n');
 
-%% FLOORLOAD 由于周围一圈不是梁包围，故需加压力荷载
-fprintf(fileID,'*FLOORLOAD    ; Floor Loads\n');
-fprintf(fileID,'; LTNAME, iDIST, ANGLE, iSBEAM, SBANG, SBUW, DIR, bPROJ, DESC, bEX, bAL, GROUP, NODE1, ..., NODEn  ; iDIST=1,2\n; LTNAME, iDIST, DIR, bPROJ, DESC, GROUP, NODE1, ..., NODEn                                        ; iDIST=3,4\n; [iDIST] 1=One Way, 2=Two Way, 3=Polygon-Centroid, 4=Polygon-Length\n');
-
-LTNAME = ROOF; iDIST = 2; ANGLE = 0; iSBEAM = 0; SBANG = 0; SBUW = 0; % 楼梯荷载 目前采用了屋面荷载4/3.5，板厚0.因每2.1一块板，故可能和4.2一层7/3.5差不多。(待复核)
-DIR = 'GZ'; bPROJ = 'NO'; DESC = ''; bEX = 'NO'; bAL = 'NO'; GROUP = '';
-
-iNO = iNO_init; % 初始化iNO
-for i = 1:(lengthlevelZaxis-1) % 由于有斜段，故这里要-1
-    if rem(i,2) ~= 0    % 奇数层 % 控制点，即两个斜段起点
-        iN1 = iNO+3+lengthXYcor2*(i-1);
-        iN2 = iN1+2;
-        iN3 = iN1+3+lengthXYcor2;
-        iN4 = iN1+1+lengthXYcor2;
-    else % 偶数层
-        iN1 = iNO+6+lengthXYcor2*(i-1);
-        iN2 = iN1-2;
-        iN3 = iN1-3+lengthXYcor2;
-        iN4 = iN1-1+lengthXYcor2;
-    end
-    fprintf(fileID,'   %s, %d, %d, %d, %d, %d, %s, %s, %s, %s, %s, %s, %d, %d, %d, %d\n',...
-        LTNAME, iDIST, ANGLE, iSBEAM, SBANG, SBUW, DIR, bPROJ, DESC, bEX, bAL, GROUP,...
-        iN1, iN2, iN3, iN4);
-end
-fprintf(fileID,'\n');
+%% FLOORLOAD 由于该4个点不在一个平面，故无法施加楼面荷载
+% fprintf(fileID,'*FLOORLOAD    ; Floor Loads\n');
+% fprintf(fileID,'; LTNAME, iDIST, ANGLE, iSBEAM, SBANG, SBUW, DIR, bPROJ, DESC, bEX, bAL, GROUP, NODE1, ..., NODEn  ; iDIST=1,2\n; LTNAME, iDIST, DIR, bPROJ, DESC, GROUP, NODE1, ..., NODEn                                        ; iDIST=3,4\n; [iDIST] 1=One Way, 2=Two Way, 3=Polygon-Centroid, 4=Polygon-Length\n');
+% 
+% LTNAME = ROOF; iDIST = 2; ANGLE = 0; iSBEAM = 0; SBANG = 0; SBUW = 0; % 楼梯荷载 目前采用了屋面荷载4/3.5，板厚0.因每2.1一块板，故可能和4.2一层7/3.5差不多。(待复核)
+% DIR = 'GZ'; bPROJ = 'NO'; DESC = ''; bEX = 'NO'; bAL = 'NO'; GROUP = '';
+% 
+% iNO = iNO_init; % 初始化iNO
+% for i = 1:(lengthlevelZaxis-1) % 由于有斜段，故这里要-1
+%     if rem(i,2) ~= 0    % 奇数层 % 控制点，即两个斜段起点
+%         iN1 = iNO+3+lengthXYcor2*(i-1);
+%         iN2 = iN1+2;
+%         iN3 = iN1+3+lengthXYcor2;
+%         iN4 = iN1+1+lengthXYcor2;
+%     else % 偶数层
+%         iN1 = iNO+6+lengthXYcor2*(i-1);
+%         iN2 = iN1-2;
+%         iN3 = iN1-3+lengthXYcor2;
+%         iN4 = iN1-1+lengthXYcor2;
+%     end
+%     fprintf(fileID,'   %s, %d, %d, %d, %d, %d, %s, %s, %s, %s, %s, %s, %d, %d, %d, %d\n',...
+%         LTNAME, iDIST, ANGLE, iSBEAM, SBANG, SBUW, DIR, bPROJ, DESC, bEX, bAL, GROUP,...
+%         iN1, iN2, iN3, iN4);
+% end
+% fprintf(fileID,'\n');
 
 %%
 iEL_end = iEL;
