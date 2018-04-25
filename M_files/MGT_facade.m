@@ -39,10 +39,10 @@ XYcoor_i(:,2) = XYcoor_i(:,2) + CoC_tower(2);
 XYcoor_o3(:,:,1) = XYcoor_o3(:,:,1) + CoC_tower(1);
 XYcoor_o3(:,:,2) = XYcoor_o3(:,:,2) + CoC_tower(2);
 
-lengthXYcoor2 = length(XYcoor_i(:))/2 + length(XYcoor_o3(1,:,:))/2;  % Ã¿²ã½ÚµãÊı±¸·İ
-lengthXYcoor_f = length(XYcoor_o3(1,:,:))/2;  % Ä»Ç½Ã¿²ã½ÚµãÊı
+lengthXYcoor2 = length(XYcoor_i(:))/2 + car_num*2;  % Ã¿²ã½ÚµãÊı±¸·İ
+lengthXYcoor_f = car_num*2;  % Ä»Ç½Ã¿²ã½ÚµãÊı
 
-for i = levelPstart1:lengthlevelZaxis  % length(A(:)) AÏòÁ¿ÔªËØ¸öÊı
+for i = 1:lengthlevelZaxis  % length(A(:)) AÏòÁ¿ÔªËØ¸öÊı
     for j = 1:car_num
         iNO = iNO+1;
         fprintf(fileID,'   %d, %.4f, %.4f, %.4f\n',...	% ½Úµã±àºÅ¹æÔò£º´Ó0¶È½Ç¿ªÊ¼ÄæÊ±Õë£»´ÓÏÂµ½ÉÏ¡£
@@ -66,7 +66,7 @@ ELE_TYPE = 'BEAM'; ELE_iMAT = 1; ELE_ANGLE = 0; ELE_iSUB = 0;  % iMAT = 1²ÄÁÏ¸Ö½
 fprintf(fileID,'; Ä»Ç½Öù(ÀàËÆÍâÍ²Öù)\n');
 ELE_iPRO = 1;
 iNO = iNO_init; % ³õÊ¼»¯iNO
-for i = levelPstart2:(lengthlevelZaxis-1)	% length(A(:)) AÏòÁ¿ÔªËØ¸öÊı % levelPstart µÚ¼¸²ã¿ªÊ¼Í£³µ£¬¼´ÏÂ¼¸²ã¿ª³¨
+for i = levelPstart1:(lengthlevelZaxis-1)	% length(A(:)) AÏòÁ¿ÔªËØ¸öÊı % levelPstart µÚ¼¸²ã¿ªÊ¼Í£³µ£¬¼´ÏÂ¼¸²ã¿ª³¨
     for j = 1:car_num*2	% Ã¿²ãÍâÍ²µÄ½ÚµãÊı
         iEL = iEL+1;
         iN1 = iNO+j+lengthXYcoor_f*(i-1); % ´ËĞĞÄ»Ç½ÓëÁíÍâËşµÄ²»Í¬£¬ÒòÄ»Ç½½ÚµãÎªµ¥¶À±àºÅ£¬¹ÊÒ»²ãÖ»ÓĞlengthXYcoor_f¸ö½Úµã

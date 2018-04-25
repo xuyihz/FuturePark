@@ -122,6 +122,7 @@ iNO_towerS1_init = iNO;
 
 iNO_towerS2_init = iNO;
 [iNO, iEL] = MGT_tower(fileID, iNO, iEL, car_num, CoC_towerS3, Deg_towerS3, tube_innerR, tube_outerR, levelZaxis, levelPstart(2), CAR, OFFICE, ROOF);
+[iNO, iEL] = MGT_facade(fileID, iNO, iEL, car_num, CoC_towerS3, Deg_towerS3, tube_innerR, levelZaxis, levelPstart, iNO_towerS2_init);
 
 [iNO, iEL] = MGT_stair(fileID, iNO, iEL, CoC_stairs5, Deg_stair5, levelZaxis, levelPstart(1), stairColu_num, stairL, stairW, CAR, OFFICE, ROOF);
 [iNO, iEL] = MGT_stair(fileID, iNO, iEL, CoC_stairs6, Deg_stair6, levelZaxis, levelPstart(1), stairColu_num, stairL, stairW, CAR, OFFICE, ROOF);
