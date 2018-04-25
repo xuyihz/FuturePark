@@ -16,16 +16,16 @@ XYcoor_o = zeros(car_num*2,2);	% 外筒XoY坐标第1(X)、2(Y)列。
 
 car_num2pi = 2*pi/car_num;  % speed up
 
-XYcor_i_1(1,1) = tube_innerR * cos(car_num2pi/2);   % 单个Y型模块内筒一点 X
-XYcor_i_1(1,2) = tube_innerR * sin(car_num2pi/2);   % Y
-XYcor_o_1(1,1) = sqrt(tube_outerR^2 - XYcor_i_1(1,2)^2);        % 单个Y型模块外筒一点 X1 注意外筒16个点并不是等角度等分。
-XYcor_o_1(1,2) = XYcor_i_1(1,2);                                % Y1
-XYcor_o_1(2,:) = coorMir(XYcor_o_1(1,:), [0,0], XYcor_i_1);     % X2,Y2
+XYcoor_i_1(1,1) = tube_innerR * cos(car_num2pi/2);   % 单个Y型模块内筒一点 X
+XYcoor_i_1(1,2) = tube_innerR * sin(car_num2pi/2);   % Y
+XYcoor_o_1(1,1) = sqrt(tube_outerR^2 - XYcoor_i_1(1,2)^2);        % 单个Y型模块外筒一点 X1 注意外筒16个点并不是等角度等分。
+XYcoor_o_1(1,2) = XYcoor_i_1(1,2);                                % Y1
+XYcoor_o_1(2,:) = coorMir(XYcoor_o_1(1,:), [0,0], XYcoor_i_1);     % X2,Y2
 
 for i = 0:(car_num-1)   % 尝试向量化 % 旋转局部角度+整体角度
-    [XYcoor_i(i+1,1), XYcoor_i(i+1,2)] = coorTrans(XYcor_i_1(1), XYcor_i_1(2), -car_num2pi*i+Deg_tower);       % 内筒点坐标
-    [XYcoor_o(i*2+1,1), XYcoor_o(i*2+1,2)] = coorTrans(XYcor_o_1(1,1), XYcor_o_1(1,2), -car_num2pi*i+Deg_tower); % 外筒点坐标1
-    [XYcoor_o(i*2+2,1), XYcoor_o(i*2+2,2)] = coorTrans(XYcor_o_1(2,1), XYcor_o_1(2,2), -car_num2pi*i+Deg_tower); % 外筒点坐标2
+    [XYcoor_i(i+1,1), XYcoor_i(i+1,2)] = coorTrans(XYcoor_i_1(1), XYcoor_i_1(2), -car_num2pi*i+Deg_tower);       % 内筒点坐标
+    [XYcoor_o(i*2+1,1), XYcoor_o(i*2+1,2)] = coorTrans(XYcoor_o_1(1,1), XYcoor_o_1(1,2), -car_num2pi*i+Deg_tower); % 外筒点坐标1
+    [XYcoor_o(i*2+2,1), XYcoor_o(i*2+2,2)] = coorTrans(XYcoor_o_1(2,1), XYcoor_o_1(2,2), -car_num2pi*i+Deg_tower); % 外筒点坐标2
 end
 % 局部坐标系 转换至 整体坐标系
 XYcoor_i(:,1) = XYcoor_i(:,1) + CoC_tower(1);
@@ -33,7 +33,7 @@ XYcoor_i(:,2) = XYcoor_i(:,2) + CoC_tower(2);
 XYcoor_o(:,1) = XYcoor_o(:,1) + CoC_tower(1);
 XYcoor_o(:,2) = XYcoor_o(:,2) + CoC_tower(2);
 
-lengthXYcor2 = length(XYcoor_i(:))/2 + length(XYcoor_o(:))/2;  % 每层节点数
+lengthXYcoor2 = length(XYcoor_i(:))/2 + length(XYcoor_o(:))/2;  % 每层节点数
 lengthlevelZaxis = length(levelZaxis(:));
 
 for i = 1:lengthlevelZaxis  % length(A(:)) A向量元素个数
@@ -70,8 +70,8 @@ iNO = iNO_init; % 初始化iNO
 for i = 1:(lengthlevelZaxis-1)	% length(A(:)) A向量元素个数
     for j = 1:car_num	% 每层内筒的节点数
         iEL = iEL+1;
-        iN1 = iNO+j+lengthXYcor2*(i-1);
-        iN2 = iN1+lengthXYcor2;
+        iN1 = iNO+j+lengthXYcoor2*(i-1);
+        iN2 = iN1+lengthXYcoor2;
         fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
             iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
             iN1, iN2,...    % 柱单元的两个节点号
@@ -86,8 +86,8 @@ iNO = iNO_init; % 初始化iNO
 for i = levelPstart:(lengthlevelZaxis-1)	% length(A(:)) A向量元素个数 % levelPstart 第几层开始停车，即下几层开敞
     for j = 1:car_num*2	% 每层外筒的节点数
         iEL = iEL+1;
-        iN1 = iNO+car_num+j+lengthXYcor2*(i-1); % 此行与内筒不同，多了 +car_num
-        iN2 = iN1+lengthXYcor2;
+        iN1 = iNO+car_num+j+lengthXYcoor2*(i-1); % 此行与内筒不同，多了 +car_num
+        iN2 = iN1+lengthXYcoor2;
         fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
             iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
             iN1, iN2,...    % 柱单元的两个节点号
@@ -111,7 +111,7 @@ for i = levelPstart:lengthlevelZaxis	% 此行与柱单元不同，柱单元为i-1
     for j = 1:car_num	% 每层内筒的节点数
         for k = 1:2 % 一根内筒柱连接两根外筒柱，即两根梁
             iEL = iEL+1;
-            iN1 = iNO+j+lengthXYcor2*(i-1);
+            iN1 = iNO+j+lengthXYcoor2*(i-1);
             iN2 = iN1-j+car_num+(j-1)*2+k;    % iN1归到内筒第0点后再加car_num后，即为外筒Y型第0点(即内筒最后一点)
             fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
                 iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
@@ -130,7 +130,7 @@ fprintf(fileID,';   内环梁\n');
 for i = 2:lengthlevelZaxis	% 此行与柱单元不同，柱单元为i-1; 此行与主梁不同，i起始为2.即二层开始有。
     for j = 1:car_num	% 每层内筒的节点数
         iEL = iEL+1;
-        iN1 = iNO+j+lengthXYcor2*(i-1);
+        iN1 = iNO+j+lengthXYcoor2*(i-1);
         if j ~= car_num
             iN2 = iN1+1;
         else % j = car_num 时， 连接的是本环的第一个点，而不是外环的第一个点。
@@ -148,7 +148,7 @@ fprintf(fileID,';   外环梁\n');
 for i = levelPstart:lengthlevelZaxis	% 此行与柱单元不同，柱单元为i-1;
     for j = 1:car_num*2	% 每层外筒的节点数
         iEL = iEL+1;
-        iN1 = iNO+car_num+j+lengthXYcor2*(i-1); % 此行与内环梁不同，多加了car_num
+        iN1 = iNO+car_num+j+lengthXYcoor2*(i-1); % 此行与内环梁不同，多加了car_num
         if j ~= car_num*2
             iN2 = iN1+1;
         else % j = car_num*2 时， 连接的是本环的第一个点，而不是上层内环的第一个点。
@@ -163,7 +163,7 @@ end
 fprintf(fileID,'\n');
 
 %% ELEMENT(frame) bracings
-% iEL = bracings(fileID, iNO_init, iEL, car_num, lengthlevelZaxis, levelPstart, lengthXYcor2); % 螺旋撑不是必要的设备构件，根据结构计算需要，决定加与不加。
+% iEL = bracings(fileID, iNO_init, iEL, car_num, lengthlevelZaxis, levelPstart, lengthXYcoor2); % 螺旋撑不是必要的设备构件，根据结构计算需要，决定加与不加。
 
 %% ELEMENT(planner) floor
 fprintf(fileID,'*ELEMENT    ; Elements\n');
@@ -179,7 +179,7 @@ iNO = iNO_init; % 初始化iNO
 for i = levelPstart:lengthlevelZaxis % 此行同外环梁
     for j = 1:car_num	% 每层停车数
         iEL = iEL+1;
-        iN1 = iNO+j+lengthXYcor2*(i-1);     % 逆时针板四周四个点
+        iN1 = iNO+j+lengthXYcoor2*(i-1);     % 逆时针板四周四个点
         iN2 = iN1-j+1+car_num+(j-1)*2+1;	% iN1归到内筒第一点后再加car_num后，即为外筒第一点(即Y型第一点，实际起点应再+1，即为Y型第二点)
         if j ~= car_num
             iN3 = iN2+1;
@@ -207,7 +207,7 @@ DIR = 'GZ'; bPROJ = 'NO'; DESC = ''; bEX = 'NO'; bAL = 'NO'; GROUP = '';
 iNO = iNO_init; % 初始化iNO
 for i = levelPstart:lengthlevelZaxis % 此行同1厚板停车板，即同外环梁
     for j = 1:car_num	% 每层停车数
-        iN1 = iNO+j+lengthXYcor2*(i-1); % 逆时针板四周四个点
+        iN1 = iNO+j+lengthXYcoor2*(i-1); % 逆时针板四周四个点
         iN2 = iN1-j+1+car_num+(j-1)*2+1;	% iN1归到内筒第一点后再加car_num后，即为外筒第一点(即Y型第一点，实际起点应再+1，即为Y型第二点)
         if j ~= car_num
             iN3 = iN2+1;
@@ -237,7 +237,7 @@ fprintf(fileID,'\n');
 end
 
 %% ELEMENT(frame) bracings "8->16"后未修改
-% function  iEL = bracings(fileID, iNO_init, iEL, car_num, lengthlevelZaxis, levelPstart, lengthXYcor2)
+% function  iEL = bracings(fileID, iNO_init, iEL, car_num, lengthlevelZaxis, levelPstart, lengthXYcoor2)
 % fprintf(fileID,'*ELEMENT    ; Elements\n');
 % fprintf(fileID,'; iEL, TYPE, iMAT, iPRO, iN1, iN2, ANGLE, iSUB, EXVAL, iOPT(EXVAL2) ; Frame  Element\n; iEL, TYPE, iMAT, iPRO, iN1, iN2, ANGLE, iSUB, EXVAL, EXVAL2, bLMT ; Comp/Tens Truss\n; iEL, TYPE, iMAT, iPRO, iN1, iN2, iN3, iN4, iSUB, iWID , LCAXIS    ; Planar Element\n; iEL, TYPE, iMAT, iPRO, iN1, iN2, iN3, iN4, iN5, iN6, iN7, iN8     ; Solid  Element\n');
 % 
@@ -251,11 +251,11 @@ end
 % for i = levelPstart:2:(lengthlevelZaxis-2)	% 由于螺旋撑为每两层一根，故为间隔2； 此处与柱梁都不同，因两层一撑，故要-2
 %     for j = 1:car_num	% 每层外筒的节点数
 %         iEL = iEL+1;
-%         iN1 = iNO+(j+car_num)+lengthXYcor2*(i-1); % 此行与柱单元相同
+%         iN1 = iNO+(j+car_num)+lengthXYcoor2*(i-1); % 此行与柱单元相同
 %         if j ~= car_num
-%             iN2 = iN1+1+lengthXYcor2*2;
+%             iN2 = iN1+1+lengthXYcoor2*2;
 %         else % j = car_num 时， 连接的是这层外环的第一个点，而不是上层内环的第一个点。
-%             iN2 = iN1+1+lengthXYcor2*2-car_num;
+%             iN2 = iN1+1+lengthXYcoor2*2-car_num;
 %         end
 %         fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
 %             iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...

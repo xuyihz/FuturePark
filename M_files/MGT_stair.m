@@ -50,7 +50,7 @@ for i = 1:lengthlevelZaxis  % length(A(:)) A向量元素个数
         end
     end
 end
-lengthXYcor2 = stairColu_num+stairColu_num*2;  % 每层的节点数，其中内部4个点，外部8个点。
+lengthXYcoor2 = stairColu_num+stairColu_num*2;  % 每层的节点数，其中内部4个点，外部8个点。
 iNO_end = iNO;
 fprintf(fileID,'\n');
 
@@ -68,8 +68,8 @@ iNO = iNO_init; % 初始化iNO
 for i = 1:(lengthlevelZaxis-1)	% length(A(:)) A向量元素个数
     for j = 1:stairColu_num	% 每层内筒的节点数
         iEL = iEL+1;
-        iN1 = iNO+j+lengthXYcor2*(i-1);
-        iN2 = iN1+lengthXYcor2;
+        iN1 = iNO+j+lengthXYcoor2*(i-1);
+        iN2 = iN1+lengthXYcoor2;
         fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
             iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
             iN1, iN2,...    % 柱单元的两个节点号
@@ -84,8 +84,8 @@ iNO = iNO_init; % 初始化iNO
 for i = levelPstart:(lengthlevelZaxis-1)	% length(A(:)) A向量元素个数 % levelPstart 第几层开始停车，即下几层开敞
     for j = 1:stairColu_num*2	% 每层外筒的节点数
         iEL = iEL+1;
-        iN1 = iNO+(stairColu_num+j)+lengthXYcor2*(i-1); % 此行与内筒不同，多了 +stairN_num/2
-        iN2 = iN1+lengthXYcor2;
+        iN1 = iNO+(stairColu_num+j)+lengthXYcoor2*(i-1); % 此行与内筒不同，多了 +stairN_num/2
+        iN2 = iN1+lengthXYcoor2;
         fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
             iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
             iN1, iN2,...    % 柱单元的两个节点号
@@ -107,17 +107,17 @@ ELE_iPRO = 3;
 iNO = iNO_init; % 初始化iNO
 for i = 1:(lengthlevelZaxis-1)	% 由于有斜段，故这里要-1
     if rem(i,2) ~= 0    % 奇数层 % 控制点，即两个斜段起点
-        iNcon1 = iNO+1+lengthXYcor2*(i-1);
+        iNcon1 = iNO+1+lengthXYcoor2*(i-1);
         iNcon2 = iNcon1+3;
-        iNcon3 = iNcon1+lengthXYcor2+1;
-        iNcon4 = iNcon1+lengthXYcor2+2;
+        iNcon3 = iNcon1+lengthXYcoor2+1;
+        iNcon4 = iNcon1+lengthXYcoor2+2;
         iNcon5 = iNcon3+6;
         iNcon6 = iNcon5+1;
     else % 偶数层
-        iNcon1 = iNO+2+lengthXYcor2*(i-1);
+        iNcon1 = iNO+2+lengthXYcoor2*(i-1);
         iNcon2 = iNcon1+1;
-        iNcon3 = iNcon1+lengthXYcor2-1;
-        iNcon4 = iNcon1+lengthXYcor2+2;
+        iNcon3 = iNcon1+lengthXYcoor2-1;
+        iNcon4 = iNcon1+lengthXYcoor2+2;
         iNcon5 = iNcon3+4;
         iNcon6 = iNcon5+stairColu_num*2-1;
     end
@@ -147,10 +147,10 @@ fprintf(fileID,'; 楼梯宽向主梁\n');
 iNO = iNO_init; % 初始化iNO
 for i = 1:lengthlevelZaxis	% 此行与柱单元不同，柱单元为i-1 % 每层一根贯穿宽向主梁
     if rem(i,2) ~= 0    % 奇数层 % 控制点，即两个内筒悬挑起点
-        iNcon1 = iNO+1+lengthXYcor2*(i-1);
+        iNcon1 = iNO+1+lengthXYcoor2*(i-1);
         iNcon2 = iNcon1+3;
     else % 偶数层
-        iNcon1 = iNO+2+lengthXYcor2*(i-1);
+        iNcon1 = iNO+2+lengthXYcoor2*(i-1);
         iNcon2 = iNcon1+1;
     end
     if i < levelPstart % 考虑底层无幕墙
@@ -185,17 +185,17 @@ iNO = iNO_init; % 初始化iNO
 fprintf(fileID,';   外环梁\n');
 for i = levelPstart:(lengthlevelZaxis-1)	% 由于有斜段，故这里要-1
     if rem(i,2) ~= 0    % 奇数层 % 控制点，即两个斜段起点
-        iNcon1 = iNO+6+lengthXYcor2*(i-1);
+        iNcon1 = iNO+6+lengthXYcoor2*(i-1);
         iNcon2 = iNcon1+5;
-        iNcon3 = iNcon1+lengthXYcor2+1;
-        iNcon4 = iNcon2+lengthXYcor2-1;
+        iNcon3 = iNcon1+lengthXYcoor2+1;
+        iNcon4 = iNcon2+lengthXYcoor2-1;
         iNcon5 = iNcon3+1;
         iNcon6 = iNcon4-1;
     else % 偶数层
-        iNcon1 = iNO+7+lengthXYcor2*(i-1);
+        iNcon1 = iNO+7+lengthXYcoor2*(i-1);
         iNcon2 = iNcon1+3;
-        iNcon3 = iNcon1+lengthXYcor2-1;
-        iNcon4 = iNcon2+lengthXYcor2+1;
+        iNcon3 = iNcon1+lengthXYcoor2-1;
+        iNcon4 = iNcon2+lengthXYcoor2+1;
         iNcon5 = iNcon3-1;
         iNcon6 = iNcon4+1;
     end
@@ -233,17 +233,17 @@ ELE_iPRO = 2;
 iNO = iNO_init; % 初始化iNO
 for i = 1:(lengthlevelZaxis-1) % 由于有斜段，故这里要-1
     if rem(i,2) ~= 0    % 奇数层 % 控制点，即两个斜段起点
-        iNcon1 = iNO+1+lengthXYcor2*(i-1);
+        iNcon1 = iNO+1+lengthXYcoor2*(i-1);
         iNcon2 = iNcon1+3;
-        iNcon3 = iNcon1+lengthXYcor2+1;
-        iNcon4 = iNcon1+lengthXYcor2+2;
+        iNcon3 = iNcon1+lengthXYcoor2+1;
+        iNcon4 = iNcon1+lengthXYcoor2+2;
         iNcon5 = iNcon3+6;
         iNcon6 = iNcon5+1;
     else % 偶数层
-        iNcon1 = iNO+2+lengthXYcor2*(i-1);
+        iNcon1 = iNO+2+lengthXYcoor2*(i-1);
         iNcon2 = iNcon1+1;
-        iNcon3 = iNcon1+lengthXYcor2-1;
-        iNcon4 = iNcon1+lengthXYcor2+2;
+        iNcon3 = iNcon1+lengthXYcoor2-1;
+        iNcon4 = iNcon1+lengthXYcoor2+2;
         iNcon5 = iNcon3+4;
         iNcon6 = iNcon5+stairColu_num*2-1;
     end
@@ -277,17 +277,17 @@ DIR = 'GZ'; bPROJ = 'NO'; DESC = ''; bEX = 'NO'; bAL = 'NO'; GROUP = '';
 iNO = iNO_init; % 初始化iNO
 for i = 1:(lengthlevelZaxis-1) % 由于有斜段，故这里要-1
     if rem(i,2) ~= 0    % 奇数层 % 控制点，即两个斜段起点
-        iNcon1 = iNO+1+lengthXYcor2*(i-1);
+        iNcon1 = iNO+1+lengthXYcoor2*(i-1);
         iNcon2 = iNcon1+3;
-        iNcon3 = iNcon1+lengthXYcor2+1;
-        iNcon4 = iNcon1+lengthXYcor2+2;
+        iNcon3 = iNcon1+lengthXYcoor2+1;
+        iNcon4 = iNcon1+lengthXYcoor2+2;
         iNcon5 = iNcon3+6;
         iNcon6 = iNcon5+1;
     else % 偶数层
-        iNcon1 = iNO+2+lengthXYcor2*(i-1);
+        iNcon1 = iNO+2+lengthXYcoor2*(i-1);
         iNcon2 = iNcon1+1;
-        iNcon3 = iNcon1+lengthXYcor2-1;
-        iNcon4 = iNcon1+lengthXYcor2+2;
+        iNcon3 = iNcon1+lengthXYcoor2-1;
+        iNcon4 = iNcon1+lengthXYcoor2+2;
         iNcon5 = iNcon3+4;
         iNcon6 = iNcon5+stairColu_num*2-1;
     end

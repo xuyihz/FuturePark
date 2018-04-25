@@ -146,18 +146,32 @@ fprintf(fileID,'; 楼梯长向主梁\n');
 ELE_iPRO = 3;
 iNO = iNO_init; % 初始化iNO
 for i = 1:(lengthlevelZaxis-1)	% 由于有斜段，故这里要-1
+    iNcon3 = iNO+3+lengthXYcor2*(i-1);	% 节点3
+    iNcon4 = iNcon3+1;                  % 节点4
+    iNcon5 = iNcon3+2;                  % 节点5
+    iNcon6 = iNcon3+3;                  % 节点6
     if rem(i,2) ~= 0    % 奇数层 % 控制点，即两个斜段起点
-        iN1 = iNO+5+lengthXYcor2*(i-1); % 暂定节点5起点
-        iN2 = iN1+lengthXYcor2+1;
+        iNcon4 = iNcon4+lengthXYcor2; % 暂定节点3\5起点
+        iNcon6 = iNcon6+lengthXYcor2;
     else % 偶数层
-        iN1 = iNO+6+lengthXYcor2*(i-1);
-        iN2 = iN1+lengthXYcor2-1;
+        iNcon3 = iNcon3+lengthXYcor2;
+        iNcon5 = iNcon5+lengthXYcor2;
     end
-    iEL = iEL+1;
-    fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
-        iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
-        iN1, iN2,...    % 梁单元的两个节点号
-        ELE_ANGLE, ELE_iSUB);
+    for k = 1:2
+        switch k
+            case 1
+                iN1 = iNcon3;
+                iN2 = iNcon4;
+            case 2
+                iN1 = iNcon5;
+                iN2 = iNcon6;
+        end
+        iEL = iEL+1;
+        fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
+            iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
+            iN1, iN2,...    % 梁单元的两个节点号
+            ELE_ANGLE, ELE_iSUB);
+    end
 end
 fprintf(fileID,'; 楼梯宽向主梁\n');
 iNO = iNO_init; % 初始化iNO
