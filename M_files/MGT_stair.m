@@ -12,25 +12,25 @@ fprintf(fileID,'; iNO, X, Y, Z\n');
 
 iNO_init = iNO;
 
-XYcor_i = zeros(stairColu_num,2);   % 内筒XoY坐标第1(X)、2(Y)列。
-XYcor_o = zeros(stairColu_num*2,2); % 外表皮XoY坐标第1(X)、2(Y)列。
+XYcoor_i = zeros(stairColu_num,2);   % 内筒XoY坐标第1(X)、2(Y)列。
+XYcoor_o = zeros(stairColu_num*2,2); % 外表皮XoY坐标第1(X)、2(Y)列。
 
 stairXY = [stairL/2, stairW/2; -stairL/2, stairW/2; -stairL/2, -stairW/2; stairL/2, -stairW/2]; % 原始坐标，未旋转，未转到整体坐标系
 for i = 1:stairColu_num   % 尝试向量化
-    [XYcor_i(i,1), XYcor_i(i,2)] = coorTrans(stairXY(i,1), stairXY(i,2), Deg_stair); % 内筒
+    [XYcoor_i(i,1), XYcoor_i(i,2)] = coorTrans(stairXY(i,1), stairXY(i,2), Deg_stair); % 内筒
 end
 % 外筒待定stairXY2 暂定从内筒外伸2000.
 m2 = 2000;
 stairXY2 = [stairL/2+m2, stairW/2; stairL/2, stairW/2+m2; -stairL/2, stairW/2+m2; -stairL/2-m2, stairW/2;...
     -stairL/2-m2, -stairW/2; -stairL/2, -stairW/2-m2; stairL/2, -stairW/2-m2; stairL/2+m2, -stairW/2];
 for i = 1:stairColu_num*2   % 尝试向量化
-    [XYcor_o(i,1), XYcor_o(i,2)] = coorTrans(stairXY2(i,1), stairXY2(i,2), Deg_stair); % 内筒
+    [XYcoor_o(i,1), XYcoor_o(i,2)] = coorTrans(stairXY2(i,1), stairXY2(i,2), Deg_stair); % 内筒
 end
 % 局部坐标系 转换至 整体坐标系
-XYcor_i(:,1) = XYcor_i(:,1) + CoC_stair(1);
-XYcor_i(:,2) = XYcor_i(:,2) + CoC_stair(2);
-XYcor_o(:,1) = XYcor_o(:,1) + CoC_stair(1);
-XYcor_o(:,2) = XYcor_o(:,2) + CoC_stair(2);
+XYcoor_i(:,1) = XYcoor_i(:,1) + CoC_stair(1);
+XYcoor_i(:,2) = XYcoor_i(:,2) + CoC_stair(2);
+XYcoor_o(:,1) = XYcoor_o(:,1) + CoC_stair(1);
+XYcoor_o(:,2) = XYcoor_o(:,2) + CoC_stair(2);
 lengthlevelZaxis = length(levelZaxis(:));
 
 for i = 1:lengthlevelZaxis  % length(A(:)) A向量元素个数
@@ -39,13 +39,13 @@ for i = 1:lengthlevelZaxis  % length(A(:)) A向量元素个数
             for j = 1:stairColu_num % 内部4个柱子
                 iNO = iNO+1;
                 fprintf(fileID,'   %d, %.4f, %.4f, %.4f\n',...
-                    iNO,XYcor_i(j,1),XYcor_i(j,2),levelZaxis(i));
+                    iNO,XYcoor_i(j,1),XYcoor_i(j,2),levelZaxis(i));
             end
         else
             for j = 1:stairColu_num*2 % 外部8个柱子
                 iNO = iNO+1;
                 fprintf(fileID,'   %d, %.4f, %.4f, %.4f\n',...
-                    iNO,XYcor_o(j,1),XYcor_o(j,2),levelZaxis(i));
+                    iNO,XYcoor_o(j,1),XYcoor_o(j,2),levelZaxis(i));
             end
         end
     end
