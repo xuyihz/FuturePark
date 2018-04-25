@@ -10,7 +10,7 @@ fprintf(fileID,'*NODE    ; Nodes\n');
 fprintf(fileID,'; iNO, X, Y, Z\n');
 
 % 由于幕墙每层外挑都有变化，故需要循环(或向量化)。与层数有关，与控制点定位有关，先暂定固定的数值(目前共13层，从3层起到13层)，后需参数化。
-facade_R = [0; 0; 8269; 6668; 5430; 4698; 4643; 5362; 6778; 8774; 11199; 13013; 14629];
+facade_R = [0; 0; 9663; 8404; 7305; 6462; 5997; 6070; 6827; 8261; 10291; 12773; 15500];
 
 iNO_init = iNO;
 levelPstart1 = levelPstart(1); levelPstart2 = levelPstart(2);
@@ -106,7 +106,7 @@ for i = levelPstart1:(levelPstart2-1)	% 不停车层，梁从内筒伸出
 end
 for i = levelPstart2:lengthlevelZaxis	% 停车层，梁从外筒伸出
     for j = 1:car_num	% 每层内筒的节点数
-        for k = 1:2 % 一根内筒柱连接两根外筒柱，即两根梁
+        for k = 1:2 % 两根外筒柱，即两根梁
             iEL = iEL+1;
             iN1 = iNO_towerS+car_num+lengthXYcoor2*(i-1)+(j-1)*2+k; % 此行为定位梁在塔楼的节点(外筒)
             iN2 = iNO+lengthXYcoor_f*(i-1)+(j-1)*2+k;    % 归到幕墙外筒第0点后，再定位到具体点
@@ -122,7 +122,6 @@ end
 fprintf(fileID,'; 环形次梁\n');
 ELE_iPRO = 4;
 iNO = iNO_init; % 初始化iNO
-
 % 外环梁
 fprintf(fileID,';   幕墙外环梁\n');
 for i = levelPstart1:lengthlevelZaxis	% 此行与柱单元不同，柱单元为i-1;
