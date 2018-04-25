@@ -13,7 +13,7 @@ fprintf(fileID,'; iNO, X, Y, Z\n');
 iNO_init = iNO;
 XYcoor_i = zeros(car_num,2);     % 内筒XoY坐标第1(X)、2(Y)列。
 XYcoor_o = zeros(car_num*2,2);	% 外筒XoY坐标第1(X)、2(Y)列。
-
+d
 car_num2pi = 2*pi/car_num;  % speed up
 
 XYcor_i_1(1,1) = tube_innerR * cos(car_num2pi/2);   % 单个Y型模块内筒一点 X
