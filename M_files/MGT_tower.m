@@ -5,7 +5,7 @@
 % Xu Yi, 23rd April 2018, revised
 
 %%
-function [iNO_end, iEL_end] = MGT_tower(fileID, iNO, iEL, car_num, CoC_tower, Deg_tower, tube_innerR, tube_outerR, levelZaxis, levelPstart, CAR, ~, ~)
+function [iNO_end, iEL_end] = MGT_tower(fileID, iNO, iEL, car_num, CoC_tower, Deg_tower, tube_innerR, tube_outerR, levelZaxis, levelPstart1o2, CAR, ~, ~)
 %% NODE
 fprintf(fileID,'*NODE    ; Nodes\n');
 fprintf(fileID,'; iNO, X, Y, Z\n');
@@ -83,7 +83,7 @@ end
 fprintf(fileID,'; ÍâÍ²Öù\n');
 ELE_iPRO = 1;
 iNO = iNO_init; % ³õÊ¼»¯iNO
-for i = levelPstart:(lengthlevelZaxis-1)	% length(A(:)) AÏòÁ¿ÔªËØ¸öÊı % levelPstart µÚ¼¸²ã¿ªÊ¼Í£³µ£¬¼´ÏÂ¼¸²ã¿ª³¨
+for i = levelPstart1o2:(lengthlevelZaxis-1)	% length(A(:)) AÏòÁ¿ÔªËØ¸öÊı % levelPstart µÚ¼¸²ã¿ªÊ¼Í£³µ£¬¼´ÏÂ¼¸²ã¿ª³¨
     for j = 1:car_num*2	% Ã¿²ãÍâÍ²µÄ½ÚµãÊı
         iEL = iEL+1;
         iN1 = iNO+car_num+j+lengthXYcoor2*(i-1); % ´ËĞĞÓëÄÚÍ²²»Í¬£¬¶àÁË +car_num
@@ -107,7 +107,7 @@ ELE_TYPE = 'BEAM'; ELE_iMAT = 1; ELE_ANGLE = 0; ELE_iSUB = 0;  % iMAT = 1²ÄÁÏ¸Ö½
 fprintf(fileID,'; ºáÏòÖ÷Áº\n');
 ELE_iPRO = 3;
 iNO = iNO_init; % ³õÊ¼»¯iNO
-for i = levelPstart:lengthlevelZaxis	% ´ËĞĞÓëÖùµ¥Ôª²»Í¬£¬Öùµ¥ÔªÎªi-1
+for i = levelPstart1o2:lengthlevelZaxis	% ´ËĞĞÓëÖùµ¥Ôª²»Í¬£¬Öùµ¥ÔªÎªi-1
     for j = 1:car_num	% Ã¿²ãÄÚÍ²µÄ½ÚµãÊı
         for k = 1:2 % Ò»¸ùÄÚÍ²ÖùÁ¬½ÓÁ½¸ùÍâÍ²Öù£¬¼´Á½¸ùÁº
             iEL = iEL+1;
@@ -145,7 +145,7 @@ end
 fprintf(fileID,'\n');
 % Íâ»·Áº
 fprintf(fileID,';   Íâ»·Áº\n');
-for i = levelPstart:lengthlevelZaxis	% ´ËĞĞÓëÖùµ¥Ôª²»Í¬£¬Öùµ¥ÔªÎªi-1;
+for i = levelPstart1o2:lengthlevelZaxis	% ´ËĞĞÓëÖùµ¥Ôª²»Í¬£¬Öùµ¥ÔªÎªi-1;
     for j = 1:car_num*2	% Ã¿²ãÍâÍ²µÄ½ÚµãÊı
         iEL = iEL+1;
         iN1 = iNO+car_num+j+lengthXYcoor2*(i-1); % ´ËĞĞÓëÄÚ»·Áº²»Í¬£¬¶à¼ÓÁËcar_num
@@ -176,7 +176,7 @@ ELE_TYPE = 'PLATE'; ELE_iMAT = 2; ELE_iSUB = 2; ELE_iWID = 0; % iMAT = 2²ÄÁÏ»ìÄı
 fprintf(fileID,'; 1ºñ°åÍ£³µ°å\n');
 ELE_iPRO = 2;
 iNO = iNO_init; % ³õÊ¼»¯iNO
-for i = levelPstart:lengthlevelZaxis % ´ËĞĞÍ¬Íâ»·Áº
+for i = levelPstart1o2:lengthlevelZaxis % ´ËĞĞÍ¬Íâ»·Áº
     for j = 1:car_num	% Ã¿²ãÍ£³µÊı
         iEL = iEL+1;
         iN1 = iNO+j+lengthXYcoor2*(i-1);     % ÄæÊ±Õë°åËÄÖÜËÄ¸öµã
@@ -205,7 +205,7 @@ LTNAME = CAR; iDIST = 2; ANGLE = 0; iSBEAM = 0; SBANG = 0; SBUW = 0;
 DIR = 'GZ'; bPROJ = 'NO'; DESC = ''; bEX = 'NO'; bAL = 'NO'; GROUP = '';
 
 iNO = iNO_init; % ³õÊ¼»¯iNO
-for i = levelPstart:lengthlevelZaxis % ´ËĞĞÍ¬1ºñ°åÍ£³µ°å£¬¼´Í¬Íâ»·Áº
+for i = levelPstart1o2:lengthlevelZaxis % ´ËĞĞÍ¬1ºñ°åÍ£³µ°å£¬¼´Í¬Íâ»·Áº
     for j = 1:car_num	% Ã¿²ãÍ£³µÊı
         iN1 = iNO+j+lengthXYcoor2*(i-1); % ÄæÊ±Õë°åËÄÖÜËÄ¸öµã
         iN2 = iN1-j+1+car_num+(j-1)*2+1;	% iN1¹éµ½ÄÚÍ²µÚÒ»µãºóÔÙ¼Ócar_numºó£¬¼´ÎªÍâÍ²µÚÒ»µã(¼´YĞÍµÚÒ»µã£¬Êµ¼ÊÆğµãÓ¦ÔÙ+1£¬¼´ÎªYĞÍµÚ¶şµã)

@@ -5,7 +5,7 @@
 % Xu Yi, 24th April 2018, revised
 
 %%
-function [iNO_end, iEL_end] = MGT_stair(fileID, iNO, iEL, CoC_stair, Deg_stair, levelZaxis, levelPstart, stairColu_num, stairL, stairW, ~, ~, ROOF)
+function [iNO_end, iEL_end] = MGT_stair(fileID, iNO, iEL, CoC_stair, Deg_stair, levelZaxis, levelPstart1, stairColu_num, stairL, stairW, ~, ~, ROOF)
 %% NODE
 fprintf(fileID,'*NODE    ; Nodes\n');
 fprintf(fileID,'; iNO, X, Y, Z\n');
@@ -81,7 +81,7 @@ end
 fprintf(fileID,'; ÍâÍ²Öù\n');
 ELE_iPRO = 1;
 iNO = iNO_init; % ³õÊ¼»¯iNO
-for i = levelPstart:(lengthlevelZaxis-1)	% length(A(:)) AÏòÁ¿ÔªËØ¸öÊı % levelPstart µÚ¼¸²ã¿ªÊ¼Í£³µ£¬¼´ÏÂ¼¸²ã¿ª³¨
+for i = levelPstart1:(lengthlevelZaxis-1)	% length(A(:)) AÏòÁ¿ÔªËØ¸öÊı % levelPstart µÚ¼¸²ã¿ªÊ¼Í£³µ£¬¼´ÏÂ¼¸²ã¿ª³¨
     for j = 1:stairColu_num*2	% Ã¿²ãÍâÍ²µÄ½ÚµãÊı
         iEL = iEL+1;
         iN1 = iNO+(stairColu_num+j)+lengthXYcoor2*(i-1); % ´ËĞĞÓëÄÚÍ²²»Í¬£¬¶àÁË +stairN_num/2
@@ -121,7 +121,7 @@ for i = 1:(lengthlevelZaxis-1)	% ÓÉÓÚÓĞĞ±¶Î£¬¹ÊÕâÀïÒª-1
         iNcon5 = iNcon3+4;
         iNcon6 = iNcon5+stairColu_num*2-1;
     end
-    if i < levelPstart % ¿¼ÂÇµ×²ãÎŞÄ»Ç½
+    if i < levelPstart1 % ¿¼ÂÇµ×²ãÎŞÄ»Ç½
         k_end = 2;
     else
         k_end = 4;
@@ -153,7 +153,7 @@ for i = 1:lengthlevelZaxis	% ´ËĞĞÓëÖùµ¥Ôª²»Í¬£¬Öùµ¥ÔªÎªi-1 % Ã¿²ãÒ»¸ù¹á´©¿íÏòÖ÷Á
         iNcon1 = iNO+2+lengthXYcoor2*(i-1);
         iNcon2 = iNcon1+1;
     end
-    if i < levelPstart % ¿¼ÂÇµ×²ãÎŞÄ»Ç½
+    if i < levelPstart1 % ¿¼ÂÇµ×²ãÎŞÄ»Ç½
         k_end = 1;
     else
         k_end = 3;
@@ -183,7 +183,7 @@ ELE_iPRO = 4;
 iNO = iNO_init; % ³õÊ¼»¯iNO
 % Íâ»·Áº % ²Î¿¼Â¥Ìİ³¤ÏòÖ÷Áº
 fprintf(fileID,';   Íâ»·Áº\n');
-for i = levelPstart:(lengthlevelZaxis-1)	% ÓÉÓÚÓĞĞ±¶Î£¬¹ÊÕâÀïÒª-1
+for i = levelPstart1:(lengthlevelZaxis-1)	% ÓÉÓÚÓĞĞ±¶Î£¬¹ÊÕâÀïÒª-1
     if rem(i,2) ~= 0    % ÆæÊı²ã % ¿ØÖÆµã£¬¼´Á½¸öĞ±¶ÎÆğµã
         iNcon1 = iNO+6+lengthXYcoor2*(i-1);
         iNcon2 = iNcon1+5;
@@ -247,7 +247,7 @@ for i = 1:(lengthlevelZaxis-1) % ÓÉÓÚÓĞĞ±¶Î£¬¹ÊÕâÀïÒª-1
         iNcon5 = iNcon3+4;
         iNcon6 = iNcon5+stairColu_num*2-1;
     end
-    if i < levelPstart % ¿¼ÂÇµ×²ãÎŞÄ»Ç½
+    if i < levelPstart1 % ¿¼ÂÇµ×²ãÎŞÄ»Ç½
         k_end = 1;
     else
         k_end = 2;
@@ -291,7 +291,7 @@ for i = 1:(lengthlevelZaxis-1) % ÓÉÓÚÓĞĞ±¶Î£¬¹ÊÕâÀïÒª-1
         iNcon5 = iNcon3+4;
         iNcon6 = iNcon5+stairColu_num*2-1;
     end
-    if i < levelPstart % ¿¼ÂÇµ×²ãÎŞÄ»Ç½
+    if i < levelPstart1 % ¿¼ÂÇµ×²ãÎŞÄ»Ç½
         k_end = 1;
     else
         k_end = 2;

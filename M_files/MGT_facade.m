@@ -10,7 +10,7 @@ fprintf(fileID,'*NODE    ; Nodes\n');
 fprintf(fileID,'; iNO, X, Y, Z\n');
 
 % 由于幕墙每层外挑都有变化，故需要循环(或向量化)。与层数有关，与控制点定位有关，先暂定固定的数值(目前共13层，从3层起到13层)，后需参数化。
-facade_R = [0; 0; 9663; 8404; 7305; 6462; 5997; 6070; 6827; 8261; 10291; 12773; 15500];
+facade_tower_R = [0; 0; 9663; 8404; 7305; 6462; 5997; 6070; 6827; 8261; 10291; 12773; 15500];
 
 iNO_init = iNO;
 levelPstart1 = levelPstart(1); levelPstart2 = levelPstart(2);
@@ -24,7 +24,7 @@ XYcoor_i_1(1,1) = tube_innerR * cos(car_num2pi/2);   % 单个Y型模块内筒一点 X
 XYcoor_i_1(1,2) = tube_innerR * sin(car_num2pi/2);   % Y
 
 for j = levelPstart1:lengthlevelZaxis
-    XYcoor_o_1(1,1) = sqrt(facade_R(j)^2 - XYcoor_i_1(1,2)^2);        % Y型幕墙上一点 X1 注意幕墙16个点并不是等角度等分。
+    XYcoor_o_1(1,1) = sqrt(facade_tower_R(j)^2 - XYcoor_i_1(1,2)^2);        % Y型幕墙上一点 X1 注意幕墙16个点并不是等角度等分。
     XYcoor_o_1(1,2) = XYcoor_i_1(1,2);                                % Y1
     XYcoor_o_1(2,:) = coorMir(XYcoor_o_1(1,:), [0,0], XYcoor_i_1);     % X2,Y2
     for i = 0:(car_num-1)   % 尝试向量化 % 旋转局部角度+整体角度
