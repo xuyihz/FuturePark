@@ -5,7 +5,7 @@
 % Xu Yi, 24th April 2018, revised
 
 %%
-function [iNO_end, iEL_end] = MGT_stair(fileID, iNO, iEL, CoC_stair, Deg_stair, levelZaxis, levelPstart1, stairColu_num, stairL, stairW, ~, ~, ROOF)
+function [iNO_end, iEL_end] = MGT_stair(fileID, iNO, iEL, CoC_stair, Deg_stair, levelZaxis, levelPstart1, stairColu_num, stairL, stairW, stairB, ~, ~, ROOF)
 %% NODE
 fprintf(fileID,'*NODE    ; Nodes\n');
 fprintf(fileID,'; iNO, X, Y, Z\n');
@@ -19,12 +19,11 @@ stairXY = [stairL/2, stairW/2; -stairL/2, stairW/2; -stairL/2, -stairW/2; stairL
 for i = 1:stairColu_num   % 尝试向量化
     [XYcoor_i(i,1), XYcoor_i(i,2)] = coorTrans(stairXY(i,1), stairXY(i,2), Deg_stair); % 内筒
 end
-% 外筒待定stairXY2 暂定从内筒外伸2000.
-m2 = 2000;
-stairXY2 = [stairL/2+m2, stairW/2; stairL/2, stairW/2+m2; -stairL/2, stairW/2+m2; -stairL/2-m2, stairW/2;...
-    -stairL/2-m2, -stairW/2; -stairL/2, -stairW/2-m2; stairL/2, -stairW/2-m2; stairL/2+m2, -stairW/2];
+% 外筒待定stairXY2 暂定从内筒外伸stairB.
+stairXY2 = [stairL/2+stairB, stairW/2; stairL/2, stairW/2+stairB; -stairL/2, stairW/2+stairB; -stairL/2-stairB, stairW/2;...
+    -stairL/2-stairB, -stairW/2; -stairL/2, -stairW/2-stairB; stairL/2, -stairW/2-stairB; stairL/2+stairB, -stairW/2];
 for i = 1:stairColu_num*2   % 尝试向量化
-    [XYcoor_o(i,1), XYcoor_o(i,2)] = coorTrans(stairXY2(i,1), stairXY2(i,2), Deg_stair); % 内筒
+    [XYcoor_o(i,1), XYcoor_o(i,2)] = coorTrans(stairXY2(i,1), stairXY2(i,2), Deg_stair); % 外筒
 end
 % 局部坐标系 转换至 整体坐标系
 XYcoor_i(:,1) = XYcoor_i(:,1) + CoC_stair(1);

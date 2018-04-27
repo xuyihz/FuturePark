@@ -1,5 +1,5 @@
 %% function
-% MGT facade
+% MGT tower facade
 %
 % Xu Yi, 2018
 
@@ -43,13 +43,10 @@ lengthXYcoor2 = length(XYcoor_i(:))/2 + car_num*2;  % 每层节点数备份
 lengthXYcoor_f = car_num*2;  % 幕墙每层节点数
 
 for i = 1:lengthlevelZaxis  % length(A(:)) A向量元素个数
-    for j = 1:car_num
+    for j = 1:(car_num*2)
         iNO = iNO+1;
         fprintf(fileID,'   %d, %.4f, %.4f, %.4f\n',...	% 节点编号规则：从0度角开始逆时针；从下到上。
-            iNO,XYcoor_o3(i,j*2-1,1),XYcoor_o3(i,j*2-1,2),levelZaxis(i));   % 外筒 X1 & Y1
-        iNO = iNO+1;
-        fprintf(fileID,'   %d, %.4f, %.4f, %.4f\n',...
-            iNO,XYcoor_o3(i,j*2,1),XYcoor_o3(i,j*2,2),levelZaxis(i));       % 外筒 X2 & Y2
+            iNO,XYcoor_o3(i,j,1),XYcoor_o3(i,j,2),levelZaxis(i));   % 外筒 X & Y
     end
 end
 iNO_end = iNO;
@@ -127,7 +124,7 @@ fprintf(fileID,';   幕墙外环梁\n');
 for i = levelPstart1:lengthlevelZaxis	% 此行与柱单元不同，柱单元为i-1;
     for j = 1:car_num*2	% 每层外筒的节点数
         iEL = iEL+1;
-        iN1 = iNO+j+lengthXYcoor_f*(i-1); % 此行与内环梁不同，多加了car_num
+        iN1 = iNO+j+lengthXYcoor_f*(i-1); % 
         if j ~= car_num*2
             iN2 = iN1+1;
         else % j = car_num*2 时， 连接的是本环的第一个点，而不是上层内环的第一个点。
