@@ -27,41 +27,38 @@ for i = 1:elevatorColu_num   % 尝试向量化
     [XYcoor_i(i,1), XYcoor_i(i,2)] = coorTrans(elevatorXY(i,1), elevatorXY(i,2), Deg_elevator); % 内筒
 end
 % 外筒elevatorXY2 % 外筒需要根据幕墙外表皮曲线定位 % 需有沿高度的循环(或向量化)
-ele2_depth = sqrt(abs(facade_ele_R(j)^2 - ele_width^2));
-ele2_width1 = sqrt(abs(facade_ele_R(j)^2 - ele_depth^2));
-ele2_width2 = sqrt(abs(facade_ele_R(j)^2 - ele_shift^2));
-ele2_width3 = sqrt(abs(facade_ele_R(j)^2 - str_width^2));
-[ele2_strX, ele2_strY] = coorLxCp([0,0], elevatorXY(3,:), elevatorXY(5,:), facade_ele_R(j));
-
-elevatorXY2 = [-ele_width, ele2_depth; ele_width, ele2_depth; -ele2_width1, ele_depth; ele2_width1, ele_depth;...
-                -ele2_width2, ele_shift; ele2_width2, ele_shift; -ele2_width3, -str_width; ele2_width3, -str_width;...
-                ele2_strX, ele2_strY; -ele2_strX, ele2_strY];
-            
-for i = 1:elevatorColu_o_num   % 尝试向量化
-    [XYcoor_o3(i,1), XYcoor_o3(i,2)] = coorTrans(elevatorXY2(i,1), elevatorXY2(i,2), Deg_elevator); % 内筒
+for j = levelPstart1:lengthlevelZaxis
+    ele2_depth = sqrt(abs(facade_ele_R(j)^2 - ele_width^2));
+    ele2_width1 = sqrt(abs(facade_ele_R(j)^2 - ele_depth^2));
+    ele2_width2 = sqrt(abs(facade_ele_R(j)^2 - ele_shift^2));
+    ele2_width3 = sqrt(abs(facade_ele_R(j)^2 - str_width^2));
+    [ele2_strX, ele2_strY] = coorLxCp([0,0], elevatorXY(3,:), elevatorXY(5,:), facade_ele_R(j));
+    
+    elevatorXY2 = [-ele_width, ele2_depth; ele_width, ele2_depth; -ele2_width1, ele_depth; ele2_width1, ele_depth;...
+        -ele2_width2, ele_shift; ele2_width2, ele_shift; -ele2_width3, -str_width; ele2_width3, -str_width;...
+        ele2_strX, ele2_strY; -ele2_strX, ele2_strY];
+    for i = 1:elevatorColu_o_num   % 尝试向量化
+        [XYcoor_o3(j,i,1), XYcoor_o3(j,i,2)] = coorTrans(elevatorXY2(i,1), elevatorXY2(i,2), Deg_elevator); % 内筒
+    end
 end
 % 局部坐标系 转换至 整体坐标系
 XYcoor_i(:,1) = XYcoor_i(:,1) + CoC_elevator(1);
 XYcoor_i(:,2) = XYcoor_i(:,2) + CoC_elevator(2);
-XYcoor_o3(:,1) = XYcoor_o3(:,1) + CoC_elevator(1);
-XYcoor_o3(:,2) = XYcoor_o3(:,2) + CoC_elevator(2);
+XYcoor_o3(:,:,1) = XYcoor_o3(:,:,1) + CoC_elevator(1);
+XYcoor_o3(:,:,2) = XYcoor_o3(:,:,2) + CoC_elevator(2);
 lengthlevelZaxis = length(levelZaxis(:));
 
 for i = 1:lengthlevelZaxis  % length(A(:)) A向量元素个数
-    for k = 1:2 % 内筒，外筒
-        if k == 1 % 节点编号规则：先每层内筒，再每层外筒；从下到上。
-            for j = 1:elevatorColu_num % 内部7个柱子
-                iNO = iNO+1;
-                fprintf(fileID,'   %d, %.4f, %.4f, %.4f\n',...
-                    iNO,XYcoor_i(j,1),XYcoor_i(j,2),levelZaxis(i));
-            end
-        else
-            for j = 1:elevatorColu_o_num % 外部10个柱子
-                iNO = iNO+1;
-                fprintf(fileID,'   %d, %.4f, %.4f, %.4f\n',...
-                    iNO,XYcoor_o3(j,1),XYcoor_o3(j,2),levelZaxis(i));
-            end
-        end
+    % 内筒，外筒 % 节点编号规则：先每层内筒，再每层外筒；从下到上。
+    for j = 1:elevatorColu_num % 内部7个柱子
+        iNO = iNO+1;
+        fprintf(fileID,'   %d, %.4f, %.4f, %.4f\n',...
+            iNO,XYcoor_i(j,1),XYcoor_i(j,2),levelZaxis(i));
+    end
+    for j = 1:elevatorColu_o_num % 外部10个柱子
+        iNO = iNO+1;
+        fprintf(fileID,'   %d, %.4f, %.4f, %.4f\n',...
+            iNO,XYcoor_o3(i,j,1),XYcoor_o3(i,j,2),levelZaxis(i));
     end
 end
 lengthXYcoor2 = elevatorColu_num+elevatorColu_o_num;  % 每层的节点数，其中内部47个点，外部10个点。
