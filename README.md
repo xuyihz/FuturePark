@@ -36,3 +36,6 @@ CAD里样条曲线，是NURBS(默认三阶)算法。检索NURBS的矩阵表达式。
 
 2018年5月4日
 Daniel的曲线是所有点权重均为1的，3阶(degree)，spline。
+
+2018年5月6日
+nurbsfunctions里节点向量设为t = [0 0 0 0 0.5 1 1 1 1]时与Daniel的曲线一致。
