@@ -39,3 +39,6 @@ Daniel的曲线是所有点权重均为1的，3阶(degree)，spline。
 
 2018年5月6日
 nurbsfunctions里节点向量设为t = [0 0 0 0 0.5 1 1 1 1]时与Daniel的曲线一致。
+
+2018年5月9日
+model.m里层高数据更新，另外的m文件未更新，facade数据未与CAD同步。

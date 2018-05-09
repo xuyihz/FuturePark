@@ -104,7 +104,7 @@ Deg_stair8 = -pi/6;    % 待定
 
 tube_innerR = 3950;
 tube_outerR = 8500;
-levelZaxis = -2100:2100:23100;  % 楼层标高
+levelZaxis = [-6200:2450:3600, 5800:2200:12400, 15000:2600:17600, 19800, 22350];  % 楼层标高 原-2100:2100:23100
 levelPstart = [3,length(levelZaxis(:))-2]; % 停车的楼层，与楼层数有关。第一个为大筒，后两个为小筒。
 
 stairColu_num = 4;  % 楼梯内筒柱数量
