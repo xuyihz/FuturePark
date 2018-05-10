@@ -9,8 +9,8 @@ function [iNO_end, iEL_end] = MGT_facade_tower(fileID, iNO, iEL, car_num, CoC_to
 fprintf(fileID,'*NODE    ; Nodes\n');
 fprintf(fileID,'; iNO, X, Y, Z\n');
 
-% 由于幕墙每层外挑都有变化，故需要循环(或向量化)。与层数有关，与控制点定位有关，先暂定固定的数值(目前共13层，从3层起到13层)，后需参数化。
-facade_tower_R = [0; 0; 9663; 8404; 7305; 6462; 5997; 6070; 6827; 8261; 10291; 12773; 15500];
+% 由于幕墙每层外挑都有变化，故需要循环(或向量化)。与层数有关，与控制点定位有关，先暂定固定的数值(目前共13层，从5层起到13层)，后需参数化。
+facade_tower_R = [zeros(4,1); 8680; 7451; 6506; 5993; 6115; 7299; 9546; 12108; 15500];
 
 iNO_init = iNO;
 levelPstart1 = levelPstart(1); levelPstart2 = levelPstart(2);

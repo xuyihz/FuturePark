@@ -104,40 +104,50 @@ Deg_stair8 = -pi/6;    % 待定
 
 tube_innerR = 3950;
 tube_outerR = 8500;
-levelZaxis = [-6200:2450:3600, 5800:2200:12400, 15000:2600:17600, 19800, 22350];  % 楼层标高 原-2100:2100:23100
-levelPstart = [3,length(levelZaxis(:))-2]; % 停车的楼层，与楼层数有关。第一个为大筒，后两个为小筒。
+levelTaxis = [-6200:2450:3600, 5800:2200:12400, 15000:2600:17600, 19800, 22350];  % 塔楼楼层标高 原-2100:2100:23100
+levelSaxis = [-6200, -4524, -3016, -1508, 0:1600:17600, 19360, 21120, 22350];  % 楼梯楼层标高
+levelPstart = [5, length(levelTaxis(:))-2, 7]; % 停车的楼层，与楼层数有关。第一个为大筒，第二个为小筒。 第三个为楼梯专用。
 
 stairColu_num = 4;  % 楼梯内筒柱数量
-stairL = 2750; % 楼梯长，即沿踏步前进方向长
-stairW = 3150; % 楼梯宽
+stairL = 3300; % 楼梯长，即沿踏步前进方向长
+stairW = 3950; % 楼梯宽
 stairB = 1500; % 楼梯梯板宽(暂定)
 elevatorColu_num = 8;  % 电梯筒的内筒柱数量 (电梯中间还有一个节点，故7+1=8)
 
 %% 10 towers
 iNO_towerC_init = iNO;
-[iNO, iEL] = MGT_tower(fileID, iNO, iEL, car_num, CoC_towerC1, Deg_towerC1, tube_innerR, tube_outerR, levelZaxis, levelPstart(1), CAR, OFFICE, ROOF);
+[iNO, iEL] = MGT_tower(fileID, iNO, iEL, car_num, CoC_towerC1, Deg_towerC1, tube_innerR, tube_outerR, levelTaxis, levelPstart(1), CAR, OFFICE, ROOF);
 
 iNO_towerS1_init = iNO;
-[iNO, iEL] = MGT_tower(fileID, iNO, iEL, car_num, CoC_towerS2, Deg_towerS2, tube_innerR, tube_outerR, levelZaxis, levelPstart(2), CAR, OFFICE, ROOF);
-[iNO, iEL] = MGT_facade_tower(fileID, iNO, iEL, car_num, CoC_towerS2, Deg_towerS2, tube_innerR, levelZaxis, levelPstart, iNO_towerS1_init);
+[iNO, iEL] = MGT_tower(fileID, iNO, iEL, car_num, CoC_towerS2, Deg_towerS2, tube_innerR, tube_outerR, levelTaxis, levelPstart(2), CAR, OFFICE, ROOF);
+[iNO, iEL] = MGT_facade_tower(fileID, iNO, iEL, car_num, CoC_towerS2, Deg_towerS2, tube_innerR, levelTaxis, levelPstart, iNO_towerS1_init);
 
 iNO_towerS2_init = iNO;
-[iNO, iEL] = MGT_tower(fileID, iNO, iEL, car_num, CoC_towerS3, Deg_towerS3, tube_innerR, tube_outerR, levelZaxis, levelPstart(2), CAR, OFFICE, ROOF);
-[iNO, iEL] = MGT_facade_tower(fileID, iNO, iEL, car_num, CoC_towerS3, Deg_towerS3, tube_innerR, levelZaxis, levelPstart, iNO_towerS2_init);
+[iNO, iEL] = MGT_tower(fileID, iNO, iEL, car_num, CoC_towerS3, Deg_towerS3, tube_innerR, tube_outerR, levelTaxis, levelPstart(2), CAR, OFFICE, ROOF);
+[iNO, iEL] = MGT_facade_tower(fileID, iNO, iEL, car_num, CoC_towerS3, Deg_towerS3, tube_innerR, levelTaxis, levelPstart, iNO_towerS2_init);
 
 iNO_stair5_init = iNO;
-[iNO, iEL] = MGT_stair(fileID, iNO, iEL, CoC_stair5, Deg_stair5, levelZaxis, levelPstart(1), stairColu_num, stairL, stairW, stairB, CAR, OFFICE, ROOF);
-[iNO, iEL] = MGT_facade_stair(fileID, iNO, iEL, stairColu_num, CoC_stair5, Deg_stair5, stairL, stairW, levelZaxis, levelPstart(1), iNO_stair5_init);
+[iNO, iEL] = MGT_stair(fileID, iNO, iEL, CoC_stair5, Deg_stair5, levelSaxis, levelPstart(3), stairColu_num, stairL, stairW, stairB, CAR, OFFICE, ROOF);
+[iNO, iEL] = MGT_facade_stair(fileID, iNO, iEL, stairColu_num, CoC_stair5, Deg_stair5, stairL, stairW, levelSaxis, levelPstart(3), iNO_stair5_init, 5);
 iNO_stair6_init = iNO;
-[iNO, iEL] = MGT_stair(fileID, iNO, iEL, CoC_stair6, Deg_stair6, levelZaxis, levelPstart(1), stairColu_num, stairL, stairW, stairB, CAR, OFFICE, ROOF);
-[iNO, iEL] = MGT_facade_stair(fileID, iNO, iEL, stairColu_num, CoC_stair6, Deg_stair6, stairL, stairW, levelZaxis, levelPstart(1), iNO_stair6_init);
+[iNO, iEL] = MGT_stair(fileID, iNO, iEL, CoC_stair6, Deg_stair6, levelSaxis, levelPstart(3), stairColu_num, stairL, stairW, stairB, CAR, OFFICE, ROOF);
+[iNO, iEL] = MGT_facade_stair(fileID, iNO, iEL, stairColu_num, CoC_stair6, Deg_stair6, stairL, stairW, levelSaxis, levelPstart(3), iNO_stair6_init, 6);
 
-[iNO, iEL] = MGT_stair(fileID, iNO, iEL, CoC_stair7, Deg_stair7, levelZaxis, levelPstart(1), stairColu_num, stairL, stairW, stairB, CAR, OFFICE, ROOF);
-[iNO, iEL] = MGT_stair(fileID, iNO, iEL, CoC_stair9, Deg_stair9, levelZaxis, levelPstart(1), stairColu_num, stairL, stairW, stairB, CAR, OFFICE, ROOF);
+iNO_stair7_init = iNO;
+[iNO, iEL] = MGT_stair(fileID, iNO, iEL, CoC_stair7, Deg_stair7, levelSaxis, levelPstart(3), stairColu_num, stairL, stairW, stairB, CAR, OFFICE, ROOF);
+[iNO, iEL] = MGT_facade_stair(fileID, iNO, iEL, stairColu_num, CoC_stair7, Deg_stair7, stairL, stairW, levelSaxis, levelPstart(3), iNO_stair7_init, 7);
+iNO_stair9_init = iNO;
+[iNO, iEL] = MGT_stair(fileID, iNO, iEL, CoC_stair9, Deg_stair9, levelSaxis, levelPstart(3), stairColu_num, stairL, stairW, stairB, CAR, OFFICE, ROOF);
+[iNO, iEL] = MGT_facade_stair(fileID, iNO, iEL, stairColu_num, CoC_stair9, Deg_stair9, stairL, stairW, levelSaxis, levelPstart(3), iNO_stair9_init, 9);
 
-[iNO, iEL] = MGT_elevator(fileID, iNO, iEL, CoC_elevator4, Deg_elevator4, levelZaxis, levelPstart(1), elevatorColu_num, CAR, OFFICE, ROOF);
-[iNO, iEL] = MGT_stair(fileID, iNO, iEL, CoC_side10, Deg_stair10, levelZaxis, levelPstart(1), stairColu_num, stairL, stairW, stairB, CAR, OFFICE, ROOF);
-[iNO, iEL] = MGT_stair(fileID, iNO, iEL, CoC_side8, Deg_stair8, levelZaxis, levelPstart(1), stairColu_num, stairL, stairW, stairB, CAR, OFFICE, ROOF);
+[iNO, iEL] = MGT_elevator(fileID, iNO, iEL, CoC_elevator4, Deg_elevator4, levelSaxis, levelPstart(3), elevatorColu_num, CAR, OFFICE, ROOF);
+
+iNO_stair10_init = iNO;
+[iNO, iEL] = MGT_stair(fileID, iNO, iEL, CoC_side10, Deg_stair10, levelSaxis, levelPstart(3), stairColu_num, stairL, stairW, stairB, CAR, OFFICE, ROOF);
+[iNO, iEL] = MGT_facade_stair(fileID, iNO, iEL, stairColu_num, CoC_side10, Deg_stair10, stairL, stairW, levelSaxis, levelPstart(3), iNO_stair10_init, 10);
+iNO_stair8_init = iNO;
+[iNO, iEL] = MGT_stair(fileID, iNO, iEL, CoC_side8, Deg_stair8, levelSaxis, levelPstart(3), stairColu_num, stairL, stairW, stairB, CAR, OFFICE, ROOF);
+[iNO, iEL] = MGT_facade_stair(fileID, iNO, iEL, stairColu_num, CoC_side8, Deg_stair8, stairL, stairW, levelSaxis, levelPstart(3), iNO_stair8_init, 8);
 
 %%
 
