@@ -176,7 +176,7 @@ ELE_TYPE = 'PLATE'; ELE_iMAT = 2; ELE_iSUB = 2; ELE_iWID = 0; % iMAT = 2材料混凝
 fprintf(fileID,'; 1厚板停车板\n');
 ELE_iPRO = 2;
 iNO = iNO_init; % 初始化iNO
-for i = levelPstart1o2:lengthlevelZaxis % 此行同外环梁
+for i = levelPstart1o2:(lengthlevelZaxis-1) % 此行同外环梁，屋面层先不建即(lengthlevelZaxis-1)
     for j = 1:car_num	% 每层停车数
         iEL = iEL+1;
         iN1 = iNO+j+lengthXYcoor2*(i-1);     % 逆时针板四周四个点
@@ -205,7 +205,7 @@ LTNAME = CAR; iDIST = 2; ANGLE = 0; iSBEAM = 0; SBANG = 0; SBUW = 0;
 DIR = 'GZ'; bPROJ = 'NO'; DESC = ''; bEX = 'NO'; bAL = 'NO'; GROUP = '';
 
 iNO = iNO_init; % 初始化iNO
-for i = levelPstart1o2:lengthlevelZaxis % 此行同1厚板停车板，即同外环梁
+for i = levelPstart1o2:(lengthlevelZaxis-1) % 此行同1厚板停车板，即同外环梁，屋面层先不建即(lengthlevelZaxis-1)
     for j = 1:car_num	% 每层停车数
         iN1 = iNO+j+lengthXYcoor2*(i-1); % 逆时针板四周四个点
         iN2 = iN1-j+1+car_num+(j-1)*2+1;	% iN1归到内筒第一点后再加car_num后，即为外筒第一点(即Y型第一点，实际起点应再+1，即为Y型第二点)
