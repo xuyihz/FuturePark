@@ -22,6 +22,7 @@ XYcoor_ramp_i = zeros(ramp_point,car_num*2,2);	% 坡道内侧XoY坐标第1(X)、2(Y)列。
 XYcoor_ramp_o = zeros(ramp_point,car_num*2,2);	% 坡道外侧XoY坐标第1(X)、2(Y)列。
 
 car_num2pi = 2*pi/car_num;  % speed up
+Deg_tower = Deg_tower + pi/2; % 调整坡道定位
 
 XYcoor_i_1(1,1) = tube_innerR * cos(car_num2pi/2);   % 单个Y型模块内筒一点 X % Y型模块看Parts文件夹内单筒文件
 XYcoor_i_1(1,2) = tube_innerR * sin(car_num2pi/2);   % Y
@@ -59,34 +60,60 @@ XYcoor_ramp_o(:,:,1) = XYcoor_ramp_o(:,:,1) + CoC_tower(1);
 XYcoor_ramp_o(:,:,2) = XYcoor_ramp_o(:,:,2) + CoC_tower(2);
 
 [~,lengthXYcoor_ramp,~] = size(XYcoor_ramp_i);  % 坡道每层节点数
-% 坡道悬挑梁Z向标高的确定，暂定一圈坡道6000高
+% 坡道悬挑梁Z向标高的确定，暂定一圈坡道6000高 % 暂定通向屋顶的坡道转5/4pi，满足不超过最大坡度1/10 (4750为商业层层高)
 ramp_height_1 = 6000;
+ramp_height_2 = 4750/1.25*2;
 theta_temp = atan ( (XYcoor_ramp_i_1(1,2)+XYcoor_ramp_o_1(1,2)) / (XYcoor_ramp_i_1(1,1)+XYcoor_ramp_o_1(1,1)) ); %取悬臂梁在坡道中心线交点的角度
 theta_para = theta_temp*2; % 平行悬臂梁parallel与坡道中心线交点的夹角
 theta_Y = 2*pi/8 - theta_para; % Y型悬臂梁与坡道中心线交点的夹角
-ramp_Z_sample = zeros(1,lengthXYcoor_ramp);
+ramp_Z_sample_1 = zeros(1,lengthXYcoor_ramp);
+ramp_Z_sample_2 = zeros(1,lengthXYcoor_ramp);
 for i = 2:lengthXYcoor_ramp % i-1时，ramp相对标高为0
     if rem(i,2) == 0 % i是偶数
         ramp_beam_deg = theta_Y;
     else
         ramp_beam_deg = theta_para;
     end
-    ramp_Z_sample = ramp_Z_sample + [zeros(1,i-1),ones(1,lengthXYcoor_ramp-i+1)*ramp_beam_deg/(2*pi)*ramp_height_1];
+    ramp_Z_sample_1 = ramp_Z_sample_1 + [zeros(1,i-1),ones(1,lengthXYcoor_ramp-i+1)*ramp_beam_deg/(2*pi)*ramp_height_1];
+    ramp_Z_sample_2 = ramp_Z_sample_2 + [zeros(1,i-1),ones(1,lengthXYcoor_ramp-i+1)*ramp_beam_deg/(2*pi)*ramp_height_2];
 end
-rampParkArea = levelZaxis(end-2) - levelZaxis(levelPstart1);
+rampParkArea = levelZaxis(levelPstart2) - levelZaxis(levelPstart1);
+rampCommArea = levelZaxis(end) - levelZaxis(levelPstart2);
 length_rampParkArea = fix(rampParkArea/ramp_height_1)*lengthXYcoor_ramp; % fix向零取整
-ramp_compare = rem(rampParkArea,ramp_height_1) >= ramp_Z_sample;
+length_rampCommArea = fix(rampCommArea/ramp_height_2)*lengthXYcoor_ramp; % fix向零取整
+ramp_compare_1 = rem(rampParkArea,ramp_height_1) >= ramp_Z_sample_1; % 比较大小
+ramp_compare_2 = rem(rampCommArea,ramp_height_2) <= ramp_Z_sample_2;
 for i=1:lengthXYcoor_ramp
-    if ramp_compare(i) == 0
+    if ramp_compare_1(i) == 0
         length_rampParkArea = length_rampParkArea + i-1; % 旋转坡道商业层(含)以下至最下停车层的节点数。
         break
     end
 end
+for i=1:lengthXYcoor_ramp
+    if ramp_compare_2(i) == 1
+        length_rampCommArea = length_rampCommArea + i; % 旋转坡道商业层(含)以上至屋顶层的节点数。
+        break
+    end
+end
 
-for jj = 1:length_rampParkArea  % 从商业层往下由内向外顺时针定义
-    levelZ = levelZaxis(end-2)-ramp_height_1*fix(jj/lengthXYcoor_ramp)-ramp_Z_sample(rem(jj,lengthXYcoor_ramp)+1);
+for jj = 0:(length_rampParkArea-1)  % 从商业层往下 由内向外 顺时针定义
+    levelZ = levelZaxis(levelPstart2)-ramp_height_1*fix(jj/lengthXYcoor_ramp)-ramp_Z_sample_1(rem(jj,lengthXYcoor_ramp)+1);
     i = ramp_point;
     j = lengthXYcoor_ramp - rem(jj,lengthXYcoor_ramp);
+    iNO = iNO+1;
+    fprintf(fileID,'   %d, %.4f, %.4f, %.4f\n',...	% 节点编号规则：从0度角开始逆时针；从下到上。
+        iNO,XYcoor_o(j,1),XYcoor_o(j,2),levelZ);   % 外筒 X & Y
+    iNO = iNO+1;
+    fprintf(fileID,'   %d, %.4f, %.4f, %.4f\n',...	% 节点编号规则：从0度角开始逆时针；从下到上。
+        iNO,XYcoor_ramp_i(i,j,1),XYcoor_ramp_i(i,j,2),levelZ);   % 外筒 X & Y
+    iNO = iNO+1;
+    fprintf(fileID,'   %d, %.4f, %.4f, %.4f\n',...	% 节点编号规则：从0度角开始逆时针；从下到上。
+        iNO,XYcoor_ramp_o(i,j,1),XYcoor_ramp_o(i,j,2),levelZ);   % 外筒 X & Y
+end
+for jj = 0:(length_rampCommArea-1)  % 从商业层往上 由内向外 逆时针定义
+    levelZ = levelZaxis(levelPstart2)+ramp_height_2*fix(jj/lengthXYcoor_ramp)+ramp_Z_sample_2(rem(jj,lengthXYcoor_ramp)+1);
+    i = ramp_point;
+    j = rem(jj,lengthXYcoor_ramp)+1;
     iNO = iNO+1;
     fprintf(fileID,'   %d, %.4f, %.4f, %.4f\n',...	% 节点编号规则：从0度角开始逆时针；从下到上。
         iNO,XYcoor_o(j,1),XYcoor_o(j,2),levelZ);   % 外筒 X & Y
@@ -146,6 +173,18 @@ for i = 1:length_rampParkArea	% 坡道悬臂梁广义层数
             ELE_ANGLE, ELE_iSUB);
     end
 end
+iNO = iNO + length_rampParkArea*3;
+for i = 1:length_rampCommArea	% 坡道悬臂梁广义层数
+    for j = 1:2 % 悬臂梁分两段
+        iEL = iEL+1;
+        iN1 = iNO+j+(i-1)*3;	% 外筒上的点/坡道内上的点
+        iN2 = iN1+1;    % 坡道内上的点/坡道外上的点
+        fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
+            iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
+            iN1, iN2,...    % 梁单元的两个节点号
+            ELE_ANGLE, ELE_iSUB);
+    end
+end
 
 % 环形次梁；iPRO = 4 截面编号4。
 fprintf(fileID,'; 环形次梁\n');
@@ -164,6 +203,54 @@ for i = 1:(length_rampParkArea-1)	% 坡道悬臂梁广义层数
             ELE_ANGLE, ELE_iSUB);
     end
 end
-iEL_end = iEL;
+iNO = iNO + length_rampParkArea*3;
+for i = 1:(length_rampCommArea-1)	% 坡道悬臂梁广义层数
+    for j = 1:2 % 坡道内/外环梁
+        iEL = iEL+1;
+        iN1 = iNO+(j+1)+(i-1)*3;	% 外筒上的点/坡道内上的点
+        iN2 = iN1+3;    % 坡道内上的点/坡道外上的点
+        fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
+            iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
+            iN1, iN2,...    % 梁单元的两个节点号
+            ELE_ANGLE, ELE_iSUB);
+    end
+end
 fprintf(fileID,'\n');
+
+%% ELEMENT(planner) floor 由于该4个点不在一个平面，故无法施加楼面荷载
+fprintf(fileID,'*ELEMENT    ; Elements\n');
+fprintf(fileID,'; iEL, TYPE, iMAT, iPRO, iN1, iN2, ANGLE, iSUB, EXVAL, iOPT(EXVAL2) ; Frame  Element\n; iEL, TYPE, iMAT, iPRO, iN1, iN2, ANGLE, iSUB, EXVAL, EXVAL2, bLMT ; Comp/Tens Truss\n; iEL, TYPE, iMAT, iPRO, iN1, iN2, iN3, iN4, iSUB, iWID , LCAXIS    ; Planar Element\n; iEL, TYPE, iMAT, iPRO, iN1, iN2, iN3, iN4, iN5, iN6, iN7, iN8     ; Solid  Element\n');
+
+% iEL_init_floor = iEL;
+ELE_TYPE = 'PLATE'; ELE_iMAT = 2; ELE_iSUB = 2; ELE_iWID = 0; % iMAT = 2材料混凝土C30 % iSUB = 2 薄板
+
+% 板厚1；iPRO = 2 截面编号2。
+fprintf(fileID,'; 1厚板楼梯板\n');
+ELE_iPRO = 2;
+iNO = iNO_init; % 初始化iNO
+for i = 1:(length_rampParkArea-1) % 由于有斜段，故这里要-1
+    iN1 = iNO+2+(i-1)*3;	% 坡道内上的点
+    iN2 = iN1+1;            % 坡道外上的点
+    iN3 = iN2+3;
+    iN4 = iN1+3;
+    iEL = iEL+1;
+    fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d, %d, %d\n',...
+        iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
+        iN1, iN2, iN3, iN4,...    % 板单元的四个节点号
+        ELE_iSUB, ELE_iWID);
+end
+iNO = iNO + length_rampParkArea*3;
+for i = 1:(length_rampCommArea-1) % 由于有斜段，故这里要-1
+    iN1 = iNO+2+(i-1)*3;	% 坡道内上的点
+    iN2 = iN1+1;            % 坡道外上的点
+    iN3 = iN2+3;
+    iN4 = iN1+3;
+    iEL = iEL+1;
+    fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d, %d, %d\n',...
+        iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
+        iN1, iN2, iN3, iN4,...    % 板单元的四个节点号
+        ELE_iSUB, ELE_iWID);
+end
+fprintf(fileID,'\n');
+iEL_end = iEL;
 end
