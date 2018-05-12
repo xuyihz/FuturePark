@@ -4,7 +4,7 @@
 % Xu Yi, 2018
 
 %%
-function [iNO_end, iEL_end] = MGT_ramp(fileID, iNO, iEL, car_num, CoC_tower, Deg_tower, tube_innerR, tube_outerR, levelZaxis, levelPstart, iNO_towerS_init)    %×¢ÒâÕâÀïµÄlevelPstartÊÇ1x2Êı×é
+function [iNO_end, iEL_end] = MGT_ramp(fileID, iNO, iEL, car_num, CoC_tower, Deg_tower, tube_innerR, tube_outerR, levelZaxis, levelPstart, ~)    %×¢ÒâÕâÀïµÄlevelPstartÊÇ1x2Êı×é
 %% NODE
 fprintf(fileID,'*NODE    ; Nodes\n');
 fprintf(fileID,'; iNO, X, Y, Z\n');
@@ -15,11 +15,11 @@ ramp_outer_R = 14400; % ÆÂµÀÍâÈ¦°ë¾¶
 
 iNO_init = iNO;
 levelPstart1 = levelPstart(1); levelPstart2 = levelPstart(2);
-lengthlevelZaxis = length(levelZaxis(:));
 % XYcoor_i = zeros(car_num,2);	% ÄÚÍ²XoY×ø±êµÚ1(X)¡¢2(Y)ÁĞ¡£
 XYcoor_o = zeros(car_num*2,2);	% ÍâÍ²XoY×ø±êµÚ1(X)¡¢2(Y)ÁĞ¡£
-XYcoor_ramp_i = zeros(1,car_num*2,2);	% ÆÂµÀÄÚ²àXoY×ø±êµÚ1(X)¡¢2(Y)ÁĞ¡£
-XYcoor_ramp_o = zeros(1,car_num*2,2);	% ÆÂµÀÍâ²àXoY×ø±êµÚ1(X)¡¢2(Y)ÁĞ¡£
+ramp_point = 1;
+XYcoor_ramp_i = zeros(ramp_point,car_num*2,2);	% ÆÂµÀÄÚ²àXoY×ø±êµÚ1(X)¡¢2(Y)ÁĞ¡£
+XYcoor_ramp_o = zeros(ramp_point,car_num*2,2);	% ÆÂµÀÍâ²àXoY×ø±êµÚ1(X)¡¢2(Y)ÁĞ¡£
 
 car_num2pi = 2*pi/car_num;  % speed up
 
@@ -40,7 +40,7 @@ XYcoor_ramp_i_1(2,:) = coorMir(XYcoor_ramp_i_1(1,:), [0,0], XYcoor_i_1);% ¶ÔYµÄÖ
 XYcoor_ramp_o_1(1,1) = sqrt(ramp_outer_R^2 - XYcoor_i_1(1,2)^2);        % YĞÍÆÂµÀÍâ²àÉÏÒ»µã X1 ×¢Òâ16¸öµã²¢²»ÊÇµÈ½Ç¶ÈµÈ·Ö¡£
 XYcoor_ramp_o_1(1,2) = XYcoor_i_1(1,2);                                 % Y1
 XYcoor_ramp_o_1(2,:) = coorMir(XYcoor_ramp_o_1(1,:), [0,0], XYcoor_i_1);% ¶ÔYµÄÖ÷¸ÉÏß¾µÏñ£¬µÃµ½YĞÍÄ£¿éÏÂÃæ·ÖÖ§µÄX2,Y2
-for j = 1 % Ôİ¶¨1£¬ÓÉÓÚÆÂµÀĞüÌô³¤¶ÈºÍ¸ß¶ÈÓĞ¹Ø£¬ºóÆÚ»¹»á¸ü¸Ä¡£
+for j = 1:ramp_point % Ôİ¶¨1£¬ÓÉÓÚÆÂµÀĞüÌô³¤¶ÈºÍ¸ß¶ÈÓĞ¹Ø£¬ºóÆÚ»¹»á¸ü¸Ä¡£
     for i = 0:(car_num-1)   % ³¢ÊÔÏòÁ¿»¯ % Ğı×ª¾Ö²¿½Ç¶È+ÕûÌå½Ç¶È
         [XYcoor_ramp_i(j,i*2+1,1), XYcoor_ramp_i(j,i*2+1,2)] = coorTrans(XYcoor_ramp_i_1(1,1), XYcoor_ramp_i_1(1,2), -car_num2pi*i+Deg_tower); % ÆÂµÀÄÚ²àµã×ø±ê1
         [XYcoor_ramp_i(j,i*2+2,1), XYcoor_ramp_i(j,i*2+2,2)] = coorTrans(XYcoor_ramp_i_1(2,1), XYcoor_ramp_i_1(2,2), -car_num2pi*i+Deg_tower); % ÆÂµÀÄÚ²àµã×ø±ê2
@@ -59,53 +59,70 @@ XYcoor_ramp_o(:,:,1) = XYcoor_ramp_o(:,:,1) + CoC_tower(1);
 XYcoor_ramp_o(:,:,2) = XYcoor_ramp_o(:,:,2) + CoC_tower(2);
 
 [~,lengthXYcoor_ramp,~] = size(XYcoor_ramp_i);  % ÆÂµÀÃ¿²ã½ÚµãÊı
-% ÆÂµÀĞüÌôÁº±ê¸ßµÄÈ·¶¨£¬Ôİ¶¨Ò»È¦ÆÂµÀ6000¸ß
-!theta_temp = arctan ( (XYcoor_ramp_i_1(1,2)+XYcoor_ramp_o_1(1,2)) / (XYcoor_ramp_i_1(1,1)+XYcoor_ramp_o_1(1,1)) );
+% ÆÂµÀĞüÌôÁºZÏò±ê¸ßµÄÈ·¶¨£¬Ôİ¶¨Ò»È¦ÆÂµÀ6000¸ß
+ramp_height_1 = 6000;
+theta_temp = atan ( (XYcoor_ramp_i_1(1,2)+XYcoor_ramp_o_1(1,2)) / (XYcoor_ramp_i_1(1,1)+XYcoor_ramp_o_1(1,1)) ); %È¡Ğü±ÛÁºÔÚÆÂµÀÖĞĞÄÏß½»µãµÄ½Ç¶È
+theta_para = theta_temp*2; % Æ½ĞĞĞü±ÛÁºparallelÓëÆÂµÀÖĞĞÄÏß½»µãµÄ¼Ğ½Ç
+theta_Y = 2*pi/8 - theta_para; % YĞÍĞü±ÛÁºÓëÆÂµÀÖĞĞÄÏß½»µãµÄ¼Ğ½Ç
+ramp_Z_sample = zeros(1,lengthXYcoor_ramp);
+for i = 2:lengthXYcoor_ramp % i-1Ê±£¬rampÏà¶Ô±ê¸ßÎª0
+    if rem(i,2) == 0 % iÊÇÅ¼Êı
+        ramp_beam_deg = theta_Y;
+    else
+        ramp_beam_deg = theta_para;
+    end
+    ramp_Z_sample = ramp_Z_sample + [zeros(1,i-1),ones(1,lengthXYcoor_ramp-i+1)*ramp_beam_deg/(2*pi)*ramp_height_1];
+end
+rampParkArea = levelZaxis(end-2) - levelZaxis(levelPstart1);
+length_rampParkArea = fix(rampParkArea/ramp_height_1)*lengthXYcoor_ramp; % fixÏòÁãÈ¡Õû
+ramp_compare = rem(rampParkArea,ramp_height_1) >= ramp_Z_sample;
+for i=1:lengthXYcoor_ramp
+    if ramp_compare(i) == 0
+        length_rampParkArea = length_rampParkArea + i-1; % Ğı×ªÆÂµÀÉÌÒµ²ã(º¬)ÒÔÏÂÖÁ×îÏÂÍ£³µ²ãµÄ½ÚµãÊı¡£
+        break
+    end
+end
 
-
-for i = 1:lengthlevelZaxis  % length(A(:)) AÏòÁ¿ÔªËØ¸öÊı
-    for j = 1:lengthXYcoor_ramp
-        iNO = iNO+1;
-        fprintf(fileID,'   %d, %.4f, %.4f, %.4f\n',...	% ½Úµã±àºÅ¹æÔò£º´Ó0¶È½Ç¿ªÊ¼ÄæÊ±Õë£»´ÓÏÂµ½ÉÏ¡£
-            iNO,XYcoor_o(j,1),XYcoor_o(j,2),levelZaxis(i));   % ÍâÍ² X & Y
-    end
-    for j = 1:lengthXYcoor_ramp
-        iNO = iNO+1;
-        fprintf(fileID,'   %d, %.4f, %.4f, %.4f\n',...	% ½Úµã±àºÅ¹æÔò£º´Ó0¶È½Ç¿ªÊ¼ÄæÊ±Õë£»´ÓÏÂµ½ÉÏ¡£
-            iNO,XYcoor_ramp_i(i,j,1),XYcoor_ramp_i(i,j,2),levelZaxis(i));   % ÍâÍ² X & Y
-    end
-    for j = 1:lengthXYcoor_ramp
-        iNO = iNO+1;
-        fprintf(fileID,'   %d, %.4f, %.4f, %.4f\n',...	% ½Úµã±àºÅ¹æÔò£º´Ó0¶È½Ç¿ªÊ¼ÄæÊ±Õë£»´ÓÏÂµ½ÉÏ¡£
-            iNO,XYcoor_ramp_o(i,j,1),XYcoor_ramp_o(i,j,2),levelZaxis(i));   % ÍâÍ² X & Y
-    end
+for jj = 1:length_rampParkArea  % ´ÓÉÌÒµ²ãÍùÏÂÓÉÄÚÏòÍâË³Ê±Õë¶¨Òå
+    levelZ = levelZaxis(end-2)-ramp_height_1*fix(jj/lengthXYcoor_ramp)-ramp_Z_sample(rem(jj,lengthXYcoor_ramp)+1);
+    i = ramp_point;
+    j = lengthXYcoor_ramp - rem(jj,lengthXYcoor_ramp);
+    iNO = iNO+1;
+    fprintf(fileID,'   %d, %.4f, %.4f, %.4f\n',...	% ½Úµã±àºÅ¹æÔò£º´Ó0¶È½Ç¿ªÊ¼ÄæÊ±Õë£»´ÓÏÂµ½ÉÏ¡£
+        iNO,XYcoor_o(j,1),XYcoor_o(j,2),levelZ);   % ÍâÍ² X & Y
+    iNO = iNO+1;
+    fprintf(fileID,'   %d, %.4f, %.4f, %.4f\n',...	% ½Úµã±àºÅ¹æÔò£º´Ó0¶È½Ç¿ªÊ¼ÄæÊ±Õë£»´ÓÏÂµ½ÉÏ¡£
+        iNO,XYcoor_ramp_i(i,j,1),XYcoor_ramp_i(i,j,2),levelZ);   % ÍâÍ² X & Y
+    iNO = iNO+1;
+    fprintf(fileID,'   %d, %.4f, %.4f, %.4f\n',...	% ½Úµã±àºÅ¹æÔò£º´Ó0¶È½Ç¿ªÊ¼ÄæÊ±Õë£»´ÓÏÂµ½ÉÏ¡£
+        iNO,XYcoor_ramp_o(i,j,1),XYcoor_ramp_o(i,j,2),levelZ);   % ÍâÍ² X & Y
 end
 iNO_end = iNO;
 fprintf(fileID,'\n');
 
-%% ELEMENT(frame) columns
-fprintf(fileID,'*ELEMENT    ; Elements\n');
-fprintf(fileID,'; iEL, TYPE, iMAT, iPRO, iN1, iN2, ANGLE, iSUB, EXVAL, iOPT(EXVAL2) ; Frame  Element\n; iEL, TYPE, iMAT, iPRO, iN1, iN2, ANGLE, iSUB, EXVAL, EXVAL2, bLMT ; Comp/Tens Truss\n; iEL, TYPE, iMAT, iPRO, iN1, iN2, iN3, iN4, iSUB, iWID , LCAXIS    ; Planar Element\n; iEL, TYPE, iMAT, iPRO, iN1, iN2, iN3, iN4, iN5, iN6, iN7, iN8     ; Solid  Element\n');
-
-% iEL_init_colu = iEL;
-ELE_TYPE = 'BEAM'; ELE_iMAT = 1; ELE_ANGLE = 0; ELE_iSUB = 0;  % iMAT = 1²ÄÁÏ¸Ö½á¹¹Q345
-
-% ÍâÍ²Öù£»iPRO = 1 ½ØÃæ±àºÅ1¡£
-fprintf(fileID,'; Ä»Ç½Öù(ÀàËÆÍâÍ²Öù)\n');
-ELE_iPRO = 1;
-iNO = iNO_init; % ³õÊ¼»¯iNO
-for i = levelPstart1:(lengthlevelZaxis-1)	% length(A(:)) AÏòÁ¿ÔªËØ¸öÊı % levelPstart µÚ¼¸²ã¿ªÊ¼Í£³µ£¬¼´ÏÂ¼¸²ã¿ª³¨
-    for j = 1:car_num*2	% Ã¿²ãÍâÍ²µÄ½ÚµãÊı
-        iEL = iEL+1;
-        iN1 = iNO+j+lengthXYcoor_ramp*(i-1); % ´ËĞĞÄ»Ç½ÓëÁíÍâËşµÄ²»Í¬£¬ÒòÄ»Ç½½ÚµãÎªµ¥¶À±àºÅ£¬¹ÊÒ»²ãÖ»ÓĞlengthXYcoor_f¸ö½Úµã
-        iN2 = iN1+lengthXYcoor_ramp;
-        fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
-            iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
-            iN1, iN2,...    % Öùµ¥ÔªµÄÁ½¸ö½ÚµãºÅ
-            ELE_ANGLE, ELE_iSUB);
-    end
-end
-fprintf(fileID,'\n');
+%% ELEMENT(frame) columns Ğü±ÛÁºÃ»ÓĞÖù
+% fprintf(fileID,'*ELEMENT    ; Elements\n');
+% fprintf(fileID,'; iEL, TYPE, iMAT, iPRO, iN1, iN2, ANGLE, iSUB, EXVAL, iOPT(EXVAL2) ; Frame  Element\n; iEL, TYPE, iMAT, iPRO, iN1, iN2, ANGLE, iSUB, EXVAL, EXVAL2, bLMT ; Comp/Tens Truss\n; iEL, TYPE, iMAT, iPRO, iN1, iN2, iN3, iN4, iSUB, iWID , LCAXIS    ; Planar Element\n; iEL, TYPE, iMAT, iPRO, iN1, iN2, iN3, iN4, iN5, iN6, iN7, iN8     ; Solid  Element\n');
+% 
+% % iEL_init_colu = iEL;
+% ELE_TYPE = 'BEAM'; ELE_iMAT = 1; ELE_ANGLE = 0; ELE_iSUB = 0;  % iMAT = 1²ÄÁÏ¸Ö½á¹¹Q345
+% 
+% % ÍâÍ²Öù£»iPRO = 1 ½ØÃæ±àºÅ1¡£
+% fprintf(fileID,'; Ä»Ç½Öù(ÀàËÆÍâÍ²Öù)\n');
+% ELE_iPRO = 1;
+% iNO = iNO_init; % ³õÊ¼»¯iNO
+% for i = levelPstart1:(length_rampParkArea-1)	% length(A(:)) AÏòÁ¿ÔªËØ¸öÊı % levelPstart µÚ¼¸²ã¿ªÊ¼Í£³µ£¬¼´ÏÂ¼¸²ã¿ª³¨
+%     for j = 1:car_num*2	% Ã¿²ãÍâÍ²µÄ½ÚµãÊı
+%         iEL = iEL+1;
+%         iN1 = iNO+j+lengthXYcoor_ramp*(i-1); % ´ËĞĞÄ»Ç½ÓëÁíÍâËşµÄ²»Í¬£¬ÒòÄ»Ç½½ÚµãÎªµ¥¶À±àºÅ£¬¹ÊÒ»²ãÖ»ÓĞlengthXYcoor_f¸ö½Úµã
+%         iN2 = iN1+lengthXYcoor_ramp;
+%         fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
+%             iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
+%             iN1, iN2,...    % Öùµ¥ÔªµÄÁ½¸ö½ÚµãºÅ
+%             ELE_ANGLE, ELE_iSUB);
+%     end
+% end
+% fprintf(fileID,'\n');
 
 %% ELEMENT(frame) beams
 fprintf(fileID,'*ELEMENT    ; Elements\n');
@@ -115,34 +132,18 @@ fprintf(fileID,'; iEL, TYPE, iMAT, iPRO, iN1, iN2, ANGLE, iSUB, EXVAL, iOPT(EXVA
 ELE_TYPE = 'BEAM'; ELE_iMAT = 1; ELE_ANGLE = 0; ELE_iSUB = 0;  % iMAT = 1²ÄÁÏ¸Ö½á¹¹Q345
 
 % ºáÏòÖ÷Áº£»iPRO = 3 ½ØÃæ±àºÅ3¡£
-fprintf(fileID,'; ºáÏòÖ÷Áº\n');
+fprintf(fileID,'; Ğü±ÛÁº\n');
 ELE_iPRO = 3;
 iNO = iNO_init; % ³õÊ¼»¯iNO
-iNO_towerS = iNO_towerS_init; % ³õÊ¼»¯iNO_towerS
-for i = levelPstart1:(levelPstart2-1)	% ²»Í£³µ²ã£¬Áº´ÓÄÚÍ²Éì³ö
-    for j = 1:car_num	% Ã¿²ãÄÚÍ²µÄ½ÚµãÊı
-        for k = 1:2 % Ò»¸ùÄÚÍ²ÖùÁ¬½ÓÁ½¸ùÍâÍ²Öù£¬¼´Á½¸ùÁº
-            iEL = iEL+1;
-            iN1 = iNO_towerS+j+lengthXYcoor2*(i-1); % ´ËĞĞÎª¶¨Î»ÁºÔÚËşÂ¥µÄ½Úµã(ÄÚÍ²)
-            iN2 = iNO+lengthXYcoor_ramp*(i-1)+(j-1)*2+k;    % ¹éµ½Ä»Ç½ÍâÍ²µÚ0µãºó£¬ÔÙ¶¨Î»µ½¾ßÌåµã
-            fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
-                iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
-                iN1, iN2,...    % Áºµ¥ÔªµÄÁ½¸ö½ÚµãºÅ
-                ELE_ANGLE, ELE_iSUB);
-        end
-    end
-end
-for i = levelPstart2:lengthlevelZaxis	% Í£³µ²ã£¬Áº´ÓÍâÍ²Éì³ö
-    for j = 1:car_num	% Ã¿²ãÄÚÍ²µÄ½ÚµãÊı
-        for k = 1:2 % Á½¸ùÍâÍ²Öù£¬¼´Á½¸ùÁº
-            iEL = iEL+1;
-            iN1 = iNO_towerS+car_num+lengthXYcoor2*(i-1)+(j-1)*2+k; % ´ËĞĞÎª¶¨Î»ÁºÔÚËşÂ¥µÄ½Úµã(ÍâÍ²)
-            iN2 = iNO+lengthXYcoor_ramp*(i-1)+(j-1)*2+k;    % ¹éµ½Ä»Ç½ÍâÍ²µÚ0µãºó£¬ÔÙ¶¨Î»µ½¾ßÌåµã
-            fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
-                iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
-                iN1, iN2,...    % Áºµ¥ÔªµÄÁ½¸ö½ÚµãºÅ
-                ELE_ANGLE, ELE_iSUB);
-        end
+for i = 1:length_rampParkArea	% ÆÂµÀĞü±ÛÁº¹ãÒå²ãÊı
+    for j = 1:2 % Ğü±ÛÁº·ÖÁ½¶Î
+        iEL = iEL+1;
+        iN1 = iNO+j+(i-1)*3;	% ÍâÍ²ÉÏµÄµã/ÆÂµÀÄÚÉÏµÄµã
+        iN2 = iN1+1;    % ÆÂµÀÄÚÉÏµÄµã/ÆÂµÀÍâÉÏµÄµã
+        fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
+            iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
+            iN1, iN2,...    % Áºµ¥ÔªµÄÁ½¸ö½ÚµãºÅ
+            ELE_ANGLE, ELE_iSUB);
     end
 end
 
@@ -151,16 +152,12 @@ fprintf(fileID,'; »·ĞÎ´ÎÁº\n');
 ELE_iPRO = 4;
 iNO = iNO_init; % ³õÊ¼»¯iNO
 % Íâ»·Áº
-fprintf(fileID,';   Ä»Ç½Íâ»·Áº\n');
-for i = levelPstart1:lengthlevelZaxis	% ´ËĞĞÓëÖùµ¥Ôª²»Í¬£¬Öùµ¥ÔªÎªi-1;
-    for j = 1:car_num*2	% Ã¿²ãÍâÍ²µÄ½ÚµãÊı
+fprintf(fileID,';   ÆÂµÀ»·Áº\n');
+for i = 1:(length_rampParkArea-1)	% ÆÂµÀĞü±ÛÁº¹ãÒå²ãÊı
+    for j = 1:2 % ÆÂµÀÄÚ/Íâ»·Áº
         iEL = iEL+1;
-        iN1 = iNO+j+lengthXYcoor_ramp*(i-1); % 
-        if j ~= car_num*2
-            iN2 = iN1+1;
-        else % j = car_num*2 Ê±£¬ Á¬½ÓµÄÊÇ±¾»·µÄµÚÒ»¸öµã£¬¶ø²»ÊÇÉÏ²ãÄÚ»·µÄµÚÒ»¸öµã¡£
-            iN2 = iN1+1-car_num*2;
-        end
+        iN1 = iNO+(j+1)+(i-1)*3;	% ÍâÍ²ÉÏµÄµã/ÆÂµÀÄÚÉÏµÄµã
+        iN2 = iN1+3;    % ÆÂµÀÄÚÉÏµÄµã/ÆÂµÀÍâÉÏµÄµã
         fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
             iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
             iN1, iN2,...    % Áºµ¥ÔªµÄÁ½¸ö½ÚµãºÅ
