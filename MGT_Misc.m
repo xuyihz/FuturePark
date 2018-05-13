@@ -12,6 +12,7 @@ fprintf(fileID,'; iNO, X, Y, Z\n');
 % ÓÉÓÚÆÂµÀÃ¿²ãÍâÌô¶¼ÓĞ±ä»¯£¬¹ÊĞèÒªÑ­»·(»òÏòÁ¿»¯)¡£(ÔİÊ±Î´¿¼ÂÇÍâÌô±ä»¯) % ´Ó17600¿ªÊ¼ÍùÏÂ¡¢ÍùÉÏ½¨¡£
 ramp_inner_R = 12200; % ÆÂµÀÄÚÈ¦°ë¾¶
 ramp_outer_R = 14400; % ÆÂµÀÍâÈ¦°ë¾¶
+aisle_width = 1800; % ×ßµÀ¿í¶È
 
 iNO_init = iNO;
 % levelPstart1 = levelPstart(1);
@@ -21,6 +22,8 @@ levelPstart2 = levelPstart(2);
 ramp_point = 1;
 XYcoor_ramp_i = zeros(ramp_point,car_num*2,2);	% ÆÂµÀÄÚ²àXoY×ø±êµÚ1(X)¡¢2(Y)ÁĞ¡£
 XYcoor_ramp_o = zeros(ramp_point,car_num*2,2);	% ÆÂµÀÍâ²àXoY×ø±êµÚ1(X)¡¢2(Y)ÁĞ¡£
+XYcoor_aisle = zeros(ramp_point,car_num*2,2);	% ×ßµÀÍâ²àXoY×ø±êµÚ1(X)¡¢2(Y)ÁĞ¡£(×ßµÀÄÚ²à¼´ÎªÆÂµÀÍâ²à)
+circle_num = 3; % ÒÔÉÏÈı¸öÈ¦
 
 car_num2pi = 2*pi/car_num;  % speed up
 Deg_tower = Deg_tower + pi/2; % µ÷ÕûÆÂµÀ¶¨Î»
@@ -34,12 +37,17 @@ XYcoor_ramp_i_1(2,:) = coorMir(XYcoor_ramp_i_1(1,:), [0,0], XYcoor_i_1);% ¶ÔYµÄÖ
 XYcoor_ramp_o_1(1,1) = sqrt(ramp_outer_R^2 - XYcoor_i_1(1,2)^2);        % YĞÍÆÂµÀÍâ²àÉÏÒ»µã X1 ×¢Òâ16¸öµã²¢²»ÊÇµÈ½Ç¶ÈµÈ·Ö¡£
 XYcoor_ramp_o_1(1,2) = XYcoor_i_1(1,2);                                 % Y1
 XYcoor_ramp_o_1(2,:) = coorMir(XYcoor_ramp_o_1(1,:), [0,0], XYcoor_i_1);% ¶ÔYµÄÖ÷¸ÉÏß¾µÏñ£¬µÃµ½YĞÍÄ£¿éÏÂÃæ·ÖÖ§µÄX2,Y2
+XYcoor_aisle_1(1,1) = sqrt((ramp_outer_R+aisle_width)^2 - XYcoor_i_1(1,2)^2);        % YĞÍ×ßµÀÍâ²àÉÏÒ»µã X1 ×¢Òâ16¸öµã²¢²»ÊÇµÈ½Ç¶ÈµÈ·Ö¡£
+XYcoor_aisle_1(1,2) = XYcoor_i_1(1,2);                                 % Y1
+XYcoor_aisle_1(2,:) = coorMir(XYcoor_aisle_1(1,:), [0,0], XYcoor_i_1);% ¶ÔYµÄÖ÷¸ÉÏß¾µÏñ£¬µÃµ½YĞÍÄ£¿éÏÂÃæ·ÖÖ§µÄX2,Y2
 for j = 1:ramp_point % Ôİ¶¨1£¬ÓÉÓÚÆÂµÀĞüÌô³¤¶ÈºÍ¸ß¶ÈÓĞ¹Ø£¬ºóÆÚ»¹»á¸ü¸Ä¡£
     for i = 0:(car_num-1)   % ³¢ÊÔÏòÁ¿»¯ % Ğı×ª¾Ö²¿½Ç¶È+ÕûÌå½Ç¶È
         [XYcoor_ramp_i(j,i*2+1,1), XYcoor_ramp_i(j,i*2+1,2)] = coorTrans(XYcoor_ramp_i_1(1,1), XYcoor_ramp_i_1(1,2), -car_num2pi*i+Deg_tower); % ÆÂµÀÄÚ²àµã×ø±ê1
         [XYcoor_ramp_i(j,i*2+2,1), XYcoor_ramp_i(j,i*2+2,2)] = coorTrans(XYcoor_ramp_i_1(2,1), XYcoor_ramp_i_1(2,2), -car_num2pi*i+Deg_tower); % ÆÂµÀÄÚ²àµã×ø±ê2
         [XYcoor_ramp_o(j,i*2+1,1), XYcoor_ramp_o(j,i*2+1,2)] = coorTrans(XYcoor_ramp_o_1(1,1), XYcoor_ramp_o_1(1,2), -car_num2pi*i+Deg_tower); % ÆÂµÀÍâ²àµã×ø±ê1
         [XYcoor_ramp_o(j,i*2+2,1), XYcoor_ramp_o(j,i*2+2,2)] = coorTrans(XYcoor_ramp_o_1(2,1), XYcoor_ramp_o_1(2,2), -car_num2pi*i+Deg_tower); % ÆÂµÀÍâ²àµã×ø±ê2
+        [XYcoor_aisle(j,i*2+1,1), XYcoor_aisle(j,i*2+1,2)] = coorTrans(XYcoor_aisle_1(1,1), XYcoor_aisle_1(1,2), -car_num2pi*i+Deg_tower); % ÆÂµÀÍâ²àµã×ø±ê1
+        [XYcoor_aisle(j,i*2+2,1), XYcoor_aisle(j,i*2+2,2)] = coorTrans(XYcoor_aisle_1(2,1), XYcoor_aisle_1(2,2), -car_num2pi*i+Deg_tower); % ÆÂµÀÍâ²àµã×ø±ê2
     end
 end
 % ¾Ö²¿×ø±êÏµ ×ª»»ÖÁ ÕûÌå×ø±êÏµ
@@ -47,6 +55,8 @@ XYcoor_ramp_i(:,:,1) = XYcoor_ramp_i(:,:,1) + CoC_tower(1);
 XYcoor_ramp_i(:,:,2) = XYcoor_ramp_i(:,:,2) + CoC_tower(2);
 XYcoor_ramp_o(:,:,1) = XYcoor_ramp_o(:,:,1) + CoC_tower(1);
 XYcoor_ramp_o(:,:,2) = XYcoor_ramp_o(:,:,2) + CoC_tower(2);
+XYcoor_aisle(:,:,1) = XYcoor_aisle(:,:,1) + CoC_tower(1);
+XYcoor_aisle(:,:,2) = XYcoor_aisle(:,:,2) + CoC_tower(2);
 
 [~,lengthXYcoor_ramp,~] = size(XYcoor_ramp_i);  % ÆÂµÀÃ¿²ã½ÚµãÊı
 for k = 1:2
@@ -63,6 +73,9 @@ for k = 1:2
         iNO = iNO+1;
         fprintf(fileID,'   %d, %.4f, %.4f, %.4f\n',...	% ½Úµã±àºÅ¹æÔò£º´Ó0¶È½Ç¿ªÊ¼ÄæÊ±Õë£»´ÓÏÂµ½ÉÏ¡£
             iNO,XYcoor_ramp_o(i,j,1),XYcoor_ramp_o(i,j,2),levelZ);   % ÍâÍ² X & Y
+        iNO = iNO+1;
+        fprintf(fileID,'   %d, %.4f, %.4f, %.4f\n',...	% ½Úµã±àºÅ¹æÔò£º´Ó0¶È½Ç¿ªÊ¼ÄæÊ±Õë£»´ÓÏÂµ½ÉÏ¡£
+            iNO,XYcoor_aisle(i,j,1),XYcoor_aisle(i,j,2),levelZ);   % ÍâÍ² X & Y
     end
 end
 iNO_end = iNO;
@@ -85,13 +98,13 @@ iNO = iNO_init; % ³õÊ¼»¯iNO
 fprintf(fileID,';   ÆÂµÀ»·Áº\n');
 for k = 1:2 % ÉÌÒµ²ã¡¢ÎİÃæ²ã
     for i = 1:lengthXYcoor_ramp % ÆÂµÀÍ¶Ó°Ò»È¦µÄ½ÚµãÊı
-        for j = 1:2 % ÆÂµÀÄÚ/Íâ»·Áº
+        for j = 1:circle_num % ÆÂµÀÄÚ/Íâ»·Áº/×ßµÀÍâ»·Áº
             iEL = iEL+1;
-            iN1 = iNO+j+(i-1)*2+(k-1)*lengthXYcoor_ramp*2;	% ÍâÍ²ÉÏµÄµã/ÆÂµÀÄÚÉÏµÄµã
+            iN1 = iNO+j+(i-1)*circle_num+(k-1)*lengthXYcoor_ramp*circle_num;	% ÍâÍ²ÉÏµÄµã/ÆÂµÀÄÚÉÏµÄµã
             if i == lengthXYcoor_ramp
-                iN2 = iN1+2-lengthXYcoor_ramp*2;
+                iN2 = iN1+circle_num-lengthXYcoor_ramp*circle_num;
             else
-                iN2 = iN1+2;    % ÆÂµÀÄÚÉÏµÄµã/ÆÂµÀÍâÉÏµÄµã
+                iN2 = iN1+circle_num;    % ÆÂµÀÄÚÉÏµÄµã/ÆÂµÀÍâ/×ßµÀÍâÉÏµÄµã
             end
             fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
                 iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
