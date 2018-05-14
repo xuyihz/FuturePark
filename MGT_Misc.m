@@ -78,6 +78,20 @@ for k = 1:2
             iNO,XYcoor_aisle(i,j,1),XYcoor_aisle(i,j,2),levelZ);   % 外筒 X & Y
     end
 end
+fprintf(fileID,'\n');
+
+iNO_init2 = iNO;
+fprintf(fileID,'*NODE    ; Nodes\n');
+fprintf(fileID,'; iNO, X, Y, Z\n');
+% 定义屋面边线
+Roof_edge_coor = [30570,4250; 4450,41250; 45000,55500; 78300,62100; 87950,37800; 118150,7250; 115150,4250]; % 外边线定位点，从左下角点起，顺时针定位点
+levelZ = levelZaxis(end);
+for i = 1:length(Roof_edge_coor)
+    iNO = iNO+1;
+    fprintf(fileID,'   %d, %.4f, %.4f, %.4f\n',...	% 节点编号规则：从0度角开始逆时针；从下到上。
+        iNO,Roof_edge_coor(i,1),Roof_edge_coor(i,2),levelZ);   % 外筒 X & Y
+end
+
 iNO_end = iNO;
 fprintf(fileID,'\n');
 
@@ -114,5 +128,27 @@ for k = 1:2 % 商业层、屋面层
     end
 end
 fprintf(fileID,'\n');
+
+fprintf(fileID,'*ELEMENT    ; Elements\n');
+fprintf(fileID,'; iEL, TYPE, iMAT, iPRO, iN1, iN2, ANGLE, iSUB, EXVAL, iOPT(EXVAL2) ; Frame  Element\n; iEL, TYPE, iMAT, iPRO, iN1, iN2, ANGLE, iSUB, EXVAL, EXVAL2, bLMT ; Comp/Tens Truss\n; iEL, TYPE, iMAT, iPRO, iN1, iN2, iN3, iN4, iSUB, iWID , LCAXIS    ; Planar Element\n; iEL, TYPE, iMAT, iPRO, iN1, iN2, iN3, iN4, iN5, iN6, iN7, iN8     ; Solid  Element\n');
+% 屋面环形边梁；iPRO = 4 截面编号4。
+fprintf(fileID,'; 屋面环形边梁\n');
+ELE_iPRO = 4;
+iNO = iNO_init2; % 初始化iNO
+for i = 1:length(Roof_edge_coor)
+    iEL = iEL+1;
+    iN1 = iNO+i;	% 一字长蛇阵
+    if i == length(Roof_edge_coor)
+        iN2 = iNO+1;
+    else
+        iN2 = iN1+1;    % 
+    end
+    fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
+        iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
+        iN1, iN2,...    % 梁单元的两个节点号
+        ELE_ANGLE, ELE_iSUB);
+end
+fprintf(fileID,'\n');
+
 iEL_end = iEL;
 end
