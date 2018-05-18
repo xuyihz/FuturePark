@@ -115,18 +115,18 @@ stairB = 1500; % 楼梯梯板宽(暂定)
 elevatorColu_num = 8;  % 电梯筒的内筒柱数量 (电梯中间还有一个节点，故7+1=8)
 
 %% 10 towers
-iNO_towerC_init = iNO;
+iNO_towerC1_init = iNO;
 [iNO, iEL] = MGT_tower(fileID, iNO, iEL, car_num, CoC_towerC1, Deg_towerC1, tube_innerR, tube_outerR, levelTaxis, levelPstart(1), CAR, OFFICE, ROOF);
-[iNO, iEL] = MGT_ramp(fileID, iNO, iEL, car_num, CoC_towerC1, Deg_towerC1, tube_innerR, tube_outerR, levelTaxis, levelPstart, iNO_towerC_init);
-[iNO, iEL] = MGT_Misc(fileID, iNO, iEL, car_num, CoC_towerC1, Deg_towerC1, tube_innerR, tube_outerR, levelTaxis, levelPstart, iNO_towerC_init);
-
-iNO_towerS1_init = iNO;
-[iNO, iEL] = MGT_tower(fileID, iNO, iEL, car_num, CoC_towerS2, Deg_towerS2, tube_innerR, tube_outerR, levelTaxis, levelPstart(2), CAR, OFFICE, ROOF);
-[iNO, iEL] = MGT_facade_tower(fileID, iNO, iEL, car_num, CoC_towerS2, Deg_towerS2, tube_innerR, levelTaxis, levelPstart, iNO_towerS1_init);
+[iNO, iEL] = MGT_ramp(fileID, iNO, iEL, car_num, CoC_towerC1, Deg_towerC1, tube_innerR, tube_outerR, levelTaxis, levelPstart, iNO_towerC1_init);
+[iNO, iEL] = MGT_Misc(fileID, iNO, iEL, car_num, CoC_towerC1, Deg_towerC1, tube_innerR, tube_outerR, levelTaxis, levelPstart, iNO_towerC1_init);
 
 iNO_towerS2_init = iNO;
+[iNO, iEL] = MGT_tower(fileID, iNO, iEL, car_num, CoC_towerS2, Deg_towerS2, tube_innerR, tube_outerR, levelTaxis, levelPstart(2), CAR, OFFICE, ROOF);
+[iNO, iEL] = MGT_facade_tower(fileID, iNO, iEL, car_num, CoC_towerS2, Deg_towerS2, tube_innerR, levelTaxis, levelPstart, iNO_towerS2_init);
+
+iNO_towerS3_init = iNO;
 [iNO, iEL] = MGT_tower(fileID, iNO, iEL, car_num, CoC_towerS3, Deg_towerS3, tube_innerR, tube_outerR, levelTaxis, levelPstart(2), CAR, OFFICE, ROOF);
-[iNO, iEL] = MGT_facade_tower(fileID, iNO, iEL, car_num, CoC_towerS3, Deg_towerS3, tube_innerR, levelTaxis, levelPstart, iNO_towerS2_init);
+[iNO, iEL] = MGT_facade_tower(fileID, iNO, iEL, car_num, CoC_towerS3, Deg_towerS3, tube_innerR, levelTaxis, levelPstart, iNO_towerS3_init);
 
 iNO_stair5_init = iNO;
 [iNO, iEL] = MGT_stair(fileID, iNO, iEL, CoC_stair5, Deg_stair5, levelSaxis, levelPstart(3), stairColu_num, stairL, stairW, stairB, CAR, OFFICE, ROOF);
