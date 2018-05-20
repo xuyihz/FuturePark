@@ -31,8 +31,8 @@ XYcoor_o_1(1,1) = sqrt(tube_outerR^2 - XYcoor_i_1(1,2)^2);        % µ¥¸öYÐÍÄ£¿éÍ
 XYcoor_o_1(1,2) = XYcoor_i_1(1,2);                                % Y1
 XYcoor_o_1(2,:) = coorMir(XYcoor_o_1(1,:), [0,0], XYcoor_i_1);     % X2,Y2
 for i = 0:(car_num-1)   % ³¢ÊÔÏòÁ¿»¯ % Ðý×ª¾Ö²¿½Ç¶È+ÕûÌå½Ç¶È
-    [XYcoor_o(i*2+1,1), XYcoor_o(i*2+1,2)] = coorTrans(XYcoor_o_1(1,1), XYcoor_o_1(1,2), -car_num2pi*i+Deg_tower); % ÍâÍ²µã×ø±ê1
-    [XYcoor_o(i*2+2,1), XYcoor_o(i*2+2,2)] = coorTrans(XYcoor_o_1(2,1), XYcoor_o_1(2,2), -car_num2pi*i+Deg_tower); % ÍâÍ²µã×ø±ê2
+    [XYcoor_o(i*2+1,:)] = coorTrans(XYcoor_o_1(1,:), -car_num2pi*i+Deg_tower); % ÍâÍ²µã×ø±ê1
+    [XYcoor_o(i*2+2,:)] = coorTrans(XYcoor_o_1(2,:), -car_num2pi*i+Deg_tower); % ÍâÍ²µã×ø±ê2
 end
 
 XYcoor_ramp_i_1(1,1) = sqrt(ramp_inner_R^2 - XYcoor_i_1(1,2)^2);        % YÐÍÆÂµÀÄÚ²àÉÏÒ»µã X1 ×¢Òâ16¸öµã²¢²»ÊÇµÈ½Ç¶ÈµÈ·Ö¡£
@@ -43,10 +43,10 @@ XYcoor_ramp_o_1(1,2) = XYcoor_i_1(1,2);                                 % Y1
 XYcoor_ramp_o_1(2,:) = coorMir(XYcoor_ramp_o_1(1,:), [0,0], XYcoor_i_1);% ¶ÔYµÄÖ÷¸ÉÏß¾µÏñ£¬µÃµ½YÐÍÄ£¿éÏÂÃæ·ÖÖ§µÄX2,Y2
 for j = 1:ramp_point % ÔÝ¶¨1£¬ÓÉÓÚÆÂµÀÐüÌô³¤¶ÈºÍ¸ß¶ÈÓÐ¹Ø£¬ºóÆÚ»¹»á¸ü¸Ä¡£
     for i = 0:(car_num-1)   % ³¢ÊÔÏòÁ¿»¯ % Ðý×ª¾Ö²¿½Ç¶È+ÕûÌå½Ç¶È
-        [XYcoor_ramp_i(j,i*2+1,1), XYcoor_ramp_i(j,i*2+1,2)] = coorTrans(XYcoor_ramp_i_1(1,1), XYcoor_ramp_i_1(1,2), -car_num2pi*i+Deg_tower); % ÆÂµÀÄÚ²àµã×ø±ê1
-        [XYcoor_ramp_i(j,i*2+2,1), XYcoor_ramp_i(j,i*2+2,2)] = coorTrans(XYcoor_ramp_i_1(2,1), XYcoor_ramp_i_1(2,2), -car_num2pi*i+Deg_tower); % ÆÂµÀÄÚ²àµã×ø±ê2
-        [XYcoor_ramp_o(j,i*2+1,1), XYcoor_ramp_o(j,i*2+1,2)] = coorTrans(XYcoor_ramp_o_1(1,1), XYcoor_ramp_o_1(1,2), -car_num2pi*i+Deg_tower); % ÆÂµÀÍâ²àµã×ø±ê1
-        [XYcoor_ramp_o(j,i*2+2,1), XYcoor_ramp_o(j,i*2+2,2)] = coorTrans(XYcoor_ramp_o_1(2,1), XYcoor_ramp_o_1(2,2), -car_num2pi*i+Deg_tower); % ÆÂµÀÍâ²àµã×ø±ê2
+        [XYcoor_ramp_i(j,i*2+1,:)] = coorTrans(XYcoor_ramp_i_1(1,:), -car_num2pi*i+Deg_tower); % ÆÂµÀÄÚ²àµã×ø±ê1
+        [XYcoor_ramp_i(j,i*2+2,:)] = coorTrans(XYcoor_ramp_i_1(2,:), -car_num2pi*i+Deg_tower); % ÆÂµÀÄÚ²àµã×ø±ê2
+        [XYcoor_ramp_o(j,i*2+1,:)] = coorTrans(XYcoor_ramp_o_1(1,:), -car_num2pi*i+Deg_tower); % ÆÂµÀÍâ²àµã×ø±ê1
+        [XYcoor_ramp_o(j,i*2+2,:)] = coorTrans(XYcoor_ramp_o_1(2,:), -car_num2pi*i+Deg_tower); % ÆÂµÀÍâ²àµã×ø±ê2
     end
 end
 % ¾Ö²¿×ø±êÏµ ×ª»»ÖÁ ÕûÌå×ø±êÏµ

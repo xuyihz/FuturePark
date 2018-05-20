@@ -4,10 +4,10 @@
 % Xu Yi, 25th March 2018
 
 %%
-function  [x_trans,y_trans] = coorTrans(x, y, theta)
+function  XY_trans = coorTrans(XY, theta)
 % 坐标系转换 theta为顺时针为正
 % x' = xcos(a) + ysin(a);
 % y' = ycos(a) - xsin(a);
-x_trans = x*cos(theta) + y*sin(theta);
-y_trans = y*cos(theta) - x*sin(theta);
+XY_trans(1) = XY(1)*cos(theta) + XY(2)*sin(theta);
+XY_trans(2) = XY(2)*cos(theta) - XY(1)*sin(theta);
 end

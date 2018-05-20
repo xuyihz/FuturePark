@@ -10,5 +10,7 @@ P_m = coorPerp(P0, P1, P2); % 得到垂足点
 P_LxC(1) = -sqrt(P_m(1)^2+P_m(2)^2);	% 假设直线平行于Y轴情况，P_LxC(1)应等于-P_m到P0距离(特殊情况)
 P_LxC(2) = -sqrt(R^2-P_LxC(1)^2);   % P_LxC(1)^2+P_LxC(2)^2=R^2
 theta = atan( P_m(2)/P_m(1) );
-[P_LxC1,P_LxC2] = coorTrans(P_LxC(1), P_LxC(2), -theta);    % 逆时针转，故有负号
+P_LxC_trans = coorTrans(P_LxC, -theta);    % 逆时针转，故有负号
+P_LxC1 = P_LxC_trans(1);
+P_LxC2 = P_LxC_trans(2);
 end

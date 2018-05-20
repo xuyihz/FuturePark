@@ -24,7 +24,7 @@ str_length = 2200; str_width = 2800;
 elevatorXY = [-ele_width, ele_depth; ele_width, ele_depth; -ele_width, ele_shift; ele_width, ele_shift;...
                 -str_length, -str_width; str_length, -str_width; 0, ele_depth; 0, ele_shift]; % 原始坐标，未旋转，未转到整体坐标系
 for i = 1:elevatorColu_num   % 尝试向量化
-    [XYcoor_i(i,1), XYcoor_i(i,2)] = coorTrans(elevatorXY(i,1), elevatorXY(i,2), Deg_elevator); % 内筒
+    XYcoor_i(i,:) = coorTrans(elevatorXY(i,:), Deg_elevator); % 内筒
 end
 % 外筒elevatorXY2 % 外筒需要根据幕墙外表皮曲线定位 % 需有沿高度的循环(或向量化)
 for j = levelPstart1:lengthlevelZaxis
@@ -38,7 +38,7 @@ for j = levelPstart1:lengthlevelZaxis
         -ele2_width2, ele_shift; ele2_width2, ele_shift; -ele2_width3, -str_width; ele2_width3, -str_width;...
         ele2_strX, ele2_strY; -ele2_strX, ele2_strY];
     for i = 1:elevatorColu_o_num   % 尝试向量化
-        [XYcoor_o3(j,i,1), XYcoor_o3(j,i,2)] = coorTrans(elevatorXY2(i,1), elevatorXY2(i,2), Deg_elevator); % 内筒
+        [XYcoor_o3(j,i,:)] = coorTrans(elevatorXY2(i,:), Deg_elevator); % 内筒
     end
 end
 % 局部坐标系 转换至 整体坐标系

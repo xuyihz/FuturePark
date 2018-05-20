@@ -29,7 +29,7 @@ XYcoor_o3 = zeros(lengthlevelZaxis,stairColu_num*2,2);	% 外筒XoY坐标第1(X)、2(Y)
 
 stairXY = [stairL/2, stairW/2; -stairL/2, stairW/2; -stairL/2, -stairW/2; stairL/2, -stairW/2]; % 原始坐标，未旋转，未转到整体坐标系
 for i = 1:stairColu_num   % 尝试向量化
-    [XYcoor_i(i,1), XYcoor_i(i,2)] = coorTrans(stairXY(i,1), stairXY(i,2), Deg_stair); % 内筒
+    [XYcoor_i(i,:)] = coorTrans(stairXY(i,:), Deg_stair); % 内筒
 end
 % 幕墙外筒
 for j = levelPstart1:lengthlevelZaxis
@@ -38,7 +38,7 @@ for j = levelPstart1:lengthlevelZaxis
     stairXY2 = [XYcoor_o_x, stairW/2; stairL/2, XYcoor_o_y; -stairL/2, XYcoor_o_y; -XYcoor_o_x, stairW/2;...
         -XYcoor_o_x, -stairW/2; -stairL/2, -XYcoor_o_y; stairL/2, -XYcoor_o_y; XYcoor_o_x, -stairW/2];  % 幕墙外筒各点坐标
     for i = 1:stairColu_num*2   % 尝试向量化
-        [XYcoor_o3(j,i,1), XYcoor_o3(j,i,2)] = coorTrans(stairXY2(i,1), stairXY2(i,2), Deg_stair); % 幕墙外筒点坐标 % 已旋转整体角度
+        [XYcoor_o3(j,i,:)] = coorTrans(stairXY2(i,:), Deg_stair); % 幕墙外筒点坐标 % 已旋转整体角度
     end
 end
 

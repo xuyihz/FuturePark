@@ -4,43 +4,61 @@
 % Xu Yi, 2018
 
 %%
-function [iNO_end, iEL_end] = MGT_side(fileID, iNO, iEL, CoC_side, Deg_side, levelZaxis, levelPstart1, sideColu_num, stairL, stairW, stairB, ~, ~, ROOF)
+function [iNO_end, iEL_end] = MGT_side(fileID, iNO, iEL, CoC_side, levelZaxis, levelPstart, Roof_boundary, ~, ~, ROOF, tower_num)
 %% NODE
 fprintf(fileID,'*NODE    ; Nodes\n');
 fprintf(fileID,'; iNO, X, Y, Z\n');
 
 iNO_init = iNO;
 
-XYcoor_i = zeros(sideColu_num,2);   % ÄÚÍ²XoY×ø±êµÚ1(X)¡¢2(Y)ÁĞ¡£
-XYcoor_o = zeros(sideColu_num*2,2); % Íâ±íÆ¤XoY×ø±êµÚ1(X)¡¢2(Y)ÁĞ¡£
+switch tower_num % Ëş±êºÅ
+    case 7
+        facade_stair_R = [zeros(6,1); 6820; 5839; 5162; 4734; 4529; 4534; 4750; 5189; 5880; 6878; 8473; 11040; 16200];
+        Corner_coor = Roof_boundary(4,:);
+        
+        [X_temp, Y_temp, ~] = coorLxC_sym(CoC_side, 3250, Corner_coor, Roof_boundary(3,:)); %×ó±ßµÚÒ»µã % [X, Y, Len] = coorLxC_sym(C0, R, P1, P2);
+        if X_temp(1) < X_temp(2)
+            XYcoor_1 = [X_temp(1),Y_temp(1)];
+        else
+            XYcoor_1 = [X_temp(2),Y_temp(2)];
+        end
+        [X_temp, Y_temp, ~] = coorLxC_sym(CoC_side, 3250, Corner_coor, Roof_boundary(5,:)); %×ó±ßµÚÒ»µã % [X, Y, Len] = coorLxC_sym(C0, R, P1, P2);
+        if X_temp(1) > X_temp(2)
+            XYcoor_4 = [X_temp(1),Y_temp(1)];
+        else
+            XYcoor_4 = [X_temp(2),Y_temp(2)];
+        end
+        Deg = coorDeg(Corner_coor, XYcoor_1, XYcoor_4);
+        Temp_coor = XYcoor_1 - Corner_coor;
+        Temp_coor_trans = coorTrans(Temp_coor, -Deg/3);
+        
+    case 10
+        facade_stair_R = [zeros(6,1); 7594; 6144; 5151; 4495; 4120; 4000; 4128; 4511; 5176; 6182; 7830; 10527; 16000];
+        Corner_coor = Roof_boundary(2,:);
+end
 
-stairXY = [stairL/2, stairW/2; -stairL/2, stairW/2; -stairL/2, -stairW/2; stairL/2, -stairW/2]; % Ô­Ê¼×ø±ê£¬Î´Ğı×ª£¬Î´×ªµ½ÕûÌå×ø±êÏµ
-for i = 1:sideColu_num   % ³¢ÊÔÏòÁ¿»¯
-    [XYcoor_i(i,1), XYcoor_i(i,2)] = coorTrans(stairXY(i,1), stairXY(i,2), Deg_side); % ÄÚÍ²
-end
-% ÍâÍ²´ı¶¨stairXY2 Ôİ¶¨´ÓÄÚÍ²ÍâÉìstairB.
-stairXY2 = [stairL/2+stairB, stairW/2; stairL/2, stairW/2+stairB; -stairL/2, stairW/2+stairB; -stairL/2-stairB, stairW/2;...
-    -stairL/2-stairB, -stairW/2; -stairL/2, -stairW/2-stairB; stairL/2, -stairW/2-stairB; stairL/2+stairB, -stairW/2];
-for i = 1:sideColu_num*2   % ³¢ÊÔÏòÁ¿»¯
-    [XYcoor_o(i,1), XYcoor_o(i,2)] = coorTrans(stairXY2(i,1), stairXY2(i,2), Deg_side); % ÍâÍ²
-end
+XYcoor_i = zeros(sideColu_num,2);   % ÄÚÍ²XoY×ø±êµÚ1(X)¡¢2(Y)ÁĞ¡£ % ³ı½Çµã
+XYcoor_o = zeros(sideColu_num,2);	% Íâ±íÆ¤XoY×ø±êµÚ1(X)¡¢2(Y)ÁĞ¡£
+
+%
 % ¾Ö²¿×ø±êÏµ ×ª»»ÖÁ ÕûÌå×ø±êÏµ
-XYcoor_i(:,1) = XYcoor_i(:,1) + CoC_side(1);
-XYcoor_i(:,2) = XYcoor_i(:,2) + CoC_side(2);
-XYcoor_o(:,1) = XYcoor_o(:,1) + CoC_side(1);
-XYcoor_o(:,2) = XYcoor_o(:,2) + CoC_side(2);
+
 lengthlevelZaxis = length(levelZaxis(:));
 
 for i = 1:lengthlevelZaxis  % length(A(:)) AÏòÁ¿ÔªËØ¸öÊı
-    for k = 1:2 % ÄÚÍ²£¬ÍâÍ²
-        if k == 1 % ½Úµã±àºÅ¹æÔò£º´Ó0¶È½Ç¿ªÊ¼ÄæÊ±Õë£»ÏÈÃ¿²ãÄÚÍ²£¬ÔÙÃ¿²ãÍâÍ²£»´ÓÏÂµ½ÉÏ¡£
-            for j = 1:sideColu_num % ÄÚ²¿4¸öÖù×Ó
+    for k = 1:3 % ½Çµã£¬ÄÚÍ²£¬ÍâÍ²
+        if k == 1
+            iNO = iNO+1;
+            fprintf(fileID,'   %d, %.4f, %.4f, %.4f\n',...
+                iNO,Corner_coor(1),Corner_coor(2),levelZaxis(i));
+        elseif k == 1 % ½Úµã±àºÅ¹æÔò£ºÄæÊ±Õë¡£
+            for j = 1:sideColu_num % ÄÚ²¿Öù×Ó
                 iNO = iNO+1;
                 fprintf(fileID,'   %d, %.4f, %.4f, %.4f\n',...
                     iNO,XYcoor_i(j,1),XYcoor_i(j,2),levelZaxis(i));
             end
         else
-            for j = 1:sideColu_num*2 % Íâ²¿8¸öÖù×Ó
+            for j = 1:sideColu_num % Íâ²¿Öù×Ó
                 iNO = iNO+1;
                 fprintf(fileID,'   %d, %.4f, %.4f, %.4f\n',...
                     iNO,XYcoor_o(j,1),XYcoor_o(j,2),levelZaxis(i));
@@ -79,7 +97,7 @@ end
 fprintf(fileID,'; ÍâÍ²Öù\n');
 ELE_iPRO = 1;
 iNO = iNO_init; % ³õÊ¼»¯iNO
-for i = levelPstart1:(lengthlevelZaxis-1)	% length(A(:)) AÏòÁ¿ÔªËØ¸öÊı % levelPstart µÚ¼¸²ã¿ªÊ¼Í£³µ£¬¼´ÏÂ¼¸²ã¿ª³¨
+for i = levelPstart:(lengthlevelZaxis-1)	% length(A(:)) AÏòÁ¿ÔªËØ¸öÊı % levelPstart µÚ¼¸²ã¿ªÊ¼Í£³µ£¬¼´ÏÂ¼¸²ã¿ª³¨
     for j = 1:sideColu_num*2	% Ã¿²ãÍâÍ²µÄ½ÚµãÊı
         iEL = iEL+1;
         iN1 = iNO+(sideColu_num+j)+lengthXYcoor2*(i-1); % ´ËĞĞÓëÄÚÍ²²»Í¬£¬¶àÁË +stairN_num/2
@@ -119,7 +137,7 @@ for i = 1:(lengthlevelZaxis-1)	% ÓÉÓÚÓĞĞ±¶Î£¬¹ÊÕâÀïÒª-1
         iNcon5 = iNcon3+4;
         iNcon6 = iNcon5+sideColu_num*2-1;
     end
-    if i < levelPstart1 % ¿¼ÂÇµ×²ãÎŞÄ»Ç½
+    if i < levelPstart % ¿¼ÂÇµ×²ãÎŞÄ»Ç½
         k_end = 2;
     else
         k_end = 4;
@@ -151,7 +169,7 @@ for i = 1:lengthlevelZaxis	% ´ËĞĞÓëÖùµ¥Ôª²»Í¬£¬Öùµ¥ÔªÎªi-1 % Ã¿²ãÒ»¸ù¹á´©¿íÏòÖ÷Á
         iNcon1 = iNO+2+lengthXYcoor2*(i-1);
         iNcon2 = iNcon1+1;
     end
-    if i < levelPstart1 % ¿¼ÂÇµ×²ãÎŞÄ»Ç½
+    if i < levelPstart % ¿¼ÂÇµ×²ãÎŞÄ»Ç½
         k_end = 1;
     else
         k_end = 3;
@@ -181,7 +199,7 @@ ELE_iPRO = 4;
 iNO = iNO_init; % ³õÊ¼»¯iNO
 % Íâ»·Áº % ²Î¿¼Â¥Ìİ³¤ÏòÖ÷Áº
 fprintf(fileID,';   Íâ»·Áº\n');
-for i = levelPstart1:(lengthlevelZaxis-1)	% ÓÉÓÚÓĞĞ±¶Î£¬¹ÊÕâÀïÒª-1
+for i = levelPstart:(lengthlevelZaxis-1)	% ÓÉÓÚÓĞĞ±¶Î£¬¹ÊÕâÀïÒª-1
     if rem(i,2) ~= 0    % ÆæÊı²ã % ¿ØÖÆµã£¬¼´Á½¸öĞ±¶ÎÆğµã
         iNcon1 = iNO+6+lengthXYcoor2*(i-1);
         iNcon2 = iNcon1+5;
@@ -245,7 +263,7 @@ for i = 1:(lengthlevelZaxis-1) % ÓÉÓÚÓĞĞ±¶Î£¬¹ÊÕâÀïÒª-1
         iNcon5 = iNcon3+4;
         iNcon6 = iNcon5+sideColu_num*2-1;
     end
-    if i < levelPstart1 % ¿¼ÂÇµ×²ãÎŞÄ»Ç½
+    if i < levelPstart % ¿¼ÂÇµ×²ãÎŞÄ»Ç½
         k_end = 1;
     else
         k_end = 2;
@@ -289,7 +307,7 @@ for i = 1:(lengthlevelZaxis-1) % ÓÉÓÚÓĞĞ±¶Î£¬¹ÊÕâÀïÒª-1
         iNcon5 = iNcon3+4;
         iNcon6 = iNcon5+sideColu_num*2-1;
     end
-    if i < levelPstart1 % ¿¼ÂÇµ×²ãÎŞÄ»Ç½
+    if i < levelPstart % ¿¼ÂÇµ×²ãÎŞÄ»Ç½
         k_end = 1;
     else
         k_end = 2;
