@@ -79,7 +79,7 @@ for i = 1:lengthlevelZaxis  % length(A(:)) A向量元素个数
             iNO = iNO+1;
             fprintf(fileID,'   %d, %.4f, %.4f, %.4f\n',...
                 iNO,Corner_coor(1),Corner_coor(2),levelZaxis(i));
-        elseif k == 1 % 节点编号规则：逆时针。
+        elseif k == 2 % 节点编号规则：逆时针。
             for j = 1:sideColu_num % 内部柱子
                 iNO = iNO+1;
                 fprintf(fileID,'   %d, %.4f, %.4f, %.4f\n',...
@@ -94,51 +94,51 @@ for i = 1:lengthlevelZaxis  % length(A(:)) A向量元素个数
         end
     end
 end
-% lengthXYcoor2 = sideColu_num+sideColu_num;  % 每层的节点数，其中内部4个点，外部8个点。
+lengthXYcoor2 = 1 + sideColu_num*2;  % 每层的节点数，其中角点1个点，内部4个点，外部4个点。
 iNO_end = iNO;
 fprintf(fileID,'\n');
 
-% %% ELEMENT(frame) columns
-% fprintf(fileID,'*ELEMENT    ; Elements\n');
-% fprintf(fileID,'; iEL, TYPE, iMAT, iPRO, iN1, iN2, ANGLE, iSUB, EXVAL, iOPT(EXVAL2) ; Frame  Element\n; iEL, TYPE, iMAT, iPRO, iN1, iN2, ANGLE, iSUB, EXVAL, EXVAL2, bLMT ; Comp/Tens Truss\n; iEL, TYPE, iMAT, iPRO, iN1, iN2, iN3, iN4, iSUB, iWID , LCAXIS    ; Planar Element\n; iEL, TYPE, iMAT, iPRO, iN1, iN2, iN3, iN4, iN5, iN6, iN7, iN8     ; Solid  Element\n');
-% 
-% % iEL_init_colu = iEL;
-% ELE_TYPE = 'BEAM'; ELE_iMAT = 1; ELE_ANGLE = 0; ELE_iSUB = 0;  % iMAT = 1材料钢结构Q345
-% 
-% % 内筒柱；iPRO = 2 截面编号2。
-% fprintf(fileID,'; 内筒柱\n');
-% ELE_iPRO = 2;
-% iNO = iNO_init; % 初始化iNO
-% for i = 1:(lengthlevelZaxis-1)	% length(A(:)) A向量元素个数
-%     for j = 1:sideColu_num	% 每层内筒的节点数
-%         iEL = iEL+1;
-%         iN1 = iNO+j+lengthXYcoor2*(i-1);
-%         iN2 = iN1+lengthXYcoor2;
-%         fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
-%             iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
-%             iN1, iN2,...    % 柱单元的两个节点号
-%             ELE_ANGLE, ELE_iSUB);
-%     end
-% end
-% 
-% % 外筒柱；iPRO = 1 截面编号1。
-% fprintf(fileID,'; 外筒柱\n');
-% ELE_iPRO = 1;
-% iNO = iNO_init; % 初始化iNO
-% for i = levelPstart:(lengthlevelZaxis-1)	% length(A(:)) A向量元素个数 % levelPstart 第几层开始停车，即下几层开敞
-%     for j = 1:sideColu_num*2	% 每层外筒的节点数
-%         iEL = iEL+1;
-%         iN1 = iNO+(sideColu_num+j)+lengthXYcoor2*(i-1); % 此行与内筒不同，多了 +stairN_num/2
-%         iN2 = iN1+lengthXYcoor2;
-%         fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
-%             iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
-%             iN1, iN2,...    % 柱单元的两个节点号
-%             ELE_ANGLE, ELE_iSUB);
-%     end
-% end
-% fprintf(fileID,'\n');
-% 
-% %% ELEMENT(frame) beams 布置与停车筒不同，且均为同一截面
+%% ELEMENT(frame) columns
+fprintf(fileID,'*ELEMENT    ; Elements\n');
+fprintf(fileID,'; iEL, TYPE, iMAT, iPRO, iN1, iN2, ANGLE, iSUB, EXVAL, iOPT(EXVAL2) ; Frame  Element\n; iEL, TYPE, iMAT, iPRO, iN1, iN2, ANGLE, iSUB, EXVAL, EXVAL2, bLMT ; Comp/Tens Truss\n; iEL, TYPE, iMAT, iPRO, iN1, iN2, iN3, iN4, iSUB, iWID , LCAXIS    ; Planar Element\n; iEL, TYPE, iMAT, iPRO, iN1, iN2, iN3, iN4, iN5, iN6, iN7, iN8     ; Solid  Element\n');
+
+% iEL_init_colu = iEL;
+ELE_TYPE = 'BEAM'; ELE_iMAT = 1; ELE_ANGLE = 0; ELE_iSUB = 0;  % iMAT = 1材料钢结构Q345
+
+% 内筒柱；iPRO = 2 截面编号2。
+fprintf(fileID,'; 内筒柱\n');
+ELE_iPRO = 2;
+iNO = iNO_init; % 初始化iNO
+for i = 1:(lengthlevelZaxis-1)	% length(A(:)) A向量元素个数
+    for j = 1:(1+sideColu_num)	% 每层内筒的节点数 5
+        iEL = iEL+1;
+        iN1 = iNO+j+lengthXYcoor2*(i-1);
+        iN2 = iN1+lengthXYcoor2;
+        fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
+            iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
+            iN1, iN2,...    % 柱单元的两个节点号
+            ELE_ANGLE, ELE_iSUB);
+    end
+end
+
+% 外筒柱；iPRO = 1 截面编号1。
+fprintf(fileID,'; 外筒柱\n');
+ELE_iPRO = 1;
+iNO = iNO_init; % 初始化iNO
+for i = levelPstart:(lengthlevelZaxis-1)	% length(A(:)) A向量元素个数 % levelPstart 第几层开始停车，即下几层开敞
+    for j = 1:sideColu_num	% 每层外筒的节点数
+        iEL = iEL+1;
+        iN1 = iNO+(1+sideColu_num+j)+lengthXYcoor2*(i-1); % 此行与内筒不同，多了 1+sideColu_num
+        iN2 = iN1+lengthXYcoor2;
+        fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
+            iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
+            iN1, iN2,...    % 柱单元的两个节点号
+            ELE_ANGLE, ELE_iSUB);
+    end
+end
+fprintf(fileID,'\n');
+
+% %% ELEMENT(frame)
 % fprintf(fileID,'*ELEMENT    ; Elements\n');
 % fprintf(fileID,'; iEL, TYPE, iMAT, iPRO, iN1, iN2, ANGLE, iSUB, EXVAL, iOPT(EXVAL2) ; Frame  Element\n; iEL, TYPE, iMAT, iPRO, iN1, iN2, ANGLE, iSUB, EXVAL, EXVAL2, bLMT ; Comp/Tens Truss\n; iEL, TYPE, iMAT, iPRO, iN1, iN2, iN3, iN4, iSUB, iWID , LCAXIS    ; Planar Element\n; iEL, TYPE, iMAT, iPRO, iN1, iN2, iN3, iN4, iN5, iN6, iN7, iN8     ; Solid  Element\n');
 % 
@@ -263,7 +263,7 @@ fprintf(fileID,'\n');
 %     end
 % end
 % fprintf(fileID,'\n');
-% 
+
 % %% ELEMENT(planner) floor
 % fprintf(fileID,'*ELEMENT    ; Elements\n');
 % fprintf(fileID,'; iEL, TYPE, iMAT, iPRO, iN1, iN2, ANGLE, iSUB, EXVAL, iOPT(EXVAL2) ; Frame  Element\n; iEL, TYPE, iMAT, iPRO, iN1, iN2, ANGLE, iSUB, EXVAL, EXVAL2, bLMT ; Comp/Tens Truss\n; iEL, TYPE, iMAT, iPRO, iN1, iN2, iN3, iN4, iSUB, iWID , LCAXIS    ; Planar Element\n; iEL, TYPE, iMAT, iPRO, iN1, iN2, iN3, iN4, iN5, iN6, iN7, iN8     ; Solid  Element\n');
