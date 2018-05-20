@@ -78,29 +78,35 @@ iNO = 0;    % 节点号初始化
 iEL = 0;    % 单元号初始化
 car_num = 8;    % 圆塔每层停车数
 % 10个塔楼的圆心 % centre of a circle
-CoC_towerC1 = [58800,37800]; % centre parking tower
-CoC_towerS2 = [27300,29400]; % side parking tower 1
-CoC_towerS3 = [88200,13800]; % side parking tower 2
+CoC_towerC1 = [58800,37800];	% centre parking tower
+CoC_towerS2 = [27300,29400];	% side parking tower 1
+CoC_towerS3 = [88200,13800];	% side parking tower 2
 
-CoC_stair5 = [37000,44400]; % stairs
-CoC_stair6 = [79800,33600]; % stairs
-CoC_stair7 = [76550,58935]; % stairs 角上
-CoC_stair9 = [32050,7450]; % stairs 角上
-            
-CoC_elevator4 = [63000,12600]; % 1 elevator
-CoC_side8 = [113970,8165]; % side
-CoC_side10 = [8400,40000]; % side
+CoC_elevator4 = [63000,12600];	% 1 elevator
+
+CoC_stair5 = [36977,44429];	% stairs
+CoC_stair6 = [79800,33600];	% stairs
+
+CoC_side7 = [76552,58934];	% side type 1
+CoC_side10 = [6914,40472];	% side type 1
+
+CoC_side8 = [118504,7243];	% side type 2 / 2 columns in the edge
+CoC_side9 = [32055,7107];	% side type 3 / a column in the centre
+
+Edge_side9 = [30833,4750]; Edge_side10 = [5248,41010]; Edge_side7 = [77970,61552];
+Edge_side8 = [117443,7243; 114951,4750]; Edge_North = [45186,54754]; Edge_East = [87304,37382];
+Roof_boundary = [Edge_side9; Edge_side10; Edge_North; Edge_side7; Edge_East; Edge_side8]; % 外边线定位点，从左下角点起，顺时针定位点
 
 Deg_towerC1 = atan( (CoC_elevator4(1)-CoC_towerC1(1))/(CoC_elevator4(2)-CoC_towerC1(2)) );	% degree of centre tower 由电梯圆心与主塔圆心连线确定
 Deg_towerS2 = -acot( (CoC_stair5(1)-CoC_towerS2(1))/(CoC_stair5(2)-CoC_towerS2(2)) ) + pi/4;	% degree of side tower 1 由中上楼梯圆心与左边塔圆心连线确定
 Deg_towerS3 = 0; % degree of side tower 2 右边塔
+Deg_elevator4 = Deg_towerC1;    % 由主塔角度确定
 Deg_stair5 = pi/4 + Deg_towerS2;   % 由S2塔角度确定
 Deg_stair6 = -acot( (CoC_stair6(1)-CoC_towerC1(1))/(CoC_stair6(2)-CoC_towerC1(2)) );	% degree of stair 6 由楼梯6圆心与主塔圆心连线确定
 Deg_stair7 = pi/4 + Deg_towerC1;    % 由主塔角度确定
-Deg_stair9 = -pi/2 + Deg_towerS2;   % 由S2塔角度确定
-Deg_elevator4 = Deg_towerC1;    % 由主塔角度确定
-Deg_stair10 = -pi/6;    % 待定
 Deg_stair8 = -pi/6;    % 待定
+Deg_stair9 = -pi/2 + Deg_towerS2;   % 由S2塔角度确定
+Deg_stair10 = -pi/6;    % 待定
 
 tube_innerR = 3950;
 tube_outerR = 8500;
@@ -118,7 +124,7 @@ elevatorColu_num = 8;  % 电梯筒的内筒柱数量 (电梯中间还有一个节点，故7+1=8)
 iNO_towerC1_init = iNO;
 [iNO, iEL] = MGT_tower(fileID, iNO, iEL, car_num, CoC_towerC1, Deg_towerC1, tube_innerR, tube_outerR, levelTaxis, levelPstart(1), CAR, OFFICE, ROOF);
 [iNO, iEL] = MGT_ramp(fileID, iNO, iEL, car_num, CoC_towerC1, Deg_towerC1, tube_innerR, tube_outerR, levelTaxis, levelPstart, iNO_towerC1_init);
-[iNO, iEL] = MGT_Misc(fileID, iNO, iEL, car_num, CoC_towerC1, Deg_towerC1, tube_innerR, tube_outerR, levelTaxis, levelPstart, iNO_towerC1_init);
+[iNO, iEL] = MGT_Misc(fileID, iNO, iEL, car_num, CoC_towerC1, Deg_towerC1, tube_innerR, tube_outerR, levelTaxis, levelPstart, Roof_boundary, iNO_towerC1_init);
 
 iNO_towerS2_init = iNO;
 [iNO, iEL] = MGT_tower(fileID, iNO, iEL, car_num, CoC_towerS2, Deg_towerS2, tube_innerR, tube_outerR, levelTaxis, levelPstart(2), CAR, OFFICE, ROOF);
@@ -136,11 +142,11 @@ iNO_stair6_init = iNO;
 [iNO, iEL] = MGT_facade_stair(fileID, iNO, iEL, stairColu_num, CoC_stair6, Deg_stair6, stairL, stairW, levelSaxis, levelPstart(3), iNO_stair6_init, 6);
 
 iNO_stair7_init = iNO;
-[iNO, iEL] = MGT_stair(fileID, iNO, iEL, CoC_stair7, Deg_stair7, levelSaxis, levelPstart(3), stairColu_num, stairL, stairW, stairB, CAR, OFFICE, ROOF);
-[iNO, iEL] = MGT_facade_stair(fileID, iNO, iEL, stairColu_num, CoC_stair7, Deg_stair7, stairL, stairW, levelSaxis, levelPstart(3), iNO_stair7_init, 7);
+[iNO, iEL] = MGT_stair(fileID, iNO, iEL, CoC_side7, Deg_stair7, levelSaxis, levelPstart(3), stairColu_num, stairL, stairW, stairB, CAR, OFFICE, ROOF);
+[iNO, iEL] = MGT_facade_stair(fileID, iNO, iEL, stairColu_num, CoC_side7, Deg_stair7, stairL, stairW, levelSaxis, levelPstart(3), iNO_stair7_init, 7);
 iNO_stair9_init = iNO;
-[iNO, iEL] = MGT_stair(fileID, iNO, iEL, CoC_stair9, Deg_stair9, levelSaxis, levelPstart(3), stairColu_num, stairL, stairW, stairB, CAR, OFFICE, ROOF);
-[iNO, iEL] = MGT_facade_stair(fileID, iNO, iEL, stairColu_num, CoC_stair9, Deg_stair9, stairL, stairW, levelSaxis, levelPstart(3), iNO_stair9_init, 9);
+[iNO, iEL] = MGT_stair(fileID, iNO, iEL, CoC_side9, Deg_stair9, levelSaxis, levelPstart(3), stairColu_num, stairL, stairW, stairB, CAR, OFFICE, ROOF);
+[iNO, iEL] = MGT_facade_stair(fileID, iNO, iEL, stairColu_num, CoC_side9, Deg_stair9, stairL, stairW, levelSaxis, levelPstart(3), iNO_stair9_init, 9);
 
 [iNO, iEL] = MGT_elevator(fileID, iNO, iEL, CoC_elevator4, Deg_elevator4, levelSaxis, levelPstart(3), elevatorColu_num, CAR, OFFICE, ROOF);
 

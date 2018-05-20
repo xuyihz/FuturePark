@@ -4,7 +4,7 @@
 % Xu Yi, 2018
 
 %%
-function [iNO_end, iEL_end] = MGT_Misc(fileID, iNO, iEL, car_num, CoC_tower, Deg_tower, tube_innerR, ~, levelZaxis, levelPstart, ~)    %注意这里的levelPstart是1x2数组
+function [iNO_end, iEL_end] = MGT_Misc(fileID, iNO, iEL, car_num, CoC_tower, Deg_tower, tube_innerR, ~, levelZaxis, levelPstart, Roof_boundary, ~)    %注意这里的levelPstart是1x2数组
 %% NODE 定义商业层和屋面层上坡道投影处的节点
 fprintf(fileID,'*NODE    ; Nodes\n');
 fprintf(fileID,'; iNO, X, Y, Z\n');
@@ -84,12 +84,12 @@ iNO_init2 = iNO;
 fprintf(fileID,'*NODE    ; Nodes\n');
 fprintf(fileID,'; iNO, X, Y, Z\n');
 % 定义屋面边线
-Roof_edge_coor = [30570,4250; 4450,41250; 45000,55500; 78300,62100; 87950,37800; 118150,7250; 115150,4250]; % 外边线定位点，从左下角点起，顺时针定位点
+% Roof_boundary = [30833,4750; 5248,41010; 45186,54754; 77970,61552; 87304,37382; 117443,7243; 114951,4750]; % 外边线定位点，从左下角点起，顺时针定位点
 levelZ = levelZaxis(end);
-for i = 1:length(Roof_edge_coor)
+for i = 1:length(Roof_boundary)
     iNO = iNO+1;
     fprintf(fileID,'   %d, %.4f, %.4f, %.4f\n',...	% 节点编号规则：从0度角开始逆时针；从下到上。
-        iNO,Roof_edge_coor(i,1),Roof_edge_coor(i,2),levelZ);   % 外筒 X & Y
+        iNO,Roof_boundary(i,1),Roof_boundary(i,2),levelZ);   % 外筒 X & Y
 end
 
 iNO_end = iNO;
@@ -135,10 +135,10 @@ fprintf(fileID,'; iEL, TYPE, iMAT, iPRO, iN1, iN2, ANGLE, iSUB, EXVAL, iOPT(EXVA
 fprintf(fileID,'; 屋面环形边梁\n');
 ELE_iPRO = 4;
 iNO = iNO_init2; % 初始化iNO
-for i = 1:length(Roof_edge_coor)
+for i = 1:length(Roof_boundary)
     iEL = iEL+1;
     iN1 = iNO+i;	% 一字长蛇阵
-    if i == length(Roof_edge_coor)
+    if i == length(Roof_boundary)
         iN2 = iNO+1;
     else
         iN2 = iN1+1;    % 
