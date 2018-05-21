@@ -103,12 +103,11 @@ Deg_towerS3 = 0; % degree of side tower 2 右边塔
 Deg_elevator4 = Deg_towerC1;    % 由主塔角度确定
 Deg_stair5 = pi/4 + Deg_towerS2;   % 由S2塔角度确定
 Deg_stair6 = -acot( (CoC_stair6(1)-CoC_towerC1(1))/(CoC_stair6(2)-CoC_towerC1(2)) );	% degree of stair 6 由楼梯6圆心与主塔圆心连线确定
-% Deg_side7 = pi/4 + Deg_towerC1;    % 由主塔角度确定
-Deg_side8 = -pi/6;    % 待定
-Deg_side9 = -pi/2 + Deg_towerS2;   % 由S2塔角度确定
-Deg_side10 = -pi/6;    % 待定
+% Deg_side7 = pi/4 + Deg_towerC1;    % 由主塔角度确定 % Deg_side8 = -pi/6;    % 待定 % Deg_side9 = -pi/2 + Deg_towerS2;   % 由S2塔角度确定 % Deg_side10 = -pi/6;    % 待定
 
-facade_side7_R = [zeros(6,1); 6820; 5839; 5162; 4734; 4529; 4534; 4750; 5189; 5880; 6878; 8473; 11040; 16200];
+facade_side7_R = [zeros(6,1); 7594; 6144; 5151; 4495; 4120; 4000; 4128; 4511; 5176; 6182; 7830; 10527; 16000];
+facade_side8_R = [zeros(6,1); 9769; 8319; 7326; 6669; 6295; 6175; 6302; 6685; 7351; 8357; 10005; 12702; 18175];
+facade_side9_R = facade_side7_R;
 facade_side10_R = [zeros(6,1); 6927; 5477; 4483; 3827; 3452; 3333; 3460; 3843; 4509; 5514; 7163; 9860; 15333];
 
 tube_innerR = 3950;
@@ -149,12 +148,11 @@ iNO_stair6_init = iNO;
 [iNO, iEL] = MGT_side(fileID, iNO, iEL, CoC_side7, facade_side7_R, levelSaxis, levelPstart(3), Roof_boundary, CAR, OFFICE, ROOF, 7);
 [iNO, iEL] = MGT_side(fileID, iNO, iEL, CoC_side10, facade_side10_R, levelSaxis, levelPstart(3), Roof_boundary, CAR, OFFICE, ROOF, 10);
 
-iNO_stair8_init = iNO;
-[iNO, iEL] = MGT_stair(fileID, iNO, iEL, CoC_side8, Deg_side8, levelSaxis, levelPstart(3), stairColu_num, stairL, stairW, stairB, CAR, OFFICE, ROOF);
-[iNO, iEL] = MGT_facade_stair(fileID, iNO, iEL, stairColu_num, CoC_side8, Deg_side8, stairL, stairW, levelSaxis, levelPstart(3), iNO_stair8_init, 8);
-iNO_stair9_init = iNO;
-[iNO, iEL] = MGT_stair(fileID, iNO, iEL, CoC_side9, Deg_side9, levelSaxis, levelPstart(3), stairColu_num, stairL, stairW, stairB, CAR, OFFICE, ROOF);
-[iNO, iEL] = MGT_facade_stair(fileID, iNO, iEL, stairColu_num, CoC_side9, Deg_side9, stairL, stairW, levelSaxis, levelPstart(3), iNO_stair9_init, 9);
+[iNO, iEL] = MGT_side8(fileID, iNO, iEL, CoC_side8, facade_side8_R, levelSaxis, levelPstart(3), Roof_boundary, CAR, OFFICE, ROOF);
+[iNO, iEL] = MGT_side9(fileID, iNO, iEL, CoC_side9, facade_side9_R, levelSaxis, levelPstart(3), Roof_boundary, CAR, OFFICE, ROOF);
+% iNO_stair9_init = iNO;
+% [iNO, iEL] = MGT_stair(fileID, iNO, iEL, CoC_side9, Deg_side9, levelSaxis, levelPstart(3), stairColu_num, stairL, stairW, stairB, CAR, OFFICE, ROOF);
+% [iNO, iEL] = MGT_facade_stair(fileID, iNO, iEL, stairColu_num, CoC_side9, Deg_side9, stairL, stairW, levelSaxis, levelPstart(3), iNO_stair9_init, 9);
 
 %%
 
