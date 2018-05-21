@@ -108,6 +108,9 @@ Deg_side8 = -pi/6;    % 待定
 Deg_side9 = -pi/2 + Deg_towerS2;   % 由S2塔角度确定
 Deg_side10 = -pi/6;    % 待定
 
+facade_side7_R = [zeros(6,1); 6820; 5839; 5162; 4734; 4529; 4534; 4750; 5189; 5880; 6878; 8473; 11040; 16200];
+facade_side10_R = [zeros(6,1); 6927; 5477; 4483; 3827; 3452; 3333; 3460; 3843; 4509; 5514; 7163; 9860; 15333];
+
 tube_innerR = 3950;
 tube_outerR = 8500;
 levelTaxis = [-6200:2450:3600, 5800:2200:12400, 15000:2600:17600, 19800, 22350];  % 塔楼楼层标高 原-2100:2100:23100
@@ -143,10 +146,8 @@ iNO_stair6_init = iNO;
 [iNO, iEL] = MGT_stair(fileID, iNO, iEL, CoC_stair6, Deg_stair6, levelSaxis, levelPstart(3), stairColu_num, stairL, stairW, stairB, CAR, OFFICE, ROOF);
 [iNO, iEL] = MGT_facade_stair(fileID, iNO, iEL, stairColu_num, CoC_stair6, Deg_stair6, stairL, stairW, levelSaxis, levelPstart(3), iNO_stair6_init, 6);
 
-[iNO, iEL] = MGT_side(fileID, iNO, iEL, CoC_side7, levelSaxis, levelPstart(3), Roof_boundary, CAR, OFFICE, ROOF, 7);
-iNO_stair10_init = iNO;
-[iNO, iEL] = MGT_stair(fileID, iNO, iEL, CoC_side10, Deg_side10, levelSaxis, levelPstart(3), stairColu_num, stairL, stairW, stairB, CAR, OFFICE, ROOF);
-[iNO, iEL] = MGT_facade_stair(fileID, iNO, iEL, stairColu_num, CoC_side10, Deg_side10, stairL, stairW, levelSaxis, levelPstart(3), iNO_stair10_init, 10);
+[iNO, iEL] = MGT_side(fileID, iNO, iEL, CoC_side7, facade_side7_R, levelSaxis, levelPstart(3), Roof_boundary, CAR, OFFICE, ROOF, 7);
+[iNO, iEL] = MGT_side(fileID, iNO, iEL, CoC_side10, facade_side10_R, levelSaxis, levelPstart(3), Roof_boundary, CAR, OFFICE, ROOF, 10);
 
 iNO_stair8_init = iNO;
 [iNO, iEL] = MGT_stair(fileID, iNO, iEL, CoC_side8, Deg_side8, levelSaxis, levelPstart(3), stairColu_num, stairL, stairW, stairB, CAR, OFFICE, ROOF);
