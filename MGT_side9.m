@@ -39,15 +39,22 @@ else
     XYcoor_5 = [X_temp(2),Y_temp(2)];
 end
 Deg = coorDeg(CoC_side, XYcoor_2, XYcoor_5);
-Temp_coor_trans = coorTransLoc(CoC_side, XYcoor_2, -Deg/2);
+Temp_coor_trans = coorTransLoc(CoC_side, XYcoor_2, -Deg/3);
 [X_temp, Y_temp, ~] = coorLxC_sym(CoC_side, sideRadius, CoC_side, Temp_coor_trans);
 if X_temp(1) > X_temp(2)
     XYcoor_3 = [X_temp(1),Y_temp(1)];
 else
     XYcoor_3 = [X_temp(2),Y_temp(2)];
 end
+Temp_coor_trans = coorTransLoc(CoC_side, XYcoor_2, -Deg/3*2);
+[X_temp, Y_temp, ~] = coorLxC_sym(CoC_side, sideRadius, CoC_side, Temp_coor_trans);
+if X_temp(1) > X_temp(2)
+    XYcoor_4 = [X_temp(1),Y_temp(1)];
+else
+    XYcoor_4 = [X_temp(2),Y_temp(2)];
+end
 
-XYcoor_i = [XYcoor_1; XYcoor_2; XYcoor_3; XYcoor_5; XYcoor_6]; % 5个点 % 除角点
+XYcoor_i = [XYcoor_1; XYcoor_2; XYcoor_3; XYcoor_4; XYcoor_5; XYcoor_6]; % 5个点 % 除角点
 sideColu_num = length(XYcoor_i);
 
 lengthlevelZaxis = length(levelZaxis(:));
@@ -59,13 +66,19 @@ for i = 1:(levelPstart-1)
 end
 for i = levelPstart:lengthlevelZaxis % levelPstart以下都为0
     for j = 1:sideColu_num
-        if j == sideColu_num
-            k = 2;
+        if j == 1 || j == sideColu_num
+            Core_coor = Corner_coor;
         else
-            k = 1;
+            Core_coor = CoC_side;
         end
-        [X_temp, Y_temp, ~] = coorLxC_sym(CoC_side, facade_side_R(i), Corner_coor(k,:), XYcoor_i(j,:));
-        if X_temp(1) < X_temp(2)
+        [X_temp, Y_temp, ~] = coorLxC_sym(CoC_side, facade_side_R(i), Core_coor, XYcoor_i(j,:));
+        if Y_temp(1) == Y_temp(2)
+            if X_temp(1) > X_temp(2)
+                XYcoor_temp = [X_temp(1),Y_temp(1)];
+            else
+                XYcoor_temp = [X_temp(2),Y_temp(2)];
+            end
+        elseif Y_temp(1) > Y_temp(2)
             XYcoor_temp = [X_temp(1),Y_temp(1)];
         else
             XYcoor_temp = [X_temp(2),Y_temp(2)];
@@ -76,12 +89,13 @@ end
 
 for i = 1:lengthlevelZaxis  % length(A(:)) A向量元素个数
     for k = 1:3 % 角点，内筒，外筒
-        if k == 1
-            for j = 1:2
-                iNO = iNO+1;
-                fprintf(fileID,'   %d, %.4f, %.4f, %.4f\n',...
-                    iNO,Corner_coor(j,1),Corner_coor(j,2),levelZaxis(i));
-            end
+        if k == 1 % 圆心、角点
+            iNO = iNO+1;
+            fprintf(fileID,'   %d, %.4f, %.4f, %.4f\n',...
+                iNO,CoC_side(1),CoC_side(2),levelZaxis(i));
+            iNO = iNO+1;
+            fprintf(fileID,'   %d, %.4f, %.4f, %.4f\n',...
+                iNO,Corner_coor(1),Corner_coor(2),levelZaxis(i));
         elseif k == 2 % 节点编号规则：逆时针。
             for j = 1:sideColu_num % 内部柱子
                 iNO = iNO+1;
@@ -97,7 +111,7 @@ for i = 1:lengthlevelZaxis  % length(A(:)) A向量元素个数
         end
     end
 end
-lengthXYcoor2 = 2 + sideColu_num*2;  % 每层的节点数，其中角点1个点，内部4个点，外部4个点。
+lengthXYcoor2 = 2 + sideColu_num*2;  % 每层的节点数，其中角点1个点，圆心1个点，内部5个点，外部5个点。
 iNO_end = iNO;
 fprintf(fileID,'\n');
 
@@ -153,21 +167,24 @@ fprintf(fileID,'; 角塔放射状主梁\n');
 ELE_iPRO = 3;
 iNO = iNO_init; % 初始化iNO
 for i = 1:lengthlevelZaxis	%
-    iN1 = iNO+1+lengthXYcoor2*(i-1); % 角点 1
-    iN2 = iN1+1;                     % 角点 2
-    fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
-        iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
-        iN1, iN2,...    % 梁单元的两个节点号
-        ELE_ANGLE, ELE_iSUB);
-    for j = 1:sideColu_num
-        iEL = iEL+1;
-        if j == sideColu_num
-            k = 2; h = 0;
+    iN1 = iNO+2+lengthXYcoor2*(i-1); % 角点
+    for j = 1:2
+        if j == 1
+            iN2 = iN1+1;
         else
-            k = 1; h = 1;
+            iN2 = iN1+sideColu_num;
         end
-        iN1 = iNO+k+lengthXYcoor2*(i-1); % 角点
-        iN2 = iN1+j+h;
+        iEL = iEL+1;
+        fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
+            iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
+            iN1, iN2,...    % 梁单元的两个节点号
+            ELE_ANGLE, ELE_iSUB);
+    end
+    
+    iN1 = iNO+1+lengthXYcoor2*(i-1); % 圆心点
+    for j = 1:(1+sideColu_num)
+        iN2 = iN1+j;                     % 角点 2
+        iEL = iEL+1;
         fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
             iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
             iN1, iN2,...    % 梁单元的两个节点号

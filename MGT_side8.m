@@ -141,12 +141,12 @@ iNO = iNO_init; % 初始化iNO
 for i = 1:lengthlevelZaxis	%
     iN1 = iNO+1+lengthXYcoor2*(i-1); % 角点 1
     iN2 = iN1+1;                     % 角点 2
+    iEL = iEL+1;
     fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
         iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
         iN1, iN2,...    % 梁单元的两个节点号
         ELE_ANGLE, ELE_iSUB);
     for j = 1:sideColu_num
-        iEL = iEL+1;
         if j == sideColu_num
             k = 2; h = 0;
         else
@@ -154,6 +154,7 @@ for i = 1:lengthlevelZaxis	%
         end
         iN1 = iNO+k+lengthXYcoor2*(i-1); % 角点
         iN2 = iN1+j+h;
+        iEL = iEL+1;
         fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
             iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
             iN1, iN2,...    % 梁单元的两个节点号

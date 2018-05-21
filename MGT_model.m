@@ -105,16 +105,17 @@ Deg_stair5 = pi/4 + Deg_towerS2;   % 由S2塔角度确定
 Deg_stair6 = -acot( (CoC_stair6(1)-CoC_towerC1(1))/(CoC_stair6(2)-CoC_towerC1(2)) );	% degree of stair 6 由楼梯6圆心与主塔圆心连线确定
 % Deg_side7 = pi/4 + Deg_towerC1;    % 由主塔角度确定 % Deg_side8 = -pi/6;    % 待定 % Deg_side9 = -pi/2 + Deg_towerS2;   % 由S2塔角度确定 % Deg_side10 = -pi/6;    % 待定
 
-facade_side7_R = [zeros(6,1); 7594; 6144; 5151; 4495; 4120; 4000; 4128; 4511; 5176; 6182; 7830; 10527; 16000];
-facade_side8_R = [zeros(6,1); 9769; 8319; 7326; 6669; 6295; 6175; 6302; 6685; 7351; 8357; 10005; 12702; 18175];
+facade_side7_R = [zeros(3,1); 7594; 5151; 4120; 4128; 5176; 7830; 10527; 16000];
+facade_side8_R = [zeros(3,1); 9769; 7326; 6295; 6302; 7351; 10005; 12702; 18175];
 facade_side9_R = facade_side7_R;
-facade_side10_R = [zeros(6,1); 6927; 5477; 4483; 3827; 3452; 3333; 3460; 3843; 4509; 5514; 7163; 9860; 15333];
+facade_side10_R = [zeros(3,1); 6927; 4483; 3452; 3460; 4509; 7163; 9860; 15333];
 
 tube_innerR = 3950;
 tube_outerR = 8500;
 levelTaxis = [-6200:2450:3600, 5800:2200:12400, 15000:2600:17600, 19800, 22350];  % 塔楼楼层标高 原-2100:2100:23100
 levelSaxis = [-6200, -4524, -3016, -1508, 0:1600:17600, 19360, 21120, 22350];  % 楼梯楼层标高
-levelPstart = [5, length(levelTaxis(:))-2, 7]; % 停车的楼层，与楼层数有关。第一个为大筒，第二个为小筒。 第三个为楼梯专用。
+levelSDaxis = [-6200, -3016, 0:3200:17600, 19360, 21120, 22350];  % 角塔楼层标高
+levelPstart = [5, length(levelTaxis(:))-2, 7, 4]; % 停车的楼层，与楼层数有关。第一个为大筒，第二个为小筒。 第三个为楼梯专用。第三个为角塔专用。
 
 stairColu_num = 4;  % 楼梯内筒柱数量
 stairL = 3300; % 楼梯长，即沿踏步前进方向长
@@ -145,14 +146,11 @@ iNO_stair6_init = iNO;
 [iNO, iEL] = MGT_stair(fileID, iNO, iEL, CoC_stair6, Deg_stair6, levelSaxis, levelPstart(3), stairColu_num, stairL, stairW, stairB, CAR, OFFICE, ROOF);
 [iNO, iEL] = MGT_facade_stair(fileID, iNO, iEL, stairColu_num, CoC_stair6, Deg_stair6, stairL, stairW, levelSaxis, levelPstart(3), iNO_stair6_init, 6);
 
-[iNO, iEL] = MGT_side(fileID, iNO, iEL, CoC_side7, facade_side7_R, levelSaxis, levelPstart(3), Roof_boundary, CAR, OFFICE, ROOF, 7);
-[iNO, iEL] = MGT_side(fileID, iNO, iEL, CoC_side10, facade_side10_R, levelSaxis, levelPstart(3), Roof_boundary, CAR, OFFICE, ROOF, 10);
+[iNO, iEL] = MGT_side(fileID, iNO, iEL, CoC_side7, facade_side7_R, levelSDaxis, levelPstart(4), Roof_boundary, CAR, OFFICE, ROOF, 7);
+[iNO, iEL] = MGT_side(fileID, iNO, iEL, CoC_side10, facade_side10_R, levelSDaxis, levelPstart(4), Roof_boundary, CAR, OFFICE, ROOF, 10);
 
-[iNO, iEL] = MGT_side8(fileID, iNO, iEL, CoC_side8, facade_side8_R, levelSaxis, levelPstart(3), Roof_boundary, CAR, OFFICE, ROOF);
-[iNO, iEL] = MGT_side9(fileID, iNO, iEL, CoC_side9, facade_side9_R, levelSaxis, levelPstart(3), Roof_boundary, CAR, OFFICE, ROOF);
-% iNO_stair9_init = iNO;
-% [iNO, iEL] = MGT_stair(fileID, iNO, iEL, CoC_side9, Deg_side9, levelSaxis, levelPstart(3), stairColu_num, stairL, stairW, stairB, CAR, OFFICE, ROOF);
-% [iNO, iEL] = MGT_facade_stair(fileID, iNO, iEL, stairColu_num, CoC_side9, Deg_side9, stairL, stairW, levelSaxis, levelPstart(3), iNO_stair9_init, 9);
+[iNO, iEL] = MGT_side8(fileID, iNO, iEL, CoC_side8, facade_side8_R, levelSDaxis, levelPstart(4), Roof_boundary, CAR, OFFICE, ROOF);
+[iNO, iEL] = MGT_side9(fileID, iNO, iEL, CoC_side9, facade_side9_R, levelSDaxis, levelPstart(4), Roof_boundary, CAR, OFFICE, ROOF);
 
 %%
 
