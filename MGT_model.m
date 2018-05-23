@@ -84,7 +84,7 @@ CoC_towerS3 = [88200,13800];	% side parking tower 2
 
 CoC_elevator4 = [63000,12600];	% 1 elevator
 
-CoC_stair5 = [36977,44429];	% stairs
+CoC_stair5 = [37795,44103];	% stairs
 CoC_stair6 = [79800,33600];	% stairs
 
 CoC_side7 = [76552,58934];	% side type 1
@@ -98,7 +98,7 @@ Edge_side8 = [117443,7243; 114951,4750]; Edge_North = [45186,54754]; Edge_East =
 Roof_boundary = [Edge_side9; Edge_side10; Edge_North; Edge_side7; Edge_East; Edge_side8]; % 外边线定位点，从左下角点起，顺时针定位点
 
 Deg_towerC1 = atan( (CoC_elevator4(1)-CoC_towerC1(1))/(CoC_elevator4(2)-CoC_towerC1(2)) );	% degree of centre tower 由电梯圆心与主塔圆心连线确定
-Deg_towerS2 = -acot( (CoC_stair5(1)-CoC_towerS2(1))/(CoC_stair5(2)-CoC_towerS2(2)) ) + pi/4;	% degree of side tower 1 由中上楼梯圆心与左边塔圆心连线确定
+Deg_towerS2 = Deg_towerC1;	% degree of side tower 1 由主塔角度确定
 Deg_towerS3 = 0; % degree of side tower 2 右边塔
 Deg_elevator4 = Deg_towerC1;    % 由主塔角度确定
 Deg_stair5 = pi/4 + Deg_towerS2;   % 由S2塔角度确定
