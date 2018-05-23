@@ -5,13 +5,10 @@
 % Xu Yi, 24th April 2018, revised
 
 %%
-function [iNO_end, iEL_end] = MGT_elevator(fileID, iNO, iEL, CoC_elevator, Deg_elevator, levelZaxis, levelPstart1, elevatorColu_num, ~, ~, ROOF)
+function [iNO_end, iEL_end] = MGT_elevator(fileID, iNO, iEL, CoC_elevator, Deg_elevator, facade_ele_R, levelZaxis, levelPstart1, elevatorColu_num, ~, ~, ROOF)
 %% NODE
 fprintf(fileID,'*NODE    ; Nodes\n');
 fprintf(fileID,'; iNO, X, Y, Z\n');
-
-% 由于幕墙每层外挑都有变化，故需要循环(或向量化)。与层数有关，与控制点定位有关，先暂定固定的数值(目前共19层(含半平台)，从7层起到19层)，后需参数化。
-facade_ele_R = [zeros(6,1); 7413; 6652; 6138; 5842; 5746; 5846; 6148; 6667; 7434; 8508; 10191; 12867; 18200];
 
 iNO_init = iNO;
 elevatorColu_o_num = elevatorColu_num+2;

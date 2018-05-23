@@ -4,23 +4,10 @@
 % Xu Yi, 2018
 
 %%
-function [iNO_end, iEL_end] = MGT_facade_stair(fileID, iNO, iEL, stairColu_num, CoC_stair, Deg_stair, stairL, stairW, levelZaxis, levelPstart1, iNO_stair_init, tower_num)
+function [iNO_end, iEL_end] = MGT_facade_stair(fileID, iNO, iEL, stairColu_num, CoC_stair, Deg_stair, facade_stair_R, stairL, stairW, levelZaxis, levelPstart1, iNO_stair_init, tower_num)
 %% NODE
 fprintf(fileID,'*NODE    ; Nodes\n');
 fprintf(fileID,'; iNO, X, Y, Z\n');
-
-% 由于幕墙每层外挑都有变化，故需要循环(或向量化)。与层数有关，与控制点定位有关，先暂定固定的数值(目前共19层(含半平台)，从7层起到19层)，后需参数化。
-switch tower_num % 塔标号
-    case {5, 6}
-        facade_stair_R = [zeros(6,1); 6820; 5839; 5162; 4734; 4529; 4534; 4750; 5189; 5880; 6878; 8473; 11040; 16200];
-    case {7, 9}
-        facade_stair_R = [zeros(6,1); 7594; 6144; 5151; 4495; 4120; 4000; 4128; 4511; 5176; 6182; 7830; 10527; 16000];
-    case 8
-        facade_stair_R = [zeros(6,1); 9769; 8319; 7326; 6669; 6295; 6175; 6302; 6685; 7351; 8357; 10005; 12702; 18175];
-    case 10 % 10塔外表皮塔腰处与楼梯相交。10塔是没有楼梯的，暂时先按8塔外表皮。待去掉楼梯后再按10塔外表皮。
-%         facade_stair_R = [zeros(6,1); 6927; 5477; 4483; 3827; 3452; 3333; 3460; 3843; 4509; 5514; 7163; 9860; 15333];
-        facade_stair_R = [zeros(6,1); 9769; 8319; 7326; 6669; 6295; 6175; 6302; 6685; 7351; 8357; 10005; 12702; 18175];
-end
 
 iNO_init = iNO;
 lengthlevelZaxis = length(levelZaxis(:));
