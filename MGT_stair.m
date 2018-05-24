@@ -5,51 +5,89 @@
 % Xu Yi, 24th April 2018, revised
 
 %%
-function [iNO_end, iEL_end] = MGT_stair(fileID, iNO, iEL, CoC_stair, Deg_stair, levelZaxis, levelPstart1, stairColu_num, stairL, stairW, stairB, ~, ~, ROOF)
+function [iNO_end, iEL_end] = MGT_stair(fileID, iNO, iEL, CoC_stair, Deg_stair, facade_stair_R, levelZaxis_f, levelPstart1, stairColu_num, stairL, stairW, ~, ~, ROOF)
 %% NODE
 fprintf(fileID,'*NODE    ; Nodes\n');
 fprintf(fileID,'; iNO, X, Y, Z\n');
 
 iNO_init = iNO;
+lengthlevelZaxis_f = length(levelZaxis_f(:));
 
 XYcoor_i = zeros(stairColu_num,2);   % ÄÚÍ²XoY×ø±êµÚ1(X)¡¢2(Y)ÁĞ¡£
-XYcoor_o = zeros(stairColu_num*2,2); % Íâ±íÆ¤XoY×ø±êµÚ1(X)¡¢2(Y)ÁĞ¡£
+XYcoor_o3 = zeros(lengthlevelZaxis_f,stairColu_num*3,2);	% ÕâÀï*3£¬ÍâÍ²XoY×ø±êµÚ1(X)¡¢2(Y)ÁĞ¡£×¢ÒâÕâÀïÊÇÈıÎ¬Êı×é¡£(Z·½ÏòÄ»Ç½ÓĞ±ä»¯)
 
-stairXY = [stairL/2, stairW/2; -stairL/2, stairW/2; -stairL/2, -stairW/2; stairL/2, -stairW/2]; % Ô­Ê¼×ø±ê£¬Î´Ğı×ª£¬Î´×ªµ½ÕûÌå×ø±êÏµ
+% ÄÚÍ²µã
+stairXYtemp1 = [stairL/2, stairW/2; -stairL/2, stairW/2]; % Ô­Ê¼×ø±ê£¬Î´Ğı×ª£¬Î´×ªµ½ÕûÌå×ø±êÏµ
+stairXYtemp1Deg = coorDeg([0,0], [1,0], stairXYtemp1(1,:)); % ÄÚÍ²µÚÒ»µãÓëXÖáµÄ½Ç¶È
+stairXYtemp2 = zeros(length(stairXYtemp1),2);
+for i = 1:length(stairXYtemp1)
+    stairXYtemp2(i,:) = stairXYtemp1((length(stairXYtemp1)-i+1),:); % ÄæÊ±Õë±àºÅ
+end
+for i = 1:length(stairXYtemp1)
+    stairXYtemp2(i,2) = -stairXYtemp1((length(stairXYtemp1)-i+1),2); % ÑØXÖá¶Ô³Æ
+end
+stairXY_i = [stairXYtemp1; stairXYtemp2];
+
 for i = 1:stairColu_num   % ³¢ÊÔÏòÁ¿»¯
-    [XYcoor_i(i,:)] = coorTrans(stairXY(i,:), Deg_stair); % ÄÚÍ²
+    [XYcoor_i(i,:)] = coorTrans(stairXY_i(i,:), Deg_stair); % ÄÚÍ²
 end
-% ÍâÍ²´ı¶¨stairXY2 Ôİ¶¨´ÓÄÚÍ²ÍâÉìstairB.
-stairXY2 = [stairL/2+stairB, stairW/2; stairL/2, stairW/2+stairB; -stairL/2, stairW/2+stairB; -stairL/2-stairB, stairW/2;...
-    -stairL/2-stairB, -stairW/2; -stairL/2, -stairW/2-stairB; stairL/2, -stairW/2-stairB; stairL/2+stairB, -stairW/2];
-for i = 1:stairColu_num*2   % ³¢ÊÔÏòÁ¿»¯
-    [XYcoor_o(i,:)] = coorTrans(stairXY2(i,:), Deg_stair); % ÍâÍ²
+% Ä»Ç½ÍâÍ²
+for j = levelPstart1:lengthlevelZaxis_f
+    XYcoor_o_x = sqrt(facade_stair_R(j)^2 - (stairW/2)^2);  % Ä»Ç½ÍâÈ¦µãµ±y=¡ÀstairW/2Ê±£¬xµÄ¾ø¶ÔÖµ
+    XYcoor_o_y = sqrt(facade_stair_R(j)^2 - (stairL/2)^2);  % Ä»Ç½ÍâÈ¦µãµ±x=¡ÀstairL/2Ê±£¬yµÄ¾ø¶ÔÖµ
+    
+    stairXYtemp = coorTrans([facade_stair_R(j), 0], -stairXYtemp1Deg); % Ğ±Áº¶Ëµã×ø±ê¡£
+    
+    stairXY_o_temp1 = [XYcoor_o_x, stairW/2; stairXYtemp; stairL/2, XYcoor_o_y];  % 3¸öµãµÄÄ£¿é
+    stairXY_o_temp2 = zeros(length(stairXY_o_temp1),2);
+    for i = 1:length(stairXY_o_temp1)
+        stairXY_o_temp2(i,:) = stairXY_o_temp1((length(stairXY_o_temp1)-i+1),:); % ÄæÊ±Õë±àºÅ
+    end
+    for i = 1:length(stairXY_o_temp1)
+        stairXY_o_temp2(i,1) = -stairXY_o_temp1((length(stairXY_o_temp1)-i+1),1); % ÑØYÖá¶Ô³Æ
+    end
+    stairXY_o_temp12 = [stairXY_o_temp1; stairXY_o_temp2];
+    stairXY_o_temp4 = zeros(length(stairXY_o_temp12),2);
+    for i = 1:length(stairXY_o_temp12)
+        stairXY_o_temp4(i,:) = stairXY_o_temp12((length(stairXY_o_temp12)-i+1),:); % ÄæÊ±Õë±àºÅ
+    end
+    for i = 1:length(stairXY_o_temp12)
+        stairXY_o_temp4(i,2) = -stairXY_o_temp12((length(stairXY_o_temp12)-i+1),2); % ÑØXÖá¶Ô³Æ
+    end
+    stairXY_o = [stairXY_o_temp1; stairXY_o_temp2; stairXY_o_temp4]; % Ä»Ç½ÍâÍ²¸÷µã×ø±ê
+        
+    for i = 1:length(stairXY_o)   % ³¢ÊÔÏòÁ¿»¯
+        [XYcoor_o3(j,i,:)] = coorTrans(stairXY_o(i,:), Deg_stair); % Ä»Ç½ÍâÍ²µã×ø±ê % ÒÑĞı×ªÕûÌå½Ç¶È
+    end
 end
+
 % ¾Ö²¿×ø±êÏµ ×ª»»ÖÁ ÕûÌå×ø±êÏµ
 XYcoor_i(:,1) = XYcoor_i(:,1) + CoC_stair(1);
 XYcoor_i(:,2) = XYcoor_i(:,2) + CoC_stair(2);
-XYcoor_o(:,1) = XYcoor_o(:,1) + CoC_stair(1);
-XYcoor_o(:,2) = XYcoor_o(:,2) + CoC_stair(2);
-lengthlevelZaxis = length(levelZaxis(:));
+XYcoor_o3(:,:,1) = XYcoor_o3(:,:,1) + CoC_stair(1);
+XYcoor_o3(:,:,2) = XYcoor_o3(:,:,2) + CoC_stair(2);
 
-for i = 1:lengthlevelZaxis  % length(A(:)) AÏòÁ¿ÔªËØ¸öÊı
+lengthXYcoor_i = length(XYcoor_i); % ÄÚÍ²Ã¿²ã½ÚµãÊı
+lengthXYcoor_f = length(stairXY_o); % Ä»Ç½Ã¿²ã½ÚµãÊı
+lengthXYcoor_all = lengthXYcoor_i + lengthXYcoor_f;  % Ã¿²ã½ÚµãÊı±¸·İ
+
+for i = 1:lengthlevelZaxis_f  % length(A(:)) AÏòÁ¿ÔªËØ¸öÊı
     for k = 1:2 % ÄÚÍ²£¬ÍâÍ²
         if k == 1 % ½Úµã±àºÅ¹æÔò£º´Ó0¶È½Ç¿ªÊ¼ÄæÊ±Õë£»ÏÈÃ¿²ãÄÚÍ²£¬ÔÙÃ¿²ãÍâÍ²£»´ÓÏÂµ½ÉÏ¡£
-            for j = 1:stairColu_num % ÄÚ²¿4¸öÖù×Ó
+            for j = 1:lengthXYcoor_i % ÄÚ²¿4¸öÖù×Ó
                 iNO = iNO+1;
                 fprintf(fileID,'   %d, %.4f, %.4f, %.4f\n',...
-                    iNO,XYcoor_i(j,1),XYcoor_i(j,2),levelZaxis(i));
+                    iNO,XYcoor_i(j,1),XYcoor_i(j,2),levelZaxis_f(i));
             end
         else
-            for j = 1:stairColu_num*2 % Íâ²¿8¸öÖù×Ó
+            for j = 1:lengthXYcoor_f % Íâ²¿12¸öÖù×Ó
                 iNO = iNO+1;
                 fprintf(fileID,'   %d, %.4f, %.4f, %.4f\n',...
-                    iNO,XYcoor_o(j,1),XYcoor_o(j,2),levelZaxis(i));
+                    iNO,XYcoor_o3(i,j,1),XYcoor_o3(i,j,2),levelZaxis_f(i));
             end
         end
     end
 end
-lengthXYcoor2 = stairColu_num+stairColu_num*2;  % Ã¿²ãµÄ½ÚµãÊı£¬ÆäÖĞÄÚ²¿4¸öµã£¬Íâ²¿8¸öµã¡£
 iNO_end = iNO;
 fprintf(fileID,'\n');
 
@@ -64,11 +102,11 @@ ELE_TYPE = 'BEAM'; ELE_iMAT = 1; ELE_ANGLE = 0; ELE_iSUB = 0;  % iMAT = 1²ÄÁÏ¸Ö½
 fprintf(fileID,'; ÄÚÍ²Öù\n');
 ELE_iPRO = 2;
 iNO = iNO_init; % ³õÊ¼»¯iNO
-for i = 1:(lengthlevelZaxis-1)	% length(A(:)) AÏòÁ¿ÔªËØ¸öÊı
-    for j = 1:stairColu_num	% Ã¿²ãÄÚÍ²µÄ½ÚµãÊı
+for i = 1:(lengthlevelZaxis_f-1)	% length(A(:)) AÏòÁ¿ÔªËØ¸öÊı
+    for j = 1:lengthXYcoor_i	% Ã¿²ãÄÚÍ²µÄ½ÚµãÊı
         iEL = iEL+1;
-        iN1 = iNO+j+lengthXYcoor2*(i-1);
-        iN2 = iN1+lengthXYcoor2;
+        iN1 = iNO+j+lengthXYcoor_all*(i-1);
+        iN2 = iN1+lengthXYcoor_all;
         fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
             iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
             iN1, iN2,...    % Öùµ¥ÔªµÄÁ½¸ö½ÚµãºÅ
@@ -77,14 +115,14 @@ for i = 1:(lengthlevelZaxis-1)	% length(A(:)) AÏòÁ¿ÔªËØ¸öÊı
 end
 
 % ÍâÍ²Öù£»iPRO = 1 ½ØÃæ±àºÅ1¡£
-fprintf(fileID,'; ÍâÍ²Öù\n');
+fprintf(fileID,'; Ä»Ç½Öù\n');
 ELE_iPRO = 1;
 iNO = iNO_init; % ³õÊ¼»¯iNO
-for i = levelPstart1:(lengthlevelZaxis-1)	% length(A(:)) AÏòÁ¿ÔªËØ¸öÊı % levelPstart µÚ¼¸²ã¿ªÊ¼Í£³µ£¬¼´ÏÂ¼¸²ã¿ª³¨
-    for j = 1:stairColu_num*2	% Ã¿²ãÍâÍ²µÄ½ÚµãÊı
+for i = levelPstart1:(lengthlevelZaxis_f-1)	% length(A(:)) AÏòÁ¿ÔªËØ¸öÊı % levelPstart µÚ¼¸²ã¿ªÊ¼Í£³µ£¬¼´ÏÂ¼¸²ã¿ª³¨
+    for j = 1:lengthXYcoor_f	% Ã¿²ãÍâÍ²µÄ½ÚµãÊı
         iEL = iEL+1;
-        iN1 = iNO+(stairColu_num+j)+lengthXYcoor2*(i-1); % ´ËĞĞÓëÄÚÍ²²»Í¬£¬¶àÁË +stairN_num/2
-        iN2 = iN1+lengthXYcoor2;
+        iN1 = iNO+(lengthXYcoor_i+j)+lengthXYcoor_all*(i-1); % ´ËĞĞÓëÄÚÍ²²»Í¬£¬¶àÁË +stairN_num/2
+        iN2 = iN1+lengthXYcoor_all;
         fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
             iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
             iN1, iN2,...    % Öùµ¥ÔªµÄÁ½¸ö½ÚµãºÅ
@@ -101,209 +139,60 @@ fprintf(fileID,'; iEL, TYPE, iMAT, iPRO, iN1, iN2, ANGLE, iSUB, EXVAL, iOPT(EXVA
 ELE_TYPE = 'BEAM'; ELE_iMAT = 1; ELE_ANGLE = 0; ELE_iSUB = 0;  % iMAT = 1²ÄÁÏ¸Ö½á¹¹Q345
 
 % Ö÷Áº£»iPRO = 3 ½ØÃæ±àºÅ3¡£
-fprintf(fileID,'; Â¥Ìİ³¤ÏòÖ÷Áº\n');
+fprintf(fileID,'; Â¥ÌİÖ÷Áº\n');
 ELE_iPRO = 3;
 iNO = iNO_init; % ³õÊ¼»¯iNO
-for i = 1:(lengthlevelZaxis-1)	% ÓÉÓÚÓĞĞ±¶Î£¬¹ÊÕâÀïÒª-1
-    if rem(i,2) ~= 0    % ÆæÊı²ã % ¿ØÖÆµã£¬¼´Á½¸öĞ±¶ÎÆğµã
-        iNcon1 = iNO+1+lengthXYcoor2*(i-1);
-        iNcon2 = iNcon1+3;
-        iNcon3 = iNcon1+lengthXYcoor2+1;
-        iNcon4 = iNcon1+lengthXYcoor2+2;
-        iNcon5 = iNcon3+6;
-        iNcon6 = iNcon5+1;
-    else % Å¼Êı²ã
-        iNcon1 = iNO+2+lengthXYcoor2*(i-1);
-        iNcon2 = iNcon1+1;
-        iNcon3 = iNcon1+lengthXYcoor2-1;
-        iNcon4 = iNcon1+lengthXYcoor2+2;
-        iNcon5 = iNcon3+4;
-        iNcon6 = iNcon5+stairColu_num*2-1;
-    end
-    if i < levelPstart1 % ¿¼ÂÇµ×²ãÎŞÄ»Ç½
-        k_end = 2;
-    else
-        k_end = 4;
-    end
-    for k = 1:k_end % ÁºÓĞÁ½¸ù¸÷Á½¶Î % Ğ±¶Î+Æ½¶Î
-        if k == 1
-            iN1 = iNcon1; iN2 = iNcon3;
-        elseif k == 2
-            iN1 = iNcon2; iN2 = iNcon4;
-        elseif k == 3
-            iN1 = iNcon3; iN2 = iNcon5;
-        elseif k == 4
-            iN1 = iNcon4; iN2 = iNcon6;
+for i = 1:lengthlevelZaxis_f	%
+    for j = 1:lengthXYcoor_i	% Ã¿²ãÄÚÍ²µÄ½ÚµãÊı ÆäÖĞ2~3(½¨ĞİÏ¢Æ½Ì¨Ê±½¨Á¢platform.m)¡¢4~1½Úµã²»Á¬(ĞİÏ¢Æ½Ì¨¾»¸ßÒªÇó)
+        if j == 2 || j == 4
+            % Ìø¹ı 2~3¡¢4~1½Úµã
+        else
+            iEL = iEL+1;
+            iN1 = iNO+j+lengthXYcoor_all*(i-1);
+            iN2 = iN1+1;    %
+            fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
+                iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
+                iN1, iN2,...    % Áºµ¥ÔªµÄÁ½¸ö½ÚµãºÅ
+                ELE_ANGLE, ELE_iSUB);
         end
-        iEL = iEL+1;
-        fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
-            iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
-            iN1, iN2,...    % Áºµ¥ÔªµÄÁ½¸ö½ÚµãºÅ
-            ELE_ANGLE, ELE_iSUB);
-    end
-end
-fprintf(fileID,'; Â¥Ìİ¿íÏòÖ÷Áº\n');
-iNO = iNO_init; % ³õÊ¼»¯iNO
-for i = 1:lengthlevelZaxis	% ´ËĞĞÓëÖùµ¥Ôª²»Í¬£¬Öùµ¥ÔªÎªi-1 % Ã¿²ãÒ»¸ù¹á´©¿íÏòÖ÷Áº
-    if rem(i,2) ~= 0    % ÆæÊı²ã % ¿ØÖÆµã£¬¼´Á½¸öÄÚÍ²ĞüÌôÆğµã
-        iNcon1 = iNO+1+lengthXYcoor2*(i-1);
-        iNcon2 = iNcon1+3;
-    else % Å¼Êı²ã
-        iNcon1 = iNO+2+lengthXYcoor2*(i-1);
-        iNcon2 = iNcon1+1;
-    end
-    if i < levelPstart1 % ¿¼ÂÇµ×²ãÎŞÄ»Ç½
-        k_end = 1;
-    else
-        k_end = 3;
-    end
-    for k = 1:k_end % ÁºÓĞÈı¶Î
-        if k == 1
-            iN1 = iNcon1;
-            iN2 = iNcon2;
-        elseif k == 2
-            iN1 = iNcon1;
-            iN2 = iN1 + 5;
-        elseif k == 3
-            iN1 = iNcon2;
-            iN2 = iN1 + 7;
-        end
-        iEL = iEL+1;
-        fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
-            iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
-            iN1, iN2,...    % Áºµ¥ÔªµÄÁ½¸ö½ÚµãºÅ
-            ELE_ANGLE, ELE_iSUB);
     end
 end
 
-% »·´ÎÁº£»iPRO = 4 ½ØÃæ±àºÅ4¡£
+fprintf(fileID,'; Â¥ÌİĞüÌôÁº\n');
+iNO = iNO_init; % ³õÊ¼»¯iNO
+for i = levelPstart1:lengthlevelZaxis_f % Â¥Ìİ¶¼ÊÇ´ÓÍâÍ²Éì³ö
+    for j = 1:lengthXYcoor_i % Ã¿²ãÄÚÍ²µÄ½ÚµãÊı
+        for k = 1:(lengthXYcoor_f/lengthXYcoor_i) % Ã¿²ãÄÚÍ²¶ÔÓ¦µÄÍâÍ²½ÚµãÊı
+            iEL = iEL+1;
+            iN1 = iNO+j+lengthXYcoor_all*(i-1); % ´ËĞĞÎª¶¨Î»ÁºÔÚËşÂ¥µÄ½Úµã(ÄÚÍ²)
+            iN2 = iNO+lengthXYcoor_i+(lengthXYcoor_f/lengthXYcoor_i)*(j-1)+k+lengthXYcoor_all*(i-1);    % ¹éµ½Ä»Ç½ÍâÍ²µÚ0µãºó£¬ÔÙ¶¨Î»µ½¾ßÌåµã
+            fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
+                iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
+                iN1, iN2,...    % Áºµ¥ÔªµÄÁ½¸ö½ÚµãºÅ
+                ELE_ANGLE, ELE_iSUB);
+        end
+    end
+end
+
+% »·ĞÎ´ÎÁº£»iPRO = 4 ½ØÃæ±àºÅ4¡£
 fprintf(fileID,'; »·ĞÎ´ÎÁº\n');
 ELE_iPRO = 4;
 iNO = iNO_init; % ³õÊ¼»¯iNO
-% Íâ»·Áº % ²Î¿¼Â¥Ìİ³¤ÏòÖ÷Áº
-fprintf(fileID,';   Íâ»·Áº\n');
-for i = levelPstart1:(lengthlevelZaxis-1)	% ÓÉÓÚÓĞĞ±¶Î£¬¹ÊÕâÀïÒª-1
-    if rem(i,2) ~= 0    % ÆæÊı²ã % ¿ØÖÆµã£¬¼´Á½¸öĞ±¶ÎÆğµã
-        iNcon1 = iNO+6+lengthXYcoor2*(i-1);
-        iNcon2 = iNcon1+5;
-        iNcon3 = iNcon1+lengthXYcoor2+1;
-        iNcon4 = iNcon2+lengthXYcoor2-1;
-        iNcon5 = iNcon3+1;
-        iNcon6 = iNcon4-1;
-    else % Å¼Êı²ã
-        iNcon1 = iNO+7+lengthXYcoor2*(i-1);
-        iNcon2 = iNcon1+3;
-        iNcon3 = iNcon1+lengthXYcoor2-1;
-        iNcon4 = iNcon2+lengthXYcoor2+1;
-        iNcon5 = iNcon3-1;
-        iNcon6 = iNcon4+1;
-    end
-    for k = 1:5 % ÁºÓĞ³¤ÏòÁ½¸ù¸÷Á½¶Î£¬¿íÏòÒ»¸ùÒ»¶Î % Ğ±¶Î+Æ½¶Î
-        if k == 1
-            iN1 = iNcon1; iN2 = iNcon3;
-        elseif k == 2
-            iN1 = iNcon2; iN2 = iNcon4;
-        elseif k == 3
-            iN1 = iNcon3; iN2 = iNcon5;
-        elseif k == 4
-            iN1 = iNcon4; iN2 = iNcon6;
-        elseif k == 5
-            iN1 = iNcon5; iN2 = iNcon6;
-        end
+% Íâ»·Áº
+fprintf(fileID,';   Ä»Ç½Íâ»·Áº\n');
+for i = levelPstart1:lengthlevelZaxis_f	% ´ËĞĞÓëÖùµ¥Ôª²»Í¬£¬Öùµ¥ÔªÎªi-1;
+    for j = 1:lengthXYcoor_f	% Ã¿²ãÍâÍ²µÄ½ÚµãÊı
         iEL = iEL+1;
+        iN1 = iNO+lengthXYcoor_i+j+lengthXYcoor_all*(i-1); % 
+        if j ~= lengthXYcoor_f
+            iN2 = iN1+1;
+        else % j = lengthXYcoor_f Ê±£¬ Á¬½ÓµÄÊÇ±¾»·µÄµÚÒ»¸öµã£¬¶ø²»ÊÇÉÏ²ãÄÚ»·µÄµÚÒ»¸öµã¡£
+            iN2 = iN1+1-lengthXYcoor_f;
+        end
         fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
             iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
             iN1, iN2,...    % Áºµ¥ÔªµÄÁ½¸ö½ÚµãºÅ
             ELE_ANGLE, ELE_iSUB);
-    end
-end
-fprintf(fileID,'\n');
-
-%% ELEMENT(planner) floor
-fprintf(fileID,'*ELEMENT    ; Elements\n');
-fprintf(fileID,'; iEL, TYPE, iMAT, iPRO, iN1, iN2, ANGLE, iSUB, EXVAL, iOPT(EXVAL2) ; Frame  Element\n; iEL, TYPE, iMAT, iPRO, iN1, iN2, ANGLE, iSUB, EXVAL, EXVAL2, bLMT ; Comp/Tens Truss\n; iEL, TYPE, iMAT, iPRO, iN1, iN2, iN3, iN4, iSUB, iWID , LCAXIS    ; Planar Element\n; iEL, TYPE, iMAT, iPRO, iN1, iN2, iN3, iN4, iN5, iN6, iN7, iN8     ; Solid  Element\n');
-
-% iEL_init_floor = iEL;
-ELE_TYPE = 'PLATE'; ELE_iMAT = 2; ELE_iSUB = 2; ELE_iWID = 0; % iMAT = 2²ÄÁÏ»ìÄıÍÁC30 % iSUB = 2 ±¡°å
-
-% °åºñ1£»iPRO = 2 ½ØÃæ±àºÅ2¡£
-fprintf(fileID,'; 1ºñ°åÂ¥Ìİ°å\n');
-ELE_iPRO = 2;
-iNO = iNO_init; % ³õÊ¼»¯iNO
-for i = 1:(lengthlevelZaxis-1) % ÓÉÓÚÓĞĞ±¶Î£¬¹ÊÕâÀïÒª-1
-    if rem(i,2) ~= 0    % ÆæÊı²ã % ¿ØÖÆµã£¬¼´Á½¸öĞ±¶ÎÆğµã
-        iNcon1 = iNO+1+lengthXYcoor2*(i-1);
-        iNcon2 = iNcon1+3;
-        iNcon3 = iNcon1+lengthXYcoor2+1;
-        iNcon4 = iNcon1+lengthXYcoor2+2;
-        iNcon5 = iNcon3+6;
-        iNcon6 = iNcon5+1;
-    else % Å¼Êı²ã
-        iNcon1 = iNO+2+lengthXYcoor2*(i-1);
-        iNcon2 = iNcon1+1;
-        iNcon3 = iNcon1+lengthXYcoor2-1;
-        iNcon4 = iNcon1+lengthXYcoor2+2;
-        iNcon5 = iNcon3+4;
-        iNcon6 = iNcon5+stairColu_num*2-1;
-    end
-    if i < levelPstart1 % ¿¼ÂÇµ×²ãÎŞÄ»Ç½
-        k_end = 1;
-    else
-        k_end = 2;
-    end
-    for k = 1:k_end % Á½¿é°å % Ğ±¶Î+Æ½¶Î
-        if k == 1
-            iN1 = iNcon1; iN2 = iNcon3; iN3 = iNcon4; iN4 = iNcon2;
-        elseif k == 2
-            iN1 = iNcon3; iN2 = iNcon5; iN3 = iNcon6; iN4 = iNcon4;
-        end
-        iEL = iEL+1;
-        fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d, %d, %d\n',...
-            iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
-            iN1, iN2, iN3, iN4,...    % °åµ¥ÔªµÄËÄ¸ö½ÚµãºÅ
-            ELE_iSUB, ELE_iWID);
-    end
-end
-fprintf(fileID,'\n');
-
-%% FLOORLOAD
-fprintf(fileID,'*FLOORLOAD    ; Floor Loads\n');
-fprintf(fileID,'; LTNAME, iDIST, ANGLE, iSBEAM, SBANG, SBUW, DIR, bPROJ, DESC, bEX, bAL, GROUP, NODE1, ..., NODEn  ; iDIST=1,2\n; LTNAME, iDIST, DIR, bPROJ, DESC, GROUP, NODE1, ..., NODEn                                        ; iDIST=3,4\n; [iDIST] 1=One Way, 2=Two Way, 3=Polygon-Centroid, 4=Polygon-Length\n');
-
-LTNAME = ROOF; iDIST = 2; ANGLE = 0; iSBEAM = 0; SBANG = 0; SBUW = 0; % Â¥ÌİºÉÔØ Ä¿Ç°²ÉÓÃÁËÎİÃæºÉÔØ4/3.5£¬°åºñ0.ÒòÃ¿2.1Ò»¿é°å£¬¹Ê¿ÉÄÜºÍ4.2Ò»²ã7/3.5²î²»¶à¡£(´ı¸´ºË)
-DIR = 'GZ'; bPROJ = 'NO'; DESC = ''; bEX = 'NO'; bAL = 'NO'; GROUP = '';
-
-iNO = iNO_init; % ³õÊ¼»¯iNO
-for i = 1:(lengthlevelZaxis-1) % ÓÉÓÚÓĞĞ±¶Î£¬¹ÊÕâÀïÒª-1
-    if rem(i,2) ~= 0    % ÆæÊı²ã % ¿ØÖÆµã£¬¼´Á½¸öĞ±¶ÎÆğµã
-        iNcon1 = iNO+1+lengthXYcoor2*(i-1);
-        iNcon2 = iNcon1+3;
-        iNcon3 = iNcon1+lengthXYcoor2+1;
-        iNcon4 = iNcon1+lengthXYcoor2+2;
-        iNcon5 = iNcon3+6;
-        iNcon6 = iNcon5+1;
-    else % Å¼Êı²ã
-        iNcon1 = iNO+2+lengthXYcoor2*(i-1);
-        iNcon2 = iNcon1+1;
-        iNcon3 = iNcon1+lengthXYcoor2-1;
-        iNcon4 = iNcon1+lengthXYcoor2+2;
-        iNcon5 = iNcon3+4;
-        iNcon6 = iNcon5+stairColu_num*2-1;
-    end
-    if i < levelPstart1 % ¿¼ÂÇµ×²ãÎŞÄ»Ç½
-        k_end = 1;
-    else
-        k_end = 2;
-    end
-    for k = 1:k_end % Á½¿é°å % Ğ±¶Î+Æ½¶Î
-        if k == 1
-            iN1 = iNcon1; iN2 = iNcon3; iN3 = iNcon4; iN4 = iNcon2;
-        elseif k == 2
-            iN1 = iNcon3; iN2 = iNcon5; iN3 = iNcon6; iN4 = iNcon4;
-        end
-        fprintf(fileID,'   %s, %d, %d, %d, %d, %d, %s, %s, %s, %s, %s, %s, %d, %d, %d, %d\n',...
-            LTNAME, iDIST, ANGLE, iSBEAM, SBANG, SBUW, DIR, bPROJ, DESC, bEX, bAL, GROUP,...
-            iN1, iN2, iN3, iN4);
     end
 end
 fprintf(fileID,'\n');
@@ -316,7 +205,7 @@ fprintf(fileID,'*CONSTRAINT    ; Supports\n');
 fprintf(fileID,'; NODE_LIST, CONST(Dx,Dy,Dz,Rx,Ry,Rz), GROUP\n');
 
 iNO = iNO_init; % ³õÊ¼»¯iNO
-NODE_LIST = sprintf('%dto%d', iNO+1, iNO+stairColu_num);
+NODE_LIST = sprintf('%dto%d', iNO+1, iNO+lengthXYcoor_i);
 CONSTRAINT = 111111; % 6¸ö×ÔÓÉ¶ÈÈ«Ô¼Êø
 fprintf(fileID,'   %s, %d, \n',...
     NODE_LIST, CONSTRAINT);
