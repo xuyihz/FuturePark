@@ -102,7 +102,7 @@ Deg_towerS2 = Deg_towerC1;	% degree of side tower 1 由主塔角度确定
 Deg_towerS3 = 0; % degree of side tower 2 右边塔
 Deg_elevator4 = Deg_towerC1;    % 由主塔角度确定
 Deg_stair5 = pi/4 + Deg_towerS2;   % 由S2塔角度确定
-Deg_stair6 = -acot( (CoC_stair6(1)-CoC_towerC1(1))/(CoC_stair6(2)-CoC_towerC1(2)) );	% degree of stair 6 由楼梯6圆心与主塔圆心连线确定
+Deg_stair6 = -acot( (CoC_stair6(1)-CoC_towerC1(1))/(CoC_stair6(2)-CoC_towerC1(2)) )+pi;	% degree of stair 6 由楼梯6圆心与主塔圆心连线确定
 % Deg_side7 = pi/4 + Deg_towerC1;    % 由主塔角度确定 % Deg_side8 = -pi/6;    % 待定 % Deg_side9 = -pi/2 + Deg_towerS2;   % 由S2塔角度确定 % Deg_side10 = -pi/6;    % 待定
 
 facade_tower2_R = [zeros(4,1); 8908; 7770; 7128; 6906; 7084; 7843; 9338; 11562; 16412];
@@ -145,12 +145,10 @@ iNO_towerS3_init = iNO;
 
 [iNO, iEL] = MGT_elevator(fileID, iNO, iEL, CoC_elevator4, Deg_elevator4, facade_ele4_R, levelSaxis, levelPstart(3), elevatorColu_num, CAR, OFFICE, ROOF);
 
-iNO_stair5_init = iNO;
 [iNO, iEL] = MGT_stair(fileID, iNO, iEL, CoC_stair5, Deg_stair5, facade_stair5_R, levelSaxis_f, levelPstart(4), stairColu_num, stairL, stairW, CAR, OFFICE, ROOF);
-% [iNO, iEL] = MGT_facade_stair(fileID, iNO, iEL, stairColu_num, CoC_stair5, Deg_stair5, facade_stair5_R, stairL, stairW, levelSaxis, levelPstart(3), iNO_stair5_init, 5);
-iNO_stair6_init = iNO;
+[iNO, iEL] = MGT_stair_platform(fileID, iNO, iEL, CoC_stair5, Deg_stair5, levelSaxis, stairColu_num, stairL, stairW, stairB, CAR, OFFICE, ROOF);
 [iNO, iEL] = MGT_stair(fileID, iNO, iEL, CoC_stair6, Deg_stair6, facade_stair6_R, levelSaxis_f, levelPstart(4), stairColu_num, stairL, stairW, CAR, OFFICE, ROOF);
-% [iNO, iEL] = MGT_facade_stair(fileID, iNO, iEL, stairColu_num, CoC_stair6, Deg_stair6, facade_stair6_R, stairL, stairW, levelSaxis, levelPstart(3), iNO_stair6_init, 6);
+[iNO, iEL] = MGT_stair_platform(fileID, iNO, iEL, CoC_stair6, Deg_stair6, levelSaxis, stairColu_num, stairL, stairW, stairB, CAR, OFFICE, ROOF);
 
 [iNO, iEL] = MGT_side(fileID, iNO, iEL, CoC_side7, facade_side7_R, levelSDaxis, levelPstart(5), Roof_boundary, CAR, OFFICE, ROOF, 7);
 [iNO, iEL] = MGT_side(fileID, iNO, iEL, CoC_side10, facade_side10_R, levelSDaxis, levelPstart(5), Roof_boundary, CAR, OFFICE, ROOF, 10);
