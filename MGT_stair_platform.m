@@ -126,6 +126,30 @@ for i = 1:lengthlevelZaxis	%
     end
 end
 
+fprintf(fileID,'; 平台斜梁\n');
+iNO = iNO_init; % 初始化iNO
+iN_i = zeros(1,lengthXYcoor_i);
+iN_table = [1,1; 4,-1; 2,-1; 3,1]; % 表驱动
+for i = 1:(lengthlevelZaxis-1)	% 斜梁，故-1.(逻辑同柱)
+    for k = 1:lengthXYcoor_i % 内筒4个点
+        iN_i(k) = iNO+k+lengthXYcoor_all*(i-1); % 内筒点1/2/3/4
+    end
+    for j = 1:2 % 两根斜梁
+    if rem(i,2) ~= 0 % i是奇数层
+        iN1 = iN_i( iN_table(j,1) ); % 内筒点1/4
+        iN2 = iN1 + iN_table(j,2) + lengthXYcoor_all;    % 上层内筒点2/3
+    else % i是偶数层
+        iN1 = iN_i( iN_table(j+2,1) ); % 内筒点2/3
+        iN2 = iN1 + iN_table(j+2,2) + lengthXYcoor_all;    % 上层内筒点1/4
+    end
+        iEL = iEL+1;
+        fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
+            iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
+            iN1, iN2,...    % 梁单元的两个节点号
+            ELE_ANGLE, ELE_iSUB);
+    end
+end
+
 % 环形次梁；iPRO = 4 截面编号4。
 fprintf(fileID,'; 平台封边梁\n');
 ELE_iPRO = 4;
@@ -156,40 +180,46 @@ ELE_TYPE = 'PLATE'; ELE_iMAT = 2; ELE_iSUB = 2; ELE_iWID = 0; % iMAT = 2材料混凝
 % 板厚1；iPRO = 2 截面编号2。
 fprintf(fileID,'; 1厚板楼梯板\n');
 ELE_iPRO = 2;
+fprintf(fileID,'; 1厚板楼梯斜板\n');
 iNO = iNO_init; % 初始化iNO
 for i = 1:(lengthlevelZaxis-1) % 由于有斜段，故这里要-1
-    if rem(i,2) ~= 0    % 奇数层 % 控制点，即两个斜段起点
-        iNcon1 = iNO+1+lengthXYcoor_all*(i-1);
-        iNcon2 = iNcon1+3;
-        iNcon3 = iNcon1+lengthXYcoor_all+1;
-        iNcon4 = iNcon1+lengthXYcoor_all+2;
-        iNcon5 = iNcon3+6;
-        iNcon6 = iNcon5+1;
-    else % 偶数层
-        iNcon1 = iNO+2+lengthXYcoor_all*(i-1);
-        iNcon2 = iNcon1+1;
-        iNcon3 = iNcon1+lengthXYcoor_all-1;
-        iNcon4 = iNcon1+lengthXYcoor_all+2;
-        iNcon5 = iNcon3+4;
-        iNcon6 = iNcon5+stairColu_num*2-1;
+    if rem(i,2) ~= 0    % 奇数层 1/2+/3+/4
+        iN1 = iNO +1 + lengthXYcoor_all*(i-1); % 本层1
+        iN2 = iN1 +1 + lengthXYcoor_all; % 上层2
+        iN3 = iN2 +1; % 上层3
+        iN4 = iN1 +3; % 本层4
+    else % 偶数层 1+/2/3/4+
+        iN1 = iNO +1 + lengthXYcoor_all*i; % 上层1
+        iN2 = iNO +2 + lengthXYcoor_all*(i-1); % 本层2
+        iN3 = iN2 +1; % 本层3
+        iN4 = iN1 +3; % 上层4
     end
-    if i < levelPstart1 % 考虑底层无幕墙
-        k_end = 1;
-    else
-        k_end = 2;
+    iEL = iEL+1;
+    fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d, %d, %d\n',...
+        iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
+        iN1, iN2, iN3, iN4,...    % 板单元的四个节点号
+        ELE_iSUB, ELE_iWID);
+end
+
+fprintf(fileID,'; 1厚板楼梯平台板\n');
+iNO = iNO_init; % 初始化iNO
+for i = 1:lengthlevelZaxis % 平台不需要-1
+    if rem(i,2) ~= 0    % 奇数层 1/4/4'/1'
+        iN1 = iNO +1 + lengthXYcoor_all*(i-1); % 内筒1
+        iN2 = iN1 +3; % 内筒4
+        iN3 = iN2 + lengthXYcoor_i; % 平台4
+        iN4 = iN1 + lengthXYcoor_i; % 平台1
+    else % 偶数层 2/2'/3'/3
+        iN1 = iNO +2 + lengthXYcoor_all*(i-1); % 内筒2
+        iN2 = iN1 + lengthXYcoor_i; % 平台2
+        iN3 = iN2 +1; % 平台3
+        iN4 = iN1 +1; % 内筒3
     end
-    for k = 1:k_end % 两块板 % 斜段+平段
-        if k == 1
-            iN1 = iNcon1; iN2 = iNcon3; iN3 = iNcon4; iN4 = iNcon2;
-        elseif k == 2
-            iN1 = iNcon3; iN2 = iNcon5; iN3 = iNcon6; iN4 = iNcon4;
-        end
-        iEL = iEL+1;
-        fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d, %d, %d\n',...
-            iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
-            iN1, iN2, iN3, iN4,...    % 板单元的四个节点号
-            ELE_iSUB, ELE_iWID);
-    end
+    iEL = iEL+1;
+    fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d, %d, %d\n',...
+        iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
+        iN1, iN2, iN3, iN4,...    % 板单元的四个节点号
+        ELE_iSUB, ELE_iWID);
 end
 fprintf(fileID,'\n');
 
@@ -200,38 +230,42 @@ fprintf(fileID,'; LTNAME, iDIST, ANGLE, iSBEAM, SBANG, SBUW, DIR, bPROJ, DESC, b
 LTNAME = ROOF; iDIST = 2; ANGLE = 0; iSBEAM = 0; SBANG = 0; SBUW = 0; % 楼梯荷载 目前采用了屋面荷载4/3.5，板厚0.因每2.1一块板，故可能和4.2一层7/3.5差不多。(待复核)
 DIR = 'GZ'; bPROJ = 'NO'; DESC = ''; bEX = 'NO'; bAL = 'NO'; GROUP = '';
 
+fprintf(fileID,'; 1厚板楼梯斜板荷载\n');
 iNO = iNO_init; % 初始化iNO
 for i = 1:(lengthlevelZaxis-1) % 由于有斜段，故这里要-1
-    if rem(i,2) ~= 0    % 奇数层 % 控制点，即两个斜段起点
-        iNcon1 = iNO+1+lengthXYcoor_all*(i-1);
-        iNcon2 = iNcon1+3;
-        iNcon3 = iNcon1+lengthXYcoor_all+1;
-        iNcon4 = iNcon1+lengthXYcoor_all+2;
-        iNcon5 = iNcon3+6;
-        iNcon6 = iNcon5+1;
-    else % 偶数层
-        iNcon1 = iNO+2+lengthXYcoor_all*(i-1);
-        iNcon2 = iNcon1+1;
-        iNcon3 = iNcon1+lengthXYcoor_all-1;
-        iNcon4 = iNcon1+lengthXYcoor_all+2;
-        iNcon5 = iNcon3+4;
-        iNcon6 = iNcon5+stairColu_num*2-1;
+    if rem(i,2) ~= 0    % 奇数层 1/2+/3+/4
+        iN1 = iNO +1 + lengthXYcoor_all*(i-1); % 本层1
+        iN2 = iN1 +1 + lengthXYcoor_all; % 上层2
+        iN3 = iN2 +1; % 上层3
+        iN4 = iN1 +3; % 本层4
+    else % 偶数层 1+/2/3/4+
+        iN1 = iNO +1 + lengthXYcoor_all*i; % 上层1
+        iN2 = iNO +2 + lengthXYcoor_all*(i-1); % 本层2
+        iN3 = iN2 +1; % 本层3
+        iN4 = iN1 +3; % 上层4
     end
-    if i < levelPstart1 % 考虑底层无幕墙
-        k_end = 1;
-    else
-        k_end = 2;
-    end
-    for k = 1:k_end % 两块板 % 斜段+平段
-        if k == 1
-            iN1 = iNcon1; iN2 = iNcon3; iN3 = iNcon4; iN4 = iNcon2;
-        elseif k == 2
-            iN1 = iNcon3; iN2 = iNcon5; iN3 = iNcon6; iN4 = iNcon4;
-        end
-        fprintf(fileID,'   %s, %d, %d, %d, %d, %d, %s, %s, %s, %s, %s, %s, %d, %d, %d, %d\n',...
+    fprintf(fileID,'   %s, %d, %d, %d, %d, %d, %s, %s, %s, %s, %s, %s, %d, %d, %d, %d\n',...
             LTNAME, iDIST, ANGLE, iSBEAM, SBANG, SBUW, DIR, bPROJ, DESC, bEX, bAL, GROUP,...
             iN1, iN2, iN3, iN4);
+end
+
+fprintf(fileID,'; 1厚板楼梯平台板荷载\n');
+iNO = iNO_init; % 初始化iNO
+for i = 1:lengthlevelZaxis % 平台不需要-1
+    if rem(i,2) ~= 0    % 奇数层 1/4/4'/1'
+        iN1 = iNO +1 + lengthXYcoor_all*(i-1); % 内筒1
+        iN2 = iN1 +3; % 内筒4
+        iN3 = iN2 + lengthXYcoor_i; % 平台4
+        iN4 = iN1 + lengthXYcoor_i; % 平台1
+    else % 偶数层 2/2'/3'/3
+        iN1 = iNO +2 + lengthXYcoor_all*(i-1); % 内筒2
+        iN2 = iN1 + lengthXYcoor_i; % 平台2
+        iN3 = iN2 +1; % 平台3
+        iN4 = iN1 +1; % 内筒3
     end
+    fprintf(fileID,'   %s, %d, %d, %d, %d, %d, %s, %s, %s, %s, %s, %s, %d, %d, %d, %d\n',...
+            LTNAME, iDIST, ANGLE, iSBEAM, SBANG, SBUW, DIR, bPROJ, DESC, bEX, bAL, GROUP,...
+            iN1, iN2, iN3, iN4);
 end
 fprintf(fileID,'\n');
 
