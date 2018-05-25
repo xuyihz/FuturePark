@@ -56,20 +56,15 @@ lengthXYcoor_pf = length(XYcoor_pf); % 平台每层节点数
 lengthXYcoor_all = lengthXYcoor_i + lengthXYcoor_pf;  % 每层节点数备份
 
 for i = 1:lengthlevelZaxis  % length(A(:)) A向量元素个数
-    for k = 1:2 % 内筒，平台
-        if k == 1 % 节点编号规则：从0度角开始逆时针；先每层内筒，再每层外筒；从下到上。
-            for j = 1:lengthXYcoor_i % 内部4个点
-                iNO = iNO+1;
-                fprintf(fileID,'   %d, %.4f, %.4f, %.4f\n',...
-                    iNO,XYcoor_i(j,1),XYcoor_i(j,2),levelZaxis(i));
-            end
-        else
-            for j = 1:lengthXYcoor_pf % 外部4个点
-                iNO = iNO+1;
-                fprintf(fileID,'   %d, %.4f, %.4f, %.4f\n',...
-                    iNO,XYcoor_pf(j,1),XYcoor_pf(j,2),levelZaxis(i));
-            end
-        end
+    for j = 1:lengthXYcoor_i % 内部4个点
+        iNO = iNO+1;
+        fprintf(fileID,'   %d, %.4f, %.4f, %.4f\n',...
+            iNO,XYcoor_i(j,1),XYcoor_i(j,2),levelZaxis(i));
+    end
+    for j = 1:lengthXYcoor_pf % 外部4个点
+        iNO = iNO+1;
+        fprintf(fileID,'   %d, %.4f, %.4f, %.4f\n',...
+            iNO,XYcoor_pf(j,1),XYcoor_pf(j,2),levelZaxis(i));
     end
 end
 iNO_end = iNO;
@@ -126,10 +121,10 @@ for i = 1:lengthlevelZaxis	%
     end
 end
 
-fprintf(fileID,'; 平台斜梁\n');
+fprintf(fileID,'; 楼梯斜梁\n');
 iNO = iNO_init; % 初始化iNO
 iN_i = zeros(1,lengthXYcoor_i);
-iN_table = [1,1; 4,-1; 2,-1; 3,1]; % 表驱动
+iN_table = [1,2; 4,3; 2,1; 3,4]; % 表驱动
 for i = 1:(lengthlevelZaxis-1)	% 斜梁，故-1.(逻辑同柱)
     for k = 1:lengthXYcoor_i % 内筒4个点
         iN_i(k) = iNO+k+lengthXYcoor_all*(i-1); % 内筒点1/2/3/4
@@ -137,10 +132,10 @@ for i = 1:(lengthlevelZaxis-1)	% 斜梁，故-1.(逻辑同柱)
     for j = 1:2 % 两根斜梁
     if rem(i,2) ~= 0 % i是奇数层
         iN1 = iN_i( iN_table(j,1) ); % 内筒点1/4
-        iN2 = iN1 + iN_table(j,2) + lengthXYcoor_all;    % 上层内筒点2/3
+        iN2 = iN_i( iN_table(j,2) ) + lengthXYcoor_all;    % 上层内筒点2/3
     else % i是偶数层
         iN1 = iN_i( iN_table(j+2,1) ); % 内筒点2/3
-        iN2 = iN1 + iN_table(j+2,2) + lengthXYcoor_all;    % 上层内筒点1/4
+        iN2 = iN_i( iN_table(j+2,2) ) + lengthXYcoor_all;    % 上层内筒点1/4
     end
         iEL = iEL+1;
         fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
@@ -271,4 +266,5 @@ fprintf(fileID,'\n');
 
 %%
 iEL_end = iEL;
+
 end

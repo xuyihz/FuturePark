@@ -72,20 +72,16 @@ lengthXYcoor_f = length(stairXY_o); % 幕墙每层节点数
 lengthXYcoor_all = lengthXYcoor_i + lengthXYcoor_f;  % 每层节点数备份
 
 for i = 1:lengthlevelZaxis_f  % length(A(:)) A向量元素个数
-    for k = 1:2 % 内筒，外筒
-        if k == 1 % 节点编号规则：从0度角开始逆时针；先每层内筒，再每层外筒；从下到上。
-            for j = 1:lengthXYcoor_i % 内部4个柱子
-                iNO = iNO+1;
-                fprintf(fileID,'   %d, %.4f, %.4f, %.4f\n',...
-                    iNO,XYcoor_i(j,1),XYcoor_i(j,2),levelZaxis_f(i));
-            end
-        else
-            for j = 1:lengthXYcoor_f % 外部12个柱子
-                iNO = iNO+1;
-                fprintf(fileID,'   %d, %.4f, %.4f, %.4f\n',...
-                    iNO,XYcoor_o3(i,j,1),XYcoor_o3(i,j,2),levelZaxis_f(i));
-            end
-        end
+    % 内筒，外筒 % 节点编号规则：从0度角开始逆时针；先每层内筒，再每层外筒；从下到上。
+    for j = 1:lengthXYcoor_i % 内部4个柱子
+        iNO = iNO+1;
+        fprintf(fileID,'   %d, %.4f, %.4f, %.4f\n',...
+            iNO,XYcoor_i(j,1),XYcoor_i(j,2),levelZaxis_f(i));
+    end
+    for j = 1:lengthXYcoor_f % 外部12个柱子
+        iNO = iNO+1;
+        fprintf(fileID,'   %d, %.4f, %.4f, %.4f\n',...
+            iNO,XYcoor_o3(i,j,1),XYcoor_o3(i,j,2),levelZaxis_f(i));
     end
 end
 iNO_end = iNO;
