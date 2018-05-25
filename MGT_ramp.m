@@ -62,7 +62,7 @@ XYcoor_ramp_o(:,:,2) = XYcoor_ramp_o(:,:,2) + CoC_tower(2);
 [~,lengthXYcoor_ramp,~] = size(XYcoor_ramp_i);  % 坡道每层节点数
 % 坡道悬挑梁Z向标高的确定，暂定一圈坡道6000高 % 暂定通向屋顶的坡道转5/4pi，满足不超过最大坡度1/10 (4750为商业层层高)
 ramp_height_1 = 6000;
-ramp_height_2 = 4750/1.25*2;
+ramp_height_2 = 4500/1.25*2;
 theta_temp = atan ( (XYcoor_ramp_i_1(1,2)+XYcoor_ramp_o_1(1,2)) / (XYcoor_ramp_i_1(1,1)+XYcoor_ramp_o_1(1,1)) ); %取悬臂梁在坡道中心线交点的角度
 theta_para = theta_temp*2; % 平行悬臂梁parallel与坡道中心线交点的夹角
 theta_Y = 2*pi/8 - theta_para; % Y型悬臂梁与坡道中心线交点的夹角
