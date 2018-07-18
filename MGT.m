@@ -15,9 +15,6 @@ addpath(genpath('nurbs_fun'))
 %% append initial conditions
 MGT_init(fileID);
 
-%% append material conditions
-MGT_mat(fileID);	% 目前只定义了Q345, C30
-
 %% append model file
 MGT_model(fileID);
 

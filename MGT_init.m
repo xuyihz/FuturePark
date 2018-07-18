@@ -1,8 +1,7 @@
 %% function
 % MGT initial conditions
 % 
-% Xu Yi, 19th March 2018
-% Xu Yi, 23rd March 2018, revised
+% Xu Yi, 2018
 
 %%
 function MGT_init(fileID)
@@ -63,5 +62,8 @@ for i = 1:length(LCNAME)
     fprintf(fileID,'   %s, %s, %s\n',LCN,LCT,DES);
 end
 fprintf(fileID,'\n');
+
+%% MATERIAL
+MGT_mat(fileID); % 目前只定义了Q345, C30
 
 end
