@@ -77,6 +77,7 @@ fprintf(fileID,'\n');
 iNO = 0;    % 节点号初始化
 iEL = 0;    % 单元号初始化
 car_num = 8;    % 圆塔每层停车数
+tower_colu_num = 4; % 停车小塔的柱子数
 % 10个塔楼的圆心 % centre of a circle
 CoC_towerC1 = [58800,37800];	% centre parking tower
 CoC_towerS2 = [27300,29400];	% side parking tower 1
@@ -120,6 +121,7 @@ facade_side10_R = [zeros(3,1); 6259; 3866; 2865; 2878; 3926; 4950; 9390; 12302];
 
 tube_innerR = 3950;
 tube_outerR = 8500;
+towerS_column_coor = [ 3125,4150; 3850,3500 ]; % 两个停车小塔的XY坐标
 levelTaxis = [-6300:2450:3500, 5700:2200:12300, 14900:2600:17500, 19750, 22000];  % 塔楼楼层标高 -6300(-1)/3500/17500(commercial)/22000(Roof)
 levelSaxis = [-6300, -4624, -3116, -1608, -100:1600:17500, 19260, 21020, 22000];  % 楼梯楼层标高
 levelSaxis_f = [-6300, -3116, -100:3200:15900, 17500, 21020, 22000];  % 楼梯幕墙支撑梁标高
@@ -140,8 +142,8 @@ iNO_towerC1_init = iNO;
 [iNO, iEL] = MGT_Misc(fileID, iNO, iEL, car_num, CoC_towerC1, Deg_towerC1, tube_innerR, tube_outerR, levelTaxis, levelPstart, Roof_boundary, iNO_towerC1_init);
 
 iNO_towerS2_init = iNO;
-[iNO, iEL] = MGT_tower(fileID, iNO, iEL, car_num, CoC_towerS2, Deg_towerS2, tube_innerR, tube_outerR, levelTaxis, levelPstart(2), CAR, OFFICE, ROOF);
-[iNO, iEL] = MGT_facade_tower(fileID, iNO, iEL, car_num, CoC_towerS2, Deg_towerS2, facade_tower2_R, tube_innerR, levelTaxis, levelPstart, iNO_towerS2_init);
+[iNO, iEL] = MGT_tower_S2(fileID, iNO, iEL, tower_colu_num, CoC_towerS2, Deg_towerS2, towerS_column_coor(1,:), levelTaxis, levelPstart(2), CAR, OFFICE, ROOF);
+% [iNO, iEL] = MGT_facade_tower(fileID, iNO, iEL, car_num, CoC_towerS2, Deg_towerS2, facade_tower2_R, tube_innerR, levelTaxis, levelPstart, iNO_towerS2_init);
 iNO_towerS3_init = iNO;
 [iNO, iEL] = MGT_tower(fileID, iNO, iEL, car_num, CoC_towerS3, Deg_towerS3, tube_innerR, tube_outerR, levelTaxis, levelPstart(2), CAR, OFFICE, ROOF);
 [iNO, iEL] = MGT_facade_tower(fileID, iNO, iEL, car_num, CoC_towerS3, Deg_towerS3, facade_tower3_R, tube_innerR, levelTaxis, levelPstart, iNO_towerS3_init);
