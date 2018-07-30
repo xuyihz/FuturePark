@@ -4,7 +4,7 @@
 % Xu Yi, 2018
 
 %%
-function [iNO_end, iEL_end] = MGT_tower_S2(fileID, iNO, iEL, column_num, CoC_tower, Deg_tower, towerS_column_coor, levelZaxis, levelPstart1o2, CAR, ~, ~)
+function [iNO_end, iEL_end] = MGT_tower_S(fileID, iNO, iEL, column_num, CoC_tower, Deg_tower, towerS_column_coor, levelZaxis, levelPstart1o2, CAR, ~, ~)
 %% NODE
 fprintf(fileID,'*NODE    ; Nodes\n');
 fprintf(fileID,'; iNO, X, Y, Z\n');
