@@ -79,28 +79,24 @@ iEL = 0;    % 单元号初始化
 car_num = 8;    % 圆塔每层停车数
 tower_colu_num = 4; % 停车小塔的柱子数
 % 10个塔楼的圆心 % centre of a circle
-CoC_towerC1 = [58800,37800];	% centre parking tower
-CoC_towerS2 = [27300,29400];	% side parking tower 1
-CoC_towerS3 = [88200,13800];	% side parking tower 2
+CoC_towerC1   = [57400,36000];	% centre parking tower
+CoC_towerS2   = [26225,27850];	% side parking tower 1
+CoC_towerS3   = [86800,12000];	% side parking tower 2
+CoC_elevator4 = [61600,10800];	% 1 elevator
+CoC_stair5    = [36400,42300];	% stairs
+CoC_stair6    = [78400,31800];	% stairs
+CoC_side7     = [75366,57542];	% side type 1
+CoC_side8     = [117104,5443];	% side type 2 / 2 columns in the edge
+CoC_side9     = [30655, 5307];	% side type 3 / a column in the centre
+CoC_side10    = [ 5514,38672];	% side type 1
 
-CoC_elevator4 = [63000,12600];	% 1 elevator
-
-CoC_stair5 = [37795,44103];	% stairs
-CoC_stair6 = [79800,33600];	% stairs
-
-CoC_side7 = [76552,58934];	% side type 1
-CoC_side10 = [6914,40472];	% side type 1
-
-CoC_side8 = [118504,7243];	% side type 2 / 2 columns in the edge
-CoC_side9 = [32055,7107];	% side type 3 / a column in the centre
-
-Edge_side9 = [30833,4750]; Edge_side10 = [5248,41010]; Edge_side7 = [77970,61552];
-Edge_side8 = [117443,7243; 114951,4750]; Edge_North = [45186,54754]; Edge_East = [87304,37382];
+Edge_side9 = [29407,2900]; Edge_side10 = [3769,39236]; Edge_side7 = [76602,59809];
+Edge_side8 = [116115,5443; 113571,2900]; Edge_North = [43773,53002]; Edge_East = [85996,35635];
 Roof_boundary = [Edge_side9; Edge_side10; Edge_North; Edge_side7; Edge_East; Edge_side8]; % 外边线定位点，从左下角点起，顺时针定位点
 
 Deg_ref = atan( (CoC_elevator4(1)-CoC_towerC1(1))/(CoC_elevator4(2)-CoC_towerC1(2)) );	% 由电梯圆心与主塔圆心连线确定
-Deg_towerC1 = 0;	% degree of centre tower 考虑地下一层车辆进塔库，该塔不转。
-Deg_towerS2 = 0;	% degree of side tower 1 左边塔
+Deg_towerC1 = 0; % degree of centre tower 考虑地下一层车辆进塔库，该塔不转。
+Deg_towerS2 = 0; % degree of side tower 1 左边塔
 Deg_towerS3 = 0; % degree of side tower 2 右边塔
 Deg_elevator4 = Deg_ref;	% degree of elevator4 由电梯圆心与主塔圆心连线确定
 Deg_stair5 = pi/4 + Deg_ref;   % 由电梯圆心与主塔圆心连线确定
