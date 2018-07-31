@@ -13,7 +13,7 @@ iNO_init = iNO;
 
 switch tower_num % 塔标号
     case 7
-        sideRadius = 3250;
+        sideRadius = 3300;
         Corner_coor = Roof_boundary(4,:);
         
         [X_temp, Y_temp, ~] = coorLxC_sym(CoC_side, sideRadius, Corner_coor, Roof_boundary(3,:)); %左边第一点 % [X, Y, Len] = coorLxC_sym(C0, R, P1, P2);
