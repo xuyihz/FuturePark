@@ -130,7 +130,7 @@ stairW = 3950; % 楼梯宽
 stairL = 4300; % 楼梯长，即沿踏步前进方向长
 stairB = 1975; % 楼梯梯板宽(暂定)
 elevatorColu_num = 8;  % 电梯筒的内筒柱数量 (电梯中间还有一个节点，故7+1=8)
-elevatorR = 4000; % 电梯筒的半径
+elevatorR = 4250; % 电梯筒的半径
 
 %% 10 towers
 iNO_towerC1_init = iNO;
@@ -157,7 +157,8 @@ iNO_towerS3_init = iNO;
 [iNO, iEL] = MGT_side(fileID, iNO, iEL, CoC_side10, facade_side10_R, levelSDaxis, levelPstart(5), Roof_boundary, CAR, OFFICE, ROOF, 10);
 
 [iNO, iEL] = MGT_side8(fileID, iNO, iEL, CoC_side8, facade_side8_R, levelSDaxis, levelPstart(5), Roof_boundary, CAR, OFFICE, ROOF);
-[iNO, iEL] = MGT_side9(fileID, iNO, iEL, CoC_side9, facade_side9_R, levelSDaxis, levelPstart(5), Roof_boundary, CAR, OFFICE, ROOF);
+[iNO, iEL] = MGT_side(fileID, iNO, iEL, CoC_side9, facade_side9_R, levelSDaxis, levelPstart(5), Roof_boundary, CAR, OFFICE, ROOF, 9);
+% [iNO, iEL] = MGT_side9(fileID, iNO, iEL, CoC_side9, facade_side9_R, levelSDaxis, levelPstart(5), Roof_boundary, CAR, OFFICE, ROOF);
 
 %%
 

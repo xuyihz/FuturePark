@@ -19,7 +19,7 @@ XYcoor_i = zeros(elevatorColu_num,2);   % 8个点(含电梯中间不落柱的1个点和圆心点)
 elevatorXYtemp = elevatorR/sqrt(2);
 elevatorXY = [elevatorXYtemp,elevatorXYtemp; -elevatorXYtemp,elevatorXYtemp;...
     -elevatorXYtemp,-elevatorXYtemp; elevatorXYtemp,-elevatorXYtemp;...
-    elevatorXYtemp,0; -elevatorXYtemp,0; 0,elevatorXYtemp; 0,0]; % 原始坐标，未旋转，未转到整体坐标系
+    elevatorXYtemp,350; -elevatorXYtemp,350; 0,elevatorXYtemp; 0,350]; % 原始坐标，未旋转，未转到整体坐标系
 for i = 1:elevatorColu_num   % 尝试向量化
     XYcoor_i(i,:) = coorTrans(elevatorXY(i,:), Deg_elevator); % 内筒
 end

@@ -65,6 +65,67 @@ switch tower_num % Ëþ±êºÅ
                 XYcoor_o3(i,j,:) = XYcoor_temp;
             end
         end
+    case 9
+        sideRadius = 3300;
+        Corner_coor = Roof_boundary(1,:);
+        
+        [X_temp, Y_temp, ~] = coorLxC_sym(CoC_side, sideRadius, Corner_coor, Roof_boundary(7,:)); %×ó±ßµÚÒ»µã % [X, Y, Len] = coorLxC_sym(C0, R, P1, P2);
+        if X_temp(1) > X_temp(2)
+            XYcoor_1 = [X_temp(1),Y_temp(1)];
+        else
+            XYcoor_1 = [X_temp(2),Y_temp(2)];
+        end
+        [X_temp, Y_temp, ~] = coorLxC_sym(CoC_side, sideRadius, Corner_coor, Roof_boundary(2,:)); %ÓÒ±ßµÚÒ»µã % [X, Y, Len] = coorLxC_sym(C0, R, P1, P2);
+        if X_temp(1) < X_temp(2)
+            XYcoor_4 = [X_temp(1),Y_temp(1)];
+        else
+            XYcoor_4 = [X_temp(2),Y_temp(2)];
+        end
+%         Deg = coorDeg(Corner_coor, XYcoor_1, XYcoor_4);
+        Temp_coor_trans = coorTransLoc(Corner_coor, XYcoor_1, -pi/4); %¸Ã½ÇËþ·Ö¸ô45¡ã£¬35¡ã£¬45¡ã
+        [X_temp, Y_temp, ~] = coorLxC_sym(CoC_side, sideRadius, Corner_coor, Temp_coor_trans);
+        if X_temp(1) > X_temp(2)
+            XYcoor_2 = [X_temp(1),Y_temp(1)];
+        else
+            XYcoor_2 = [X_temp(2),Y_temp(2)];
+        end
+        Temp_coor_trans = coorTransLoc(Corner_coor, XYcoor_4, pi/4); %¸Ã½ÇËþ·Ö¸ô45¡ã£¬35¡ã£¬45¡ã
+        [X_temp, Y_temp, ~] = coorLxC_sym(CoC_side, sideRadius, Corner_coor, Temp_coor_trans);
+        if X_temp(1) > X_temp(2)
+            XYcoor_3 = [X_temp(1),Y_temp(1)];
+        else
+            XYcoor_3 = [X_temp(2),Y_temp(2)];
+        end
+        
+        XYcoor_i = [XYcoor_1; XYcoor_2; XYcoor_3; XYcoor_4]; % ÄÚÍ²XoY×ø±êµÚ1(X)¡¢2(Y)ÁÐ¡£ % ³ý½Çµã
+        sideColu_num = length(XYcoor_i);
+        
+        lengthlevelZaxis = length(levelZaxis(:));
+        XYcoor_o3 = zeros(lengthlevelZaxis,sideColu_num,2); % Íâ±íÆ¤XoY×ø±êµÚ1(X)¡¢2(Y)ÁÐ¡£
+        for i = 1:(levelPstart-1)
+            for j = 1:sideColu_num
+                XYcoor_o3(i,j,:) = CoC_side;
+            end
+        end
+        for i = levelPstart:lengthlevelZaxis % levelPstartÒÔÏÂ¶¼Îª0
+            for j = 1:sideColu_num
+                [X_temp, Y_temp, ~] = coorLxC_sym(CoC_side, facade_side_R(i), Corner_coor, XYcoor_i(j,:));
+                if j == 1
+                    if X_temp(1) > X_temp(2)
+                        XYcoor_temp = [X_temp(1),Y_temp(1)];
+                    else
+                        XYcoor_temp = [X_temp(2),Y_temp(2)];
+                    end
+                else
+                    if Y_temp(1) > Y_temp(2)
+                        XYcoor_temp = [X_temp(1),Y_temp(1)];
+                    else
+                        XYcoor_temp = [X_temp(2),Y_temp(2)];
+                    end
+                end
+                XYcoor_o3(i,j,:) = XYcoor_temp;
+            end
+        end
     case 10
         sideRadius = 2500;
         Corner_coor = Roof_boundary(2,:);
@@ -189,7 +250,7 @@ ELE_TYPE = 'BEAM'; ELE_iMAT = 1; ELE_ANGLE = 0; ELE_iSUB = 0;  % iMAT = 1²ÄÁÏ¸Ö½
 fprintf(fileID,'; ½ÇËþ·ÅÉä×´Ö÷Áº\n');
 ELE_iPRO = 3;
 iNO = iNO_init; % ³õÊ¼»¯iNO
-for i = 1:lengthlevelZaxis	% 
+for i = 1:lengthlevelZaxis	%
     for j = 1:sideColu_num
         iEL = iEL+1;
         iN1 = iNO+1+lengthXYcoor2*(i-1); % ½Çµã
@@ -202,7 +263,7 @@ for i = 1:lengthlevelZaxis	%
 end
 fprintf(fileID,'; ½ÇËþ·ÅÉä×´Ðü±ÛÁº\n');
 iNO = iNO_init; % ³õÊ¼»¯iNO
-for i = levelPstart:lengthlevelZaxis	% 
+for i = levelPstart:lengthlevelZaxis	%
     for j = 1:sideColu_num
         iEL = iEL+1;
         iN1 = iNO+1+j+lengthXYcoor2*(i-1); % ÄÚ²¿µã
@@ -220,7 +281,7 @@ ELE_iPRO = 4;
 iNO = iNO_init; % ³õÊ¼»¯iNO
 % ÄÚ»·Áº
 fprintf(fileID,';   ÄÚ»·Áº\n');
-for i = 1:lengthlevelZaxis	% 
+for i = 1:lengthlevelZaxis	%
     for j = 1:(sideColu_num-1)
         iEL = iEL+1;
         iN1 = iNO+1+j+lengthXYcoor2*(i-1); % ÄÚ²¿µã
@@ -233,7 +294,7 @@ for i = 1:lengthlevelZaxis	%
 end
 % Íâ»·Áº
 fprintf(fileID,';   Íâ»·Áº\n');
-for i = levelPstart:lengthlevelZaxis	% 
+for i = levelPstart:lengthlevelZaxis	%
     for j = 1:(sideColu_num-1)
         iEL = iEL+1;
         iN1 = iNO+1+sideColu_num+j+lengthXYcoor2*(i-1); % ÄÚ²¿µã
