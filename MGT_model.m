@@ -140,10 +140,10 @@ iNO_towerC1_init = iNO;
 
 iNO_towerS2_init = iNO;
 [iNO, iEL] = MGT_tower_S(fileID, iNO, iEL, tower_colu_num, CoC_towerS2, Deg_towerS2, towerS_column_coor(1,:), levelTSaxis, levelPstart(2), CAR, OFFICE, ROOF);
-% [iNO, iEL] = MGT_facade_tower(fileID, iNO, iEL, car_num, CoC_towerS2, Deg_towerS2, facade_tower2_R, tube_innerR, levelTaxis, levelPstart, iNO_towerS2_init);
+% [iNO, iEL] = MGT_facade_S2(fileID, iNO, iEL, tower_colu_num, CoC_towerS2, Deg_towerS2, facade_tower2_R, tube_innerR, levelTaxis, levelPstart, iNO_towerS2_init);
 iNO_towerS3_init = iNO;
 [iNO, iEL] = MGT_tower_S(fileID, iNO, iEL, tower_colu_num, CoC_towerS3, Deg_towerS3, towerS_column_coor(2,:), levelTSaxis, levelPstart(2), CAR, OFFICE, ROOF);
-% [iNO, iEL] = MGT_facade_tower(fileID, iNO, iEL, car_num, CoC_towerS3, Deg_towerS3, facade_tower3_R, tube_innerR, levelTaxis, levelPstart, iNO_towerS3_init);
+% [iNO, iEL] = MGT_facade_S3(fileID, iNO, iEL, tower_colu_num, CoC_towerS3, Deg_towerS3, facade_tower3_R, tube_innerR, levelTaxis, levelPstart, iNO_towerS3_init);
 
 [iNO, iEL] = MGT_elevator(fileID, iNO, iEL, CoC_elevator4, Deg_elevator4, facade_ele4_R, levelSaxis_f, levelPstart(4), elevatorColu_num, elevatorR, CAR, OFFICE, ROOF);
 [iNO, iEL] = MGT_elevator_platform(fileID, iNO, iEL, CoC_elevator4, Deg_elevator4, levelSaxis, elevatorColu_num, elevatorR, CAR, OFFICE, ROOF);
