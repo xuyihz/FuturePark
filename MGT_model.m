@@ -117,7 +117,7 @@ facade_side10_R = [zeros(3,1); 6259; 3866; 2865; 2878; 3926; 4950; 9390; 12302];
 
 tube_innerR = 3950;
 tube_outerR = 8500;
-towerS_column_coor = [ 3125,4150; 3850,3500 ]; % 两个停车小塔的XY坐标
+towerS_column_coor = [ 3125,4150; 3850,3500 ]; % 两个停车小塔4个柱子形成的矩形的长和宽
 levelTaxis = [-6300:2450:3500, 5700:2200:12300, 14900:2600:17500, 19750, 22000];  % 塔楼楼层标高 -6300(-1)/3500/17500(commercial)/22000(Roof)
 levelTSaxis = [-6300, 0:3500:17500, 22000];  % 小塔楼楼层标高 -6300(-1)/3500/17500(commercial)/22000(Roof)
 levelSaxis = [-6300, -4624, -3116, -1608, -100:1600:17500, 19260, 21020, 22000];  % 楼梯楼层标高
@@ -133,33 +133,46 @@ elevatorColu_num = 8;  % 电梯筒的内筒柱数量 (电梯中间还有一个节点，故7+1=8)
 elevatorR = 4250; % 电梯筒的半径
 
 %% 10 towers
+fprintf(fileID,'; 塔1\n');
 iNO_towerC1_init = iNO;
 [iNO, iEL] = MGT_tower(fileID, iNO, iEL, car_num, CoC_towerC1, Deg_towerC1, tube_innerR, tube_outerR, levelTaxis, levelPstart(1), CAR, OFFICE, ROOF);
 [iNO, iEL] = MGT_ramp(fileID, iNO, iEL, car_num, CoC_towerC1, Deg_towerC1, tube_innerR, tube_outerR, levelTaxis, levelPstart, iNO_towerC1_init);
-[iNO, iEL] = MGT_Misc(fileID, iNO, iEL, car_num, CoC_towerC1, Deg_towerC1, tube_innerR, tube_outerR, levelTaxis, levelPstart, Roof_boundary, iNO_towerC1_init);
+% [iNO, iEL] = MGT_Misc(fileID, iNO, iEL, car_num, CoC_towerC1, Deg_towerC1, tube_innerR, tube_outerR, levelTaxis, levelPstart, Roof_boundary, iNO_towerC1_init, ...
+%                 CoC_towerS2, CoC_towerS3, CoC_elevator4, CoC_stair5, CoC_stair6,...
+%                 facade_tower2_R, facade_tower3_R, facade_ele4_R, facade_stair5_R, facade_stair6_R,...
+%                 levelTaxis, levelTSaxis, levelSaxis_f);
 
+fprintf(fileID,'; 塔2\n');
 iNO_towerS2_init = iNO;
 [iNO, iEL] = MGT_tower_S(fileID, iNO, iEL, tower_colu_num, CoC_towerS2, Deg_towerS2, towerS_column_coor(1,:), levelTSaxis, levelPstart(2), CAR, OFFICE, ROOF);
 % [iNO, iEL] = MGT_facade_S2(fileID, iNO, iEL, tower_colu_num, CoC_towerS2, Deg_towerS2, facade_tower2_R, tube_innerR, levelTaxis, levelPstart, iNO_towerS2_init);
+fprintf(fileID,'; 塔3\n');
 iNO_towerS3_init = iNO;
 [iNO, iEL] = MGT_tower_S(fileID, iNO, iEL, tower_colu_num, CoC_towerS3, Deg_towerS3, towerS_column_coor(2,:), levelTSaxis, levelPstart(2), CAR, OFFICE, ROOF);
 % [iNO, iEL] = MGT_facade_S3(fileID, iNO, iEL, tower_colu_num, CoC_towerS3, Deg_towerS3, facade_tower3_R, tube_innerR, levelTaxis, levelPstart, iNO_towerS3_init);
 
+fprintf(fileID,'; 塔4\n');
 [iNO, iEL] = MGT_elevator(fileID, iNO, iEL, CoC_elevator4, Deg_elevator4, facade_ele4_R, levelSaxis_f, levelPstart(4), elevatorColu_num, elevatorR, CAR, OFFICE, ROOF);
 [iNO, iEL] = MGT_elevator_platform(fileID, iNO, iEL, CoC_elevator4, Deg_elevator4, levelSaxis, elevatorColu_num, elevatorR, CAR, OFFICE, ROOF);
 
+fprintf(fileID,'; 塔5\n');
 [iNO, iEL] = MGT_stair(fileID, iNO, iEL, CoC_stair5, Deg_stair5, facade_stair5_R, levelSaxis_f, levelPstart(4), stairColu_num, stairL, stairW, CAR, OFFICE, ROOF);
 [iNO, iEL] = MGT_stair_platform(fileID, iNO, iEL, CoC_stair5, Deg_stair5, levelSaxis, stairColu_num, stairL, stairW, stairB, CAR, OFFICE, ROOF);
+fprintf(fileID,'; 塔6\n');
 [iNO, iEL] = MGT_stair(fileID, iNO, iEL, CoC_stair6, Deg_stair6, facade_stair6_R, levelSaxis_f, levelPstart(4), stairColu_num, stairL, stairW, CAR, OFFICE, ROOF);
 [iNO, iEL] = MGT_stair_platform(fileID, iNO, iEL, CoC_stair6, Deg_stair6, levelSaxis, stairColu_num, stairL, stairW, stairB, CAR, OFFICE, ROOF);
 
+fprintf(fileID,'; 塔7\n');
 [iNO, iEL] = MGT_side(fileID, iNO, iEL, CoC_side7, facade_side7_R, levelSDaxis, levelPstart(5), Roof_boundary, CAR, OFFICE, ROOF, 7);
-[iNO, iEL] = MGT_side(fileID, iNO, iEL, CoC_side10, facade_side10_R, levelSDaxis, levelPstart(5), Roof_boundary, CAR, OFFICE, ROOF, 10);
 
+fprintf(fileID,'; 塔8\n');
 [iNO, iEL] = MGT_side8(fileID, iNO, iEL, CoC_side8, facade_side8_R, levelSDaxis, levelPstart(5), Roof_boundary, CAR, OFFICE, ROOF);
+fprintf(fileID,'; 塔9\n');
 [iNO, iEL] = MGT_side(fileID, iNO, iEL, CoC_side9, facade_side9_R, levelSDaxis, levelPstart(5), Roof_boundary, CAR, OFFICE, ROOF, 9);
 % [iNO, iEL] = MGT_side9(fileID, iNO, iEL, CoC_side9, facade_side9_R, levelSDaxis, levelPstart(5), Roof_boundary, CAR, OFFICE, ROOF);
 
+fprintf(fileID,'; 塔10\n');
+[iNO, iEL] = MGT_side(fileID, iNO, iEL, CoC_side10, facade_side10_R, levelSDaxis, levelPstart(5), Roof_boundary, CAR, OFFICE, ROOF, 10);
 %%
 
 

@@ -16,13 +16,13 @@ switch tower_num % 塔标号
         sideRadius = 3300;
         Corner_coor = Roof_boundary(4,:);
         
-        [X_temp, Y_temp, ~] = coorLxC_sym(CoC_side, sideRadius, Corner_coor, Roof_boundary(3,:)); %左边第一点 % [X, Y, Len] = coorLxC_sym(C0, R, P1, P2);
+        [X_temp, Y_temp, ~] = coorLxCp(CoC_side, sideRadius, Corner_coor, Roof_boundary(3,:)); %左边第一点 % [X, Y, Len] = coorLxCp(C0, R, P1, P2);
         if X_temp(1) < X_temp(2)
             XYcoor_1 = [X_temp(1),Y_temp(1)];
         else
             XYcoor_1 = [X_temp(2),Y_temp(2)];
         end
-        [X_temp, Y_temp, ~] = coorLxC_sym(CoC_side, sideRadius, Corner_coor, Roof_boundary(5,:)); %右边第一点 % [X, Y, Len] = coorLxC_sym(C0, R, P1, P2);
+        [X_temp, Y_temp, ~] = coorLxCp(CoC_side, sideRadius, Corner_coor, Roof_boundary(5,:)); %右边第一点 % [X, Y, Len] = coorLxCp(C0, R, P1, P2);
         if X_temp(1) > X_temp(2)
             XYcoor_4 = [X_temp(1),Y_temp(1)];
         else
@@ -30,14 +30,14 @@ switch tower_num % 塔标号
         end
         Deg = coorDeg(Corner_coor, XYcoor_1, XYcoor_4);
         Temp_coor_trans = coorTransLoc(Corner_coor, XYcoor_1, -Deg/3);
-        [X_temp, Y_temp, ~] = coorLxC_sym(CoC_side, sideRadius, Corner_coor, Temp_coor_trans);
+        [X_temp, Y_temp, ~] = coorLxCp(CoC_side, sideRadius, Corner_coor, Temp_coor_trans);
         if X_temp(1) < X_temp(2)
             XYcoor_2 = [X_temp(1),Y_temp(1)];
         else
             XYcoor_2 = [X_temp(2),Y_temp(2)];
         end
         Temp_coor_trans = coorTransLoc(Corner_coor, XYcoor_1, -Deg/3*2);
-        [X_temp, Y_temp, ~] = coorLxC_sym(CoC_side, sideRadius, Corner_coor, Temp_coor_trans);
+        [X_temp, Y_temp, ~] = coorLxCp(CoC_side, sideRadius, Corner_coor, Temp_coor_trans);
         if X_temp(1) < X_temp(2)
             XYcoor_3 = [X_temp(1),Y_temp(1)];
         else
@@ -56,7 +56,7 @@ switch tower_num % 塔标号
         end
         for i = levelPstart:lengthlevelZaxis % levelPstart以下都为0
             for j = 1:sideColu_num
-                [X_temp, Y_temp, ~] = coorLxC_sym(CoC_side, facade_side_R(i), Corner_coor, XYcoor_i(j,:));
+                [X_temp, Y_temp, ~] = coorLxCp(CoC_side, facade_side_R(i), Corner_coor, XYcoor_i(j,:));
                 if Y_temp(1) < Y_temp(2)
                     XYcoor_temp = [X_temp(1),Y_temp(1)];
                 else
@@ -69,13 +69,13 @@ switch tower_num % 塔标号
         sideRadius = 3300;
         Corner_coor = Roof_boundary(1,:);
         
-        [X_temp, Y_temp, ~] = coorLxC_sym(CoC_side, sideRadius, Corner_coor, Roof_boundary(7,:)); %左边第一点 % [X, Y, Len] = coorLxC_sym(C0, R, P1, P2);
+        [X_temp, Y_temp, ~] = coorLxCp(CoC_side, sideRadius, Corner_coor, Roof_boundary(7,:)); %左边第一点 % [X, Y, Len] = coorLxCp(C0, R, P1, P2);
         if X_temp(1) > X_temp(2)
             XYcoor_1 = [X_temp(1),Y_temp(1)];
         else
             XYcoor_1 = [X_temp(2),Y_temp(2)];
         end
-        [X_temp, Y_temp, ~] = coorLxC_sym(CoC_side, sideRadius, Corner_coor, Roof_boundary(2,:)); %右边第一点 % [X, Y, Len] = coorLxC_sym(C0, R, P1, P2);
+        [X_temp, Y_temp, ~] = coorLxCp(CoC_side, sideRadius, Corner_coor, Roof_boundary(2,:)); %右边第一点 % [X, Y, Len] = coorLxCp(C0, R, P1, P2);
         if X_temp(1) < X_temp(2)
             XYcoor_4 = [X_temp(1),Y_temp(1)];
         else
@@ -83,14 +83,14 @@ switch tower_num % 塔标号
         end
 %         Deg = coorDeg(Corner_coor, XYcoor_1, XYcoor_4);
         Temp_coor_trans = coorTransLoc(Corner_coor, XYcoor_1, -pi/4); %该角塔分隔45°，35°，45°
-        [X_temp, Y_temp, ~] = coorLxC_sym(CoC_side, sideRadius, Corner_coor, Temp_coor_trans);
+        [X_temp, Y_temp, ~] = coorLxCp(CoC_side, sideRadius, Corner_coor, Temp_coor_trans);
         if X_temp(1) > X_temp(2)
             XYcoor_2 = [X_temp(1),Y_temp(1)];
         else
             XYcoor_2 = [X_temp(2),Y_temp(2)];
         end
         Temp_coor_trans = coorTransLoc(Corner_coor, XYcoor_4, pi/4); %该角塔分隔45°，35°，45°
-        [X_temp, Y_temp, ~] = coorLxC_sym(CoC_side, sideRadius, Corner_coor, Temp_coor_trans);
+        [X_temp, Y_temp, ~] = coorLxCp(CoC_side, sideRadius, Corner_coor, Temp_coor_trans);
         if X_temp(1) > X_temp(2)
             XYcoor_3 = [X_temp(1),Y_temp(1)];
         else
@@ -109,7 +109,7 @@ switch tower_num % 塔标号
         end
         for i = levelPstart:lengthlevelZaxis % levelPstart以下都为0
             for j = 1:sideColu_num
-                [X_temp, Y_temp, ~] = coorLxC_sym(CoC_side, facade_side_R(i), Corner_coor, XYcoor_i(j,:));
+                [X_temp, Y_temp, ~] = coorLxCp(CoC_side, facade_side_R(i), Corner_coor, XYcoor_i(j,:));
                 if j == 1
                     if X_temp(1) > X_temp(2)
                         XYcoor_temp = [X_temp(1),Y_temp(1)];
@@ -130,13 +130,13 @@ switch tower_num % 塔标号
         sideRadius = 2500;
         Corner_coor = Roof_boundary(2,:);
         
-        [X_temp, Y_temp, ~] = coorLxC_sym(CoC_side, sideRadius, Corner_coor, Roof_boundary(1,:)); %左边第一点 % [X, Y, Len] = coorLxC_sym(C0, R, P1, P2);
+        [X_temp, Y_temp, ~] = coorLxCp(CoC_side, sideRadius, Corner_coor, Roof_boundary(1,:)); %左边第一点 % [X, Y, Len] = coorLxCp(C0, R, P1, P2);
         if X_temp(1) > X_temp(2)
             XYcoor_1 = [X_temp(1),Y_temp(1)];
         else
             XYcoor_1 = [X_temp(2),Y_temp(2)];
         end
-        [X_temp, Y_temp, ~] = coorLxC_sym(CoC_side, sideRadius, Corner_coor, Roof_boundary(3,:)); %右边第一点 % [X, Y, Len] = coorLxC_sym(C0, R, P1, P2);
+        [X_temp, Y_temp, ~] = coorLxCp(CoC_side, sideRadius, Corner_coor, Roof_boundary(3,:)); %右边第一点 % [X, Y, Len] = coorLxCp(C0, R, P1, P2);
         if X_temp(1) > X_temp(2)
             XYcoor_3 = [X_temp(1),Y_temp(1)];
         else
@@ -144,7 +144,7 @@ switch tower_num % 塔标号
         end
         Deg = coorDeg(Corner_coor, XYcoor_1, XYcoor_3);
         Temp_coor_trans = coorTransLoc(Corner_coor, XYcoor_1, -Deg/2);
-        [X_temp, Y_temp, ~] = coorLxC_sym(CoC_side, sideRadius, Corner_coor, Temp_coor_trans);
+        [X_temp, Y_temp, ~] = coorLxCp(CoC_side, sideRadius, Corner_coor, Temp_coor_trans);
         if X_temp(1) > X_temp(2)
             XYcoor_2 = [X_temp(1),Y_temp(1)];
         else
@@ -163,7 +163,7 @@ switch tower_num % 塔标号
         end
         for i = levelPstart:lengthlevelZaxis % levelPstart以下都为0
             for j = 1:sideColu_num
-                [X_temp, Y_temp, ~] = coorLxC_sym(CoC_side, facade_side_R(i), Corner_coor, XYcoor_i(j,:));
+                [X_temp, Y_temp, ~] = coorLxCp(CoC_side, facade_side_R(i), Corner_coor, XYcoor_i(j,:));
                 if X_temp(1) > X_temp(2)
                     XYcoor_temp = [X_temp(1),Y_temp(1)];
                 else

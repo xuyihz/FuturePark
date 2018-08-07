@@ -14,19 +14,19 @@ iNO_init = iNO;
 sideRadius = 5250;
 Corner_coor = [Roof_boundary(6,:);Roof_boundary(7,:)]; % 两个角点
 
-[X_temp, Y_temp, ~] = coorLxC_sym(CoC_side, sideRadius, Corner_coor(1,:), Roof_boundary(5,:)); %上面边第一点 % [X, Y, Len] = coorLxC_sym(C0, R, P1, P2);
+[X_temp, Y_temp, ~] = coorLxCp(CoC_side, sideRadius, Corner_coor(1,:), Roof_boundary(5,:)); %上面边第一点 % [X, Y, Len] = coorLxCp(C0, R, P1, P2);
 if X_temp(1) < X_temp(2)
     XYcoor_1 = [X_temp(1),Y_temp(1)];
 else
     XYcoor_1 = [X_temp(2),Y_temp(2)];
 end
-[X_temp, Y_temp, ~] = coorLxC_sym(CoC_side, sideRadius, Corner_coor(2,:), Roof_boundary(1,:)); %右边第一点 % [X, Y, Len] = coorLxC_sym(C0, R, P1, P2);
+[X_temp, Y_temp, ~] = coorLxCp(CoC_side, sideRadius, Corner_coor(2,:), Roof_boundary(1,:)); %右边第一点 % [X, Y, Len] = coorLxCp(C0, R, P1, P2);
 if X_temp(1) < X_temp(2)
     XYcoor_3 = [X_temp(1),Y_temp(1)];
 else
     XYcoor_3 = [X_temp(2),Y_temp(2)];
 end
-[X_temp, Y_temp, ~] = coorLxC_sym(CoC_side, sideRadius, Corner_coor(1,:), CoC_side);
+[X_temp, Y_temp, ~] = coorLxCp(CoC_side, sideRadius, Corner_coor(1,:), CoC_side);
 if X_temp(1) < X_temp(2)
     XYcoor_2 = [X_temp(1),Y_temp(1)];
 else
@@ -50,7 +50,7 @@ for i = levelPstart:lengthlevelZaxis % levelPstart以下都为0
         else
             k = 1;
         end
-        [X_temp, Y_temp, ~] = coorLxC_sym(CoC_side, facade_side_R(i), Corner_coor(k,:), XYcoor_i(j,:));
+        [X_temp, Y_temp, ~] = coorLxCp(CoC_side, facade_side_R(i), Corner_coor(k,:), XYcoor_i(j,:));
         if X_temp(1) < X_temp(2)
             XYcoor_temp = [X_temp(1),Y_temp(1)];
         else
