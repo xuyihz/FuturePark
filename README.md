@@ -60,7 +60,9 @@ coorLxC_sym为通过符号运算求解直线与圆交点，耗时稍长。
 
 2018年8月1日
 圆心及角点坐标updated
-MGT_facade_S2.m 未改
+MGT_facade_S2.m 未改 <=
 
 2018年8月7日
 用coorLxCp 替换了 coorLxC_sym
+外边线已建好
+精细化建模 可 以直代曲
