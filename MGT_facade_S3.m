@@ -1,10 +1,10 @@
 %% function
-% MGT tower 2 facade
+% MGT tower 3 facade
 %
 % Xu Yi, 2018
 
 %%
-function [iNO_end, iEL_end] = MGT_facade_S2(fileID, iNO, iEL, column_num, CoC_tower, Deg_tower, towerS_column_coor, facade_tower_R, levelZaxis, levelPstart, iNO_towerS_init)    %注意这里的levelPstart是1x2数组
+function [iNO_end, iEL_end] = MGT_facade_S3(fileID, iNO, iEL, column_num, CoC_tower, Deg_tower, towerS_column_coor, facade_tower_R, levelZaxis, levelPstart, iNO_towerS_init)    %注意这里的levelPstart是1x2数组
 %% NODE
 fprintf(fileID,'*NODE    ; Nodes\n');
 fprintf(fileID,'; iNO, X, Y, Z\n');
@@ -16,12 +16,14 @@ xtemp = towerS_column_coor(1); ytemp = towerS_column_coor(2);
 % XYcoor_i = [ xtemp,ytemp; -xtemp,ytemp; -xtemp,-ytemp; xtemp,-ytemp ]; % 小塔柱坐标
 XYcoor_o3 = zeros(lengthlevelZaxis,column_num*2,2);	% 外筒XoY坐标第1(X)、2(Y)列。注意这里是三维数组。(Z方向幕墙有变化)
 
+Rec_R = sqrt( xtemp^2 + ytemp^2 ); % 4个柱子形成的矩形对角线的一半
 for j = levelPstart1:lengthlevelZaxis
-    XY_o_1x = sqrt(facade_tower_R(j)^2 - ytemp^2);	% 幕墙上1点 x。
-    XY_o_2y = sqrt(facade_tower_R(j)^2 - ytemp^2);  % 幕墙上2点 y。
+    Rtemp = facade_tower_R(j);
+    XY_o_2x = xtemp / Rec_R * Rtemp;	% 幕墙上2点 x。
+    XY_o_2y = ytemp / Rec_R * Rtemp;  % 幕墙上2点 y。
     
-    XYcoor_o3(j,:,:) = [XY_o_1x, ytemp; xtemp, XY_o_2y; -xtemp, XY_o_2y; -XY_o_1x, ytemp;...
-        -XY_o_1x, -ytemp; -xtemp, -XY_o_2y; xtemp, -XY_o_2y; XY_o_1x, -ytemp;];
+    XYcoor_o3(j,:,:) = [Rtemp, 0; XY_o_2x, XY_o_2y; 0, Rtemp; -XY_o_2x, XY_o_2y;...
+        -Rtemp, 0; -XY_o_2x, -XY_o_2y; 0, -Rtemp; XY_o_2x, -XY_o_2y;];
     if Deg_tower ~= 0
         for i = 1:column_num*2
             XYcoor_o3(j,i,:) = coorTrans(XYcoor_o3(j,i,:), Deg_tower);
@@ -84,10 +86,13 @@ iNO = iNO_init; % 初始化iNO
 iNO_towerS = iNO_towerS_init; % 初始化iNO_towerS
 for i = levelPstart1:lengthlevelZaxis	% 梁从内筒伸出
     for j = 1:column_num	% 每层内筒的节点数
-        for k = 1:2 % 一根内筒柱连接两根外筒柱，即两根梁
+        for k = 1:3 % 一根内筒柱连接三根外筒柱，即三根梁
             iEL = iEL+1;
             iN1 = iNO_towerS+j+column_num*(i-1); % 此行为定位梁在塔楼的节点(内筒)
             iN2 = iNO+lengthXYcoor_f*(i-1)+(j-1)*2+k;    % 归到幕墙外筒第0点后，再定位到具体点
+            if j == 4 && k == 3
+                iN2 = iNO+lengthXYcoor_f*(i-1)+(j-1)*2+k-lengthXYcoor_f;
+            end
             fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
                 iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
                 iN1, iN2,...    % 梁单元的两个节点号

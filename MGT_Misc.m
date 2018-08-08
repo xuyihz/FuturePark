@@ -101,7 +101,7 @@ for i = 1:length(Roof_boundary)
 end
 iNO_init3 = iNO;
 % 定义每层边线
-for i = 4:6 % 目前确定塔楼4~6的边线
+for i = 2:6 % 目前确定塔楼2~6的边线
     CoC_i = CoC(i,:);                 % centre of tower i
     levelZ_f_i = levelZ_f{i};       % facade Z axis of tower i
     facade_R_i = facade_R{i};       % facade R of tower i

@@ -119,7 +119,8 @@ tube_innerR = 3950;
 tube_outerR = 8500;
 towerS_column_coor = [ 3125,4150; 3850,3500 ]; % 两个停车小塔4个柱子形成的矩形的长和宽
 levelTaxis = [-6300:2450:3500, 5700:2200:12300, 14900:2600:17500, 19750, 22000];  % 塔楼楼层标高 -6300(-1)/3500/17500(commercial)/22000(Roof)
-levelTSaxis = [-6300, 0:3500:17500, 22000];  % 小塔楼楼层标高 -6300(-1)/3500/17500(commercial)/22000(Roof)
+levelTSaxis = levelTaxis;
+% levelTSaxis = [-6300, 0:3500:17500, 22000];  % 小塔楼楼层标高 -6300(-1)/3500/17500(commercial)/22000(Roof)
 levelSaxis = [-6300, -4624, -3116, -1608, -100:1600:17500, 19260, 21020, 22000];  % 楼梯楼层标高
 levelSaxis_f = [-6300, -3116, -100:3200:15900, 17500, 21020, 22000];  % 楼梯幕墙支撑梁标高
 levelSDaxis = levelSaxis_f;  % 角塔楼层标高
@@ -145,11 +146,11 @@ iNO_towerC1_init = iNO;
 fprintf(fileID,'; 塔2\n');
 iNO_towerS2_init = iNO;
 [iNO, iEL] = MGT_tower_S(fileID, iNO, iEL, tower_colu_num, CoC_towerS2, Deg_towerS2, towerS_column_coor(1,:), levelTSaxis, levelPstart(2), CAR, OFFICE, ROOF);
-% [iNO, iEL] = MGT_facade_S2(fileID, iNO, iEL, tower_colu_num, CoC_towerS2, Deg_towerS2, facade_tower2_R, tube_innerR, levelTaxis, levelPstart, iNO_towerS2_init);
+[iNO, iEL] = MGT_facade_S2(fileID, iNO, iEL, tower_colu_num, CoC_towerS2, Deg_towerS2, towerS_column_coor(1,:), facade_tower2_R, levelTaxis, levelPstart, iNO_towerS2_init);
 fprintf(fileID,'; 塔3\n');
 iNO_towerS3_init = iNO;
 [iNO, iEL] = MGT_tower_S(fileID, iNO, iEL, tower_colu_num, CoC_towerS3, Deg_towerS3, towerS_column_coor(2,:), levelTSaxis, levelPstart(2), CAR, OFFICE, ROOF);
-% [iNO, iEL] = MGT_facade_S3(fileID, iNO, iEL, tower_colu_num, CoC_towerS3, Deg_towerS3, facade_tower3_R, tube_innerR, levelTaxis, levelPstart, iNO_towerS3_init);
+[iNO, iEL] = MGT_facade_S3(fileID, iNO, iEL, tower_colu_num, CoC_towerS3, Deg_towerS3, towerS_column_coor(2,:), facade_tower3_R, levelTaxis, levelPstart, iNO_towerS3_init);
 
 fprintf(fileID,'; 塔4\n');
 [iNO, iEL] = MGT_elevator(fileID, iNO, iEL, CoC_elevator4, Deg_elevator4, facade_ele4_R, levelSaxis_f, levelPstart(4), elevatorColu_num, elevatorR, CAR, OFFICE, ROOF);
