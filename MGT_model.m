@@ -103,7 +103,7 @@ Deg_stair5 = pi/4 + Deg_ref;   % 由电梯圆心与主塔圆心连线确定
 Deg_stair6 = -acot( (CoC_stair6(1)-CoC_towerC1(1))/(CoC_stair6(2)-CoC_towerC1(2)) )+pi;	% degree of stair 6 由楼梯6圆心与主塔圆心连线确定
 % Deg_side7 = pi/4 + Deg_towerC1;    % 由主塔角度确定 % Deg_side8 = -pi/6;    % 待定 % Deg_side9 = -pi/2 + Deg_towerS2;   % 由S2塔角度确定 % Deg_side10 = -pi/6;    % 待定
 
-facade_tower2_R = [zeros(4,1); 8908; 7770; 7128; 6906; 7084; 7843; 9338; 11562; 16412];
+facade_tower2_R = [zeros(4,1); 8908; 7770; 7128; 6906; 7084; 7843; 9338; 16412];
 facade_tower3_R = facade_tower2_R;
 % 备份 facade_ele4_R = [zeros(6,1); 8273; 7304; 6661; 6286; 6155; 6260; 6610; 7233; 8188; 9610; 12037; 15239; 17512];
 facade_ele4_R = [zeros(3,1); 8273; 6661; 6155; 6610; 8188; 9610; 15239; 17512];
@@ -118,7 +118,7 @@ facade_side10_R = [zeros(3,1); 6259; 3866; 2865; 2878; 3926; 4950; 9390; 12302];
 tube_innerR = 3950;
 tube_outerR = 8500;
 towerS_column_coor = [ 3125,4150; 3850,3500 ]; % 两个停车小塔4个柱子形成的矩形的长和宽
-levelTaxis = [-6300:2450:3500, 5700:2200:12300, 14900:2600:17500, 19750, 22000];  % 塔楼楼层标高 -6300(-1)/3500/17500(commercial)/22000(Roof)
+levelTaxis = [-6300:2450:3500, 5700:2200:12300, 14900:2600:17500, 22000];  % 塔楼楼层标高 -6300(-1)/3500/17500(commercial)/22000(Roof)
 levelTSaxis = levelTaxis;
 % levelTSaxis = [-6300, 0:3500:17500, 22000];  % 小塔楼楼层标高 -6300(-1)/3500/17500(commercial)/22000(Roof)
 levelSaxis = [-6300, -4624, -3116, -1608, -100:1600:17500, 19260, 21020, 22000];  % 楼梯楼层标高
