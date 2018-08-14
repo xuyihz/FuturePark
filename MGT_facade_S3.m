@@ -4,7 +4,7 @@
 % Xu Yi, 2018
 
 %%
-function [iNO_end, iEL_end] = MGT_facade_S3(fileID, iNO, iEL, column_num, CoC_tower, Deg_tower, towerS_column_coor, facade_tower_R, levelZaxis, levelPstart, iNO_towerS_init)    %注意这里的levelPstart是1x2数组
+function [iNO_end, iEL_end] = MGT_facade_S3(fileID, iNO, iEL, column_num, CoC_tower, Deg_tower, towerS_column_coor, facade_tower_R, levelZaxis, levelPstart, iNO_towerS_init, Arc_itvl)    %注意这里的levelPstart是1x2数组
 %% NODE
 fprintf(fileID,'*NODE    ; Nodes\n');
 fprintf(fileID,'; iNO, X, Y, Z\n');
@@ -45,6 +45,23 @@ for i = 1:lengthlevelZaxis  % length(A(:)) A向量元素个数
             iNO,XYcoor_o3(i,j,1),XYcoor_o3(i,j,2),levelZaxis(i));   % 外筒 X & Y
     end
 end
+% 以直代曲部分
+iNO_main_end = iNO; % 主节点终点备份，即以直代曲节点起点备份。
+XY_Deg_num = zeros(lengthlevelZaxis,lengthXYcoor_f); % 以直代曲的各曲线的分隔节点数
+P_start = zeros(1,2); P_end = zeros(1,2);
+for i = levelPstart1:lengthlevelZaxis
+    for j = 1:lengthXYcoor_f % 幕墙
+        P_start(:) = XYcoor_o3(i,j,:);
+        if j == lengthXYcoor_f
+            P_end(:) = XYcoor_o3(i,1,:);
+        else
+            P_end(:) = XYcoor_o3(i,j+1,:);
+        end
+        [iNO, Deg_num] = MGT_arc_FE(fileID, iNO, levelZaxis(i), CoC_tower, P_start, P_end, Arc_itvl);
+        XY_Deg_num(i,j) = Deg_num;
+    end
+end
+% 以直代曲部分
 iNO_end = iNO;
 fprintf(fileID,'\n');
 
@@ -107,19 +124,45 @@ ELE_iPRO = 4;
 iNO = iNO_init; % 初始化iNO
 % 外环梁
 fprintf(fileID,';   幕墙外环梁\n');
+iNO_arc = iNO_main_end; % 初始化
 for i = levelPstart1:lengthlevelZaxis	% 此行与柱单元不同，柱单元为i-1;
-    for j = 1:column_num*2	% 每层外筒的节点数
-        iEL = iEL+1;
-        iN1 = iNO+j+lengthXYcoor_f*(i-1); %
-        if j ~= column_num*2
-            iN2 = iN1+1;
-        else % j = car_num*2 时， 连接的是本环的第一个点，而不是上层内环的第一个点。
-            iN2 = iN1+1-column_num*2;
+    for j = 1:lengthXYcoor_f	% 每层外筒的节点数
+        iN1_bkp = iNO+j+lengthXYcoor_f*(i-1); %
+        if j ~= lengthXYcoor_f
+            iN2_bkp = iN1_bkp+1;
+        else % j = lengthXYcoor_f 时， 连接的是本环的第一个点，而不是上层内环的第一个点。
+            iN2_bkp = iN1_bkp+1-lengthXYcoor_f;
         end
-        fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
-            iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
-            iN1, iN2,...    % 梁单元的两个节点号
-            ELE_ANGLE, ELE_iSUB);
+        
+        if XY_Deg_num(i,j) == 1 % 即此处未进行以直代曲分隔
+            iEL = iEL+1;
+            iN1 = iN1_bkp;
+            iN2 = iN2_bkp;
+            fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
+                iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
+                iN1, iN2,...    % 梁单元的两个节点号
+                ELE_ANGLE, ELE_iSUB);
+        else
+            for k = 1:XY_Deg_num(i,j)
+                iEL = iEL+1;
+                if k == 1
+                    iNO_arc = iNO_arc+1;
+                    iN1 = iN1_bkp;
+                    iN2 = iNO_arc;
+                elseif k == XY_Deg_num(i,j)
+                    iN1 = iNO_arc;
+                    iN2 = iN2_bkp;
+                else
+                    iN1 = iNO_arc;
+                    iNO_arc = iNO_arc+1;
+                    iN2 = iNO_arc;
+                end
+                fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
+                    iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
+                    iN1, iN2,...    % 梁单元的两个节点号
+                    ELE_ANGLE, ELE_iSUB);
+            end
+        end
     end
 end
 iEL_end = iEL;

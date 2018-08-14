@@ -4,7 +4,7 @@
 % Xu Yi, 2018
 
 %%
-function [iNO_end, iEL_end] = MGT_facade_S2(fileID, iNO, iEL, column_num, CoC_tower, Deg_tower, towerS_column_coor, facade_tower_R, levelZaxis, levelPstart, iNO_towerS_init)    %×¢ÒâÕâÀïµÄlevelPstartÊÇ1x2Êý×é
+function [iNO_end, iEL_end] = MGT_facade_S2(fileID, iNO, iEL, column_num, CoC_tower, Deg_tower, towerS_column_coor, facade_tower_R, levelZaxis, levelPstart, iNO_towerS_init, Arc_itvl)    %×¢ÒâÕâÀïµÄlevelPstartÊÇ1x2Êý×é
 %% NODE
 fprintf(fileID,'*NODE    ; Nodes\n');
 fprintf(fileID,'; iNO, X, Y, Z\n');
@@ -18,7 +18,7 @@ XYcoor_o3 = zeros(lengthlevelZaxis,column_num*2,2);	% ÍâÍ²XoY×ø±êµÚ1(X)¡¢2(Y)ÁÐ¡
 
 for j = levelPstart1:lengthlevelZaxis
     XY_o_1x = sqrt(facade_tower_R(j)^2 - ytemp^2);	% Ä»Ç½ÉÏ1µã x¡£
-    XY_o_2y = sqrt(facade_tower_R(j)^2 - ytemp^2);  % Ä»Ç½ÉÏ2µã y¡£
+    XY_o_2y = sqrt(facade_tower_R(j)^2 - xtemp^2);  % Ä»Ç½ÉÏ2µã y¡£
     
     XYcoor_o3(j,:,:) = [XY_o_1x, ytemp; xtemp, XY_o_2y; -xtemp, XY_o_2y; -XY_o_1x, ytemp;...
         -XY_o_1x, -ytemp; -xtemp, -XY_o_2y; xtemp, -XY_o_2y; XY_o_1x, -ytemp;];
@@ -43,6 +43,23 @@ for i = 1:lengthlevelZaxis  % length(A(:)) AÏòÁ¿ÔªËØ¸öÊý
             iNO,XYcoor_o3(i,j,1),XYcoor_o3(i,j,2),levelZaxis(i));   % ÍâÍ² X & Y
     end
 end
+% ÒÔÖ±´úÇú²¿·Ö
+iNO_main_end = iNO; % Ö÷½ÚµãÖÕµã±¸·Ý£¬¼´ÒÔÖ±´úÇú½ÚµãÆðµã±¸·Ý¡£
+XY_Deg_num = zeros(lengthlevelZaxis,lengthXYcoor_f); % ÒÔÖ±´úÇúµÄ¸÷ÇúÏßµÄ·Ö¸ô½ÚµãÊý
+P_start = zeros(1,2); P_end = zeros(1,2);
+for i = levelPstart1:lengthlevelZaxis
+    for j = 1:lengthXYcoor_f % Ä»Ç½
+        P_start(:) = XYcoor_o3(i,j,:);
+        if j == lengthXYcoor_f
+            P_end(:) = XYcoor_o3(i,1,:);
+        else
+            P_end(:) = XYcoor_o3(i,j+1,:);
+        end
+        [iNO, Deg_num] = MGT_arc_FE(fileID, iNO, levelZaxis(i), CoC_tower, P_start, P_end, Arc_itvl);
+        XY_Deg_num(i,j) = Deg_num;
+    end
+end
+% ÒÔÖ±´úÇú²¿·Ö
 iNO_end = iNO;
 fprintf(fileID,'\n');
 
@@ -102,19 +119,45 @@ ELE_iPRO = 4;
 iNO = iNO_init; % ³õÊ¼»¯iNO
 % Íâ»·Áº
 fprintf(fileID,';   Ä»Ç½Íâ»·Áº\n');
+iNO_arc = iNO_main_end; % ³õÊ¼»¯
 for i = levelPstart1:lengthlevelZaxis	% ´ËÐÐÓëÖùµ¥Ôª²»Í¬£¬Öùµ¥ÔªÎªi-1;
-    for j = 1:column_num*2	% Ã¿²ãÍâÍ²µÄ½ÚµãÊý
-        iEL = iEL+1;
-        iN1 = iNO+j+lengthXYcoor_f*(i-1); %
-        if j ~= column_num*2
-            iN2 = iN1+1;
-        else % j = car_num*2 Ê±£¬ Á¬½ÓµÄÊÇ±¾»·µÄµÚÒ»¸öµã£¬¶ø²»ÊÇÉÏ²ãÄÚ»·µÄµÚÒ»¸öµã¡£
-            iN2 = iN1+1-column_num*2;
+    for j = 1:lengthXYcoor_f	% Ã¿²ãÍâÍ²µÄ½ÚµãÊý
+        iN1_bkp = iNO+j+lengthXYcoor_f*(i-1); %
+        if j ~= lengthXYcoor_f
+            iN2_bkp = iN1_bkp+1;
+        else % j = lengthXYcoor_f Ê±£¬ Á¬½ÓµÄÊÇ±¾»·µÄµÚÒ»¸öµã£¬¶ø²»ÊÇÉÏ²ãÄÚ»·µÄµÚÒ»¸öµã¡£
+            iN2_bkp = iN1_bkp+1-lengthXYcoor_f;
         end
-        fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
-            iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
-            iN1, iN2,...    % Áºµ¥ÔªµÄÁ½¸ö½ÚµãºÅ
-            ELE_ANGLE, ELE_iSUB);
+        
+        if XY_Deg_num(i,j) == 1 % ¼´´Ë´¦Î´½øÐÐÒÔÖ±´úÇú·Ö¸ô
+            iEL = iEL+1;
+            iN1 = iN1_bkp;
+            iN2 = iN2_bkp;
+            fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
+                iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
+                iN1, iN2,...    % Áºµ¥ÔªµÄÁ½¸ö½ÚµãºÅ
+                ELE_ANGLE, ELE_iSUB);
+        else
+            for k = 1:XY_Deg_num(i,j)
+                iEL = iEL+1;
+                if k == 1
+                    iNO_arc = iNO_arc+1;
+                    iN1 = iN1_bkp;
+                    iN2 = iNO_arc;
+                elseif k == XY_Deg_num(i,j)
+                    iN1 = iNO_arc;
+                    iN2 = iN2_bkp;
+                else
+                    iN1 = iNO_arc;
+                    iNO_arc = iNO_arc+1;
+                    iN2 = iNO_arc;
+                end
+                fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
+                    iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
+                    iN1, iN2,...    % Áºµ¥ÔªµÄÁ½¸ö½ÚµãºÅ
+                    ELE_ANGLE, ELE_iSUB);
+            end
+        end
     end
 end
 iEL_end = iEL;
