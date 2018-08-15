@@ -155,7 +155,7 @@ iNO_towerS3_init = iNO;
 [iNO, iEL] = MGT_facade_S3(fileID, iNO, iEL, tower_colu_num, CoC_towerS3, Deg_towerS3, towerS_column_coor(2,:), facade_tower3_R, levelTaxis, levelPstart, iNO_towerS3_init, Arc_itvl);
 
 fprintf(fileID,'; Ëþ4\n');
-[iNO, iEL] = MGT_elevator(fileID, iNO, iEL, CoC_elevator4, Deg_elevator4, facade_ele4_R, levelSaxis_f, levelPstart(4), elevatorColu_num, elevatorR, CAR, OFFICE, ROOF);
+[iNO, iEL] = MGT_elevator(fileID, iNO, iEL, CoC_elevator4, Deg_elevator4, facade_ele4_R, levelSaxis_f, levelPstart(4), elevatorColu_num, elevatorR, CAR, OFFICE, ROOF, Arc_itvl);
 [iNO, iEL] = MGT_elevator_platform(fileID, iNO, iEL, CoC_elevator4, Deg_elevator4, levelSaxis, elevatorColu_num, elevatorR, CAR, OFFICE, ROOF);
 
 fprintf(fileID,'; Ëþ5\n');
@@ -169,7 +169,7 @@ fprintf(fileID,'; Ëþ7\n');
 [iNO, iEL] = MGT_side(fileID, iNO, iEL, CoC_side7, facade_side7_R, levelSDaxis, levelPstart(5), Roof_boundary, CAR, OFFICE, ROOF, 7, Arc_itvl);
 
 fprintf(fileID,'; Ëþ8\n');
-[iNO, iEL] = MGT_side8(fileID, iNO, iEL, CoC_side8, facade_side8_R, levelSDaxis, levelPstart(5), Roof_boundary, CAR, OFFICE, ROOF);
+[iNO, iEL] = MGT_side8(fileID, iNO, iEL, CoC_side8, facade_side8_R, levelSDaxis, levelPstart(5), Roof_boundary, CAR, OFFICE, ROOF, Arc_itvl);
 fprintf(fileID,'; Ëþ9\n');
 [iNO, iEL] = MGT_side(fileID, iNO, iEL, CoC_side9, facade_side9_R, levelSDaxis, levelPstart(5), Roof_boundary, CAR, OFFICE, ROOF, 9, Arc_itvl);
 % [iNO, iEL] = MGT_side9(fileID, iNO, iEL, CoC_side9, facade_side9_R, levelSDaxis, levelPstart(5), Roof_boundary, CAR, OFFICE, ROOF);
