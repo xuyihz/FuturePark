@@ -66,3 +66,6 @@ MGT_facade_S2.m 未改 <=
 用coorLxCp 替换了 coorLxC_sym
 外边线已建好
 精细化建模 可 以直代曲
+
+2018年8月15日
+以直代曲 完成

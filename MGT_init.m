@@ -18,7 +18,7 @@ fprintf(fileID,'\n');
 
 %% VERSION
 fprintf(fileID,'*VERSION\n');
-fprintf(fileID,'   8.6.5\n');
+fprintf(fileID,'   8.7.5\n');
 fprintf(fileID,'\n');
 
 %% UNIT
@@ -61,6 +61,12 @@ for i = 1:length(LCNAME)
     LCN = LCNAME{i}; LCT = LCTYPE{i}; DES = DESC{i};
     fprintf(fileID,'   %s, %s, %s\n',LCN,LCT,DES);
 end
+fprintf(fileID,'\n');
+
+%% SELFWEIGHT
+fprintf(fileID,'*USE-STLD, DL\n');
+fprintf(fileID,'; *SELFWEIGHT, X, Y, Z, GROUP\n');
+fprintf(fileID,'*SELFWEIGHT, 0, 0, -1, \n');
 fprintf(fileID,'\n');
 
 %% MATERIAL
