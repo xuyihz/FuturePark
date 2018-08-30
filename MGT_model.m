@@ -103,22 +103,22 @@ Deg_stair5 = pi/4 + Deg_ref;   % 由电梯圆心与主塔圆心连线确定
 Deg_stair6 = -acot( (CoC_stair6(1)-CoC_towerC1(1))/(CoC_stair6(2)-CoC_towerC1(2)) )+pi;	% degree of stair 6 由楼梯6圆心与主塔圆心连线确定
 % Deg_side7 = pi/4 + Deg_towerC1;    % 由主塔角度确定 % Deg_side8 = -pi/6;    % 待定 % Deg_side9 = -pi/2 + Deg_towerS2;   % 由S2塔角度确定 % Deg_side10 = -pi/6;    % 待定
 
-facade_tower2_R = [zeros(4,1); 8908; 7770; 7128; 6906; 7084; 7843; 9338; 16412];
-facade_tower3_R = facade_tower2_R;
+facade_tower2_R = [zeros(4,1); 5012; 4585; 4578; 5075; 5943; 7205; 9153; 13215];
+facade_tower3_R = [zeros(4,1); 7117; 6212; 5718; 5733; 6212; 7117; 8826; 12530];
 % 备份 facade_ele4_R = [zeros(6,1); 8273; 7304; 6661; 6286; 6155; 6260; 6610; 7233; 8188; 9610; 12037; 15239; 17512];
-facade_ele4_R = [zeros(3,1); 8273; 6661; 6155; 6610; 8188; 9610; 15239; 17512];
+facade_ele4_R = [zeros(3,1); 5911; 4482; 4039; 4564; 6080; 7205; 10544; 10900];
 % 备份 facade_stair5_R = [zeros(6,1); 8281; 7316; 6675; 6303; 6172; 6278; 6627; 7249; 8202; 9619; 12004; 15218; 17618];
-facade_stair5_R = [zeros(3,1); 8281; 6675; 6172; 6627; 8202; 9619; 15218; 17618];
-facade_stair6_R = facade_stair5_R;
-facade_side7_R = [zeros(3,1); 6993; 4609; 3613; 3630; 4681; 5707; 10151; 13086];
-facade_side8_R = [zeros(3,1); 8963; 6594; 5608; 5634; 6697; 7731; 12227; 15260];
-facade_side9_R = facade_side7_R;
-facade_side10_R = [zeros(3,1); 6259; 3866; 2865; 2878; 3926; 4950; 9390; 12302];
+facade_stair5_R = [zeros(3,1); 7460; 6094; 5588; 6030; 7418; 8462; 11576; 11915];
+facade_stair6_R = [zeros(3,1); 6354; 5183; 4744; 5205; 6554; 7559; 10514; 10870];
+facade_side7_R = [zeros(3,1); 8914; 5438; 4309; 4216; 5346; 6546; 11657; 12820];
+facade_side8_R = [zeros(3,1); 9874; 7425; 6417; 6515; 7748; 8908; 13820; 14560];
+facade_side9_R = [zeros(3,1); 7523; 5105; 4091; 4146; 5362; 6521; 11956; 13000];
+facade_side10_R = [zeros(3,1); 6700; 4281; 3384; 3488; 4646; 5813; 11436; 12345];
 
 tube_innerR = 3950;
 tube_outerR = 8500;
 towerS_column_coor = [ 3125,4150; 3850,3500 ]; % 两个停车小塔4个柱子形成的矩形的长和宽
-levelTaxis = [-6300:2450:3500, 5700:2200:12300, 14900:2600:17500, 22000];  % 塔楼楼层标高 -6300(-1)/3500/17500(commercial)/22000(Roof)
+levelTaxis = [-6300:2550:3900, 6100:2200:12700, 14900:2600:17500, 22000];  % 塔楼楼层标高 -6300(-1)/3500/17500(commercial)/22000(Roof)
 levelTSaxis = levelTaxis;
 % levelTSaxis = [-6300, 0:3500:17500, 22000];  % 小塔楼楼层标高 -6300(-1)/3500/17500(commercial)/22000(Roof)
 levelSaxis = [-6300, -4624, -3116, -1608, -100:1600:17500, 19260, 21020, 22000];  % 楼梯楼层标高
@@ -148,11 +148,11 @@ iNO_towerC1_init = iNO;
 fprintf(fileID,'; 塔2\n');
 iNO_towerS2_init = iNO;
 [iNO, iEL] = MGT_tower_S(fileID, iNO, iEL, tower_colu_num, CoC_towerS2, Deg_towerS2, towerS_column_coor(1,:), levelTSaxis, levelPstart(2), CAR, OFFICE, ROOF);
-[iNO, iEL] = MGT_facade_S2(fileID, iNO, iEL, tower_colu_num, CoC_towerS2, Deg_towerS2, towerS_column_coor(1,:), facade_tower2_R, levelTaxis, levelPstart, iNO_towerS2_init, Arc_itvl);
+[iNO, iEL] = MGT_facade_S2(fileID, iNO, iEL, tower_colu_num, CoC_towerS2, Deg_towerS2, towerS_column_coor(1,:), facade_tower2_R, levelTSaxis, levelPstart, iNO_towerS2_init, Arc_itvl);
 fprintf(fileID,'; 塔3\n');
 iNO_towerS3_init = iNO;
 [iNO, iEL] = MGT_tower_S(fileID, iNO, iEL, tower_colu_num, CoC_towerS3, Deg_towerS3, towerS_column_coor(2,:), levelTSaxis, levelPstart(2), CAR, OFFICE, ROOF);
-[iNO, iEL] = MGT_facade_S3(fileID, iNO, iEL, tower_colu_num, CoC_towerS3, Deg_towerS3, towerS_column_coor(2,:), facade_tower3_R, levelTaxis, levelPstart, iNO_towerS3_init, Arc_itvl);
+[iNO, iEL] = MGT_facade_S3(fileID, iNO, iEL, tower_colu_num, CoC_towerS3, Deg_towerS3, towerS_column_coor(2,:), facade_tower3_R, levelTSaxis, levelPstart, iNO_towerS3_init, Arc_itvl);
 
 fprintf(fileID,'; 塔4\n');
 [iNO, iEL] = MGT_elevator(fileID, iNO, iEL, CoC_elevator4, Deg_elevator4, facade_ele4_R, levelSaxis_f, levelPstart(4), elevatorColu_num, elevatorR, CAR, OFFICE, ROOF, Arc_itvl);
