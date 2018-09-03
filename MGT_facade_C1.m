@@ -1,39 +1,37 @@
 %% function
-% MGT tower 2 facade
+% MGT tower 1 facade
 %
 % Xu Yi, 2018
 
 %%
-function [iNO_end, iEL_end] = MGT_facade_S2(fileID, iNO, iEL, column_num, CoC_tower, Deg_tower, towerS_column_coor, facade_tower_R, levelZaxis, levelPstart, iNO_towerS_init, Arc_itvl)    %注意这里的levelPstart是1x2数组
+function [iNO_end, iEL_end] = MGT_facade_C1(fileID, iNO, iEL, car_num, CoC_tower, Deg_tower, tube_innerR, facade_tower_R, levelZaxis, levelPstart1, iNO_towerC_init, Arc_itvl)
 %% NODE
 fprintf(fileID,'*NODE    ; Nodes\n');
 fprintf(fileID,'; iNO, X, Y, Z\n');
 
 iNO_init = iNO;
-levelPstart1 = levelPstart(1);
 lengthlevelZaxis = length(levelZaxis(:));
-xtemp = towerS_column_coor(1); ytemp = towerS_column_coor(2);
-% XYcoor_i = [ xtemp,ytemp; -xtemp,ytemp; -xtemp,-ytemp; xtemp,-ytemp ]; % 小塔柱坐标
-XYcoor_o3 = zeros(lengthlevelZaxis,column_num*2,2);	% 外筒XoY坐标第1(X)、2(Y)列。注意这里是三维数组。(Z方向幕墙有变化)
+XYcoor_o3 = zeros(lengthlevelZaxis,car_num*2,2);	% 外幕墙XoY坐标第1(X)、2(Y)列。注意这里是三维数组。(Z方向幕墙有变化)
+
+car_num2pi = 2*pi/car_num;  % speed up
+
+XYcoor_i_1(1,1) = tube_innerR * cos(car_num2pi/2);   % 单个Y型模块内筒一点 X
+XYcoor_i_1(1,2) = tube_innerR * sin(car_num2pi/2);   % Y
 
 for j = levelPstart1:lengthlevelZaxis
-    XY_o_1x = sqrt(facade_tower_R(j)^2 - ytemp^2);	% 幕墙上1点 x。
-    XY_o_2y = sqrt(facade_tower_R(j)^2 - xtemp^2);  % 幕墙上2点 y。
-    
-    XYcoor_o3(j,:,:) = [XY_o_1x, ytemp; xtemp, XY_o_2y; -xtemp, XY_o_2y; -XY_o_1x, ytemp;...
-        -XY_o_1x, -ytemp; -xtemp, -XY_o_2y; xtemp, -XY_o_2y; XY_o_1x, -ytemp;];
-    if Deg_tower ~= 0
-        for i = 1:column_num*2
-            XYcoor_o3(j,i,:) = coorTrans(XYcoor_o3(j,i,:), Deg_tower);
-        end
+    XYcoor_o_1(1,1) = sqrt(facade_tower_R(j)^2 - XYcoor_i_1(1,2)^2);        % 单个Y型模块外筒一点 X1 注意外筒16个点并不是等角度等分。
+    XYcoor_o_1(1,2) = XYcoor_i_1(1,2);                                % Y1
+    XYcoor_o_1(2,:) = coorMir(XYcoor_o_1(1,:), [0,0], XYcoor_i_1);     % X2,Y2
+    for i = 0:(car_num-1)   % 尝试向量化 % 旋转局部角度+整体角度
+        [XYcoor_o3(j,i*2+1,:)] = coorTrans(XYcoor_o_1(1,:), -car_num2pi*i+Deg_tower); % 外筒点坐标1
+        [XYcoor_o3(j,i*2+2,:)] = coorTrans(XYcoor_o_1(2,:), -car_num2pi*i+Deg_tower); % 外筒点坐标2
     end
 end
-
 % 局部坐标系 转换至 整体坐标系
 XYcoor_o3(:,:,1) = XYcoor_o3(:,:,1) + CoC_tower(1);
 XYcoor_o3(:,:,2) = XYcoor_o3(:,:,2) + CoC_tower(2);
 
-lengthXYcoor_f = column_num*2;  % 幕墙每层节点数
+lengthXYcoor_f = car_num*2;  % 每层节点数
 
 for i = 1:lengthlevelZaxis  % length(A(:)) A向量元素个数
     for j = 1:lengthXYcoor_f % 幕墙
@@ -45,7 +43,7 @@ end
 % 以直代曲部分
 iNO_main_end = iNO; % 主节点终点备份，即以直代曲节点起点备份。
 XY_Deg_num = zeros(lengthlevelZaxis,lengthXYcoor_f); % 以直代曲的各曲线的分隔节点数
-P_start = zeros(1,2); P_end = zeros(1,2);
+P_start = zeros(1,2); P_end = zeros(1,2); % 每段曲线的起点和终点
 for i = levelPstart1:lengthlevelZaxis
     for j = 1:lengthXYcoor_f % 幕墙
         P_start(:) = XYcoor_o3(i,j,:);
@@ -90,25 +88,20 @@ fprintf(fileID,'\n');
 fprintf(fileID,'*ELEMENT    ; Elements\n');
 fprintf(fileID,'; iEL, TYPE, iMAT, iPRO, iN1, iN2, ANGLE, iSUB, EXVAL, iOPT(EXVAL2) ; Frame  Element\n; iEL, TYPE, iMAT, iPRO, iN1, iN2, ANGLE, iSUB, EXVAL, EXVAL2, bLMT ; Comp/Tens Truss\n; iEL, TYPE, iMAT, iPRO, iN1, iN2, iN3, iN4, iSUB, iWID , LCAXIS    ; Planar Element\n; iEL, TYPE, iMAT, iPRO, iN1, iN2, iN3, iN4, iN5, iN6, iN7, iN8     ; Solid  Element\n');
 
-% iEL_init_beam = iEL;
-ELE_TYPE = 'BEAM'; ELE_iMAT = 1; ELE_ANGLE = 0; ELE_iSUB = 0;  % iMAT = 1材料钢结构Q345
-
 % 横向主梁；iPRO = 3 截面编号3。
 fprintf(fileID,'; 横向主梁\n');
 ELE_iPRO = 3;
 iNO = iNO_init; % 初始化iNO
-iNO_towerS = iNO_towerS_init; % 初始化iNO_towerS
-for i = levelPstart1:lengthlevelZaxis	% 梁从内筒伸出
-    for j = 1:column_num	% 每层内筒的节点数
-        for k = 1:2 % 一根内筒柱连接两根外筒柱，即两根梁
-            iEL = iEL+1;
-            iN1 = iNO_towerS+j+column_num*(i-1); % 此行为定位梁在塔楼的节点(内筒)
-            iN2 = iNO+lengthXYcoor_f*(i-1)+(j-1)*2+k;    % 归到幕墙外筒第0点后，再定位到具体点
-            fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
-                iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
-                iN1, iN2,...    % 梁单元的两个节点号
-                ELE_ANGLE, ELE_iSUB);
-        end
+iNO_towerC = iNO_towerC_init; % 初始化iNO_towerC
+for i = levelPstart1:lengthlevelZaxis	% 梁从外筒伸出
+    for j = 1:car_num*2	% 每层外筒的节点数
+        iEL = iEL+1;
+        iN1 = iNO_towerC+car_num+j+(car_num+car_num*2)*(i-1); % 此行为定位梁在塔楼的节点(外筒)
+        iN2 = iNO+lengthXYcoor_f*(i-1)+j;    % 归到幕墙外筒第0点后，再定位到具体点
+        fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
+            iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
+            iN1, iN2,...    % 梁单元的两个节点号
+            ELE_ANGLE, ELE_iSUB);
     end
 end
 
@@ -121,14 +114,14 @@ fprintf(fileID,';   幕墙外环梁\n');
 iNO_arc = iNO_main_end; % 初始化
 for i = levelPstart1:lengthlevelZaxis	% 此行与柱单元不同，柱单元为i-1;
     for j = 1:lengthXYcoor_f	% 每层外筒的节点数
-        iN1_bkp = iNO+j+lengthXYcoor_f*(i-1); %
+        iN1_bkp = iNO+j+lengthXYcoor_f*(i-1); % 每段曲线的起点
         if j ~= lengthXYcoor_f
-            iN2_bkp = iN1_bkp+1;
+            iN2_bkp = iN1_bkp+1; % 每段曲线的终点
         else % j = lengthXYcoor_f 时， 连接的是本环的第一个点，而不是上层内环的第一个点。
             iN2_bkp = iN1_bkp+1-lengthXYcoor_f;
         end
         
-        if XY_Deg_num(i,j) == 1 % 即此处未进行以直代曲分隔
+        if XY_Deg_num(i,j) == 1 % 即此处未进行以直代曲分隔，即两点间距离小于Arc_itvl
             iEL = iEL+1;
             iN1 = iN1_bkp;
             iN2 = iN2_bkp;
@@ -139,11 +132,11 @@ for i = levelPstart1:lengthlevelZaxis	% 此行与柱单元不同，柱单元为i-1;
         else
             for k = 1:XY_Deg_num(i,j)
                 iEL = iEL+1;
-                if k == 1
+                if k == 1 % 曲线的第一小段
                     iNO_arc = iNO_arc+1;
                     iN1 = iN1_bkp;
                     iN2 = iNO_arc;
-                elseif k == XY_Deg_num(i,j)
+                elseif k == XY_Deg_num(i,j) % 曲线的最后一小段
                     iN1 = iNO_arc;
                     iN2 = iN2_bkp;
                 else

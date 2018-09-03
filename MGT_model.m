@@ -103,6 +103,7 @@ Deg_stair5 = pi/4 + Deg_ref;   % 由电梯圆心与主塔圆心连线确定
 Deg_stair6 = -acot( (CoC_stair6(1)-CoC_towerC1(1))/(CoC_stair6(2)-CoC_towerC1(2)) )+pi;	% degree of stair 6 由楼梯6圆心与主塔圆心连线确定
 % Deg_side7 = pi/4 + Deg_towerC1;    % 由主塔角度确定 % Deg_side8 = -pi/6;    % 待定 % Deg_side9 = -pi/2 + Deg_towerS2;   % 由S2塔角度确定 % Deg_side10 = -pi/6;    % 待定
 
+facade_tower1_R = [zeros(4,1); 10298; 9802; 9700; 10032; 10830; 12105; 14346]; % 幕墙线内退500 为结构边线
 % 备份 facade_tower2_R = [zeros(5,1); 5328; 4597; 4671; 5582; 7205; 8970; 12715];
 facade_tower2_R = [zeros(3,1); 5500; 5500; 5500; 5500; 6705; 8470; 12715];
 facade_tower3_R = [zeros(3,1); 7172; 5755; 5189; 5469; 6617; 8161; 12030];
@@ -142,6 +143,7 @@ fprintf(fileID,'; 塔1\n');
 iNO_towerC1_init = iNO;
 [iNO, iEL] = MGT_tower(fileID, iNO, iEL, car_num, CoC_towerC1, Deg_towerC1, tube_innerR, tube_outerR, levelTaxis, levelPstart(1), CAR, OFFICE, ROOF);
 % [iNO, iEL] = MGT_ramp(fileID, iNO, iEL, car_num, CoC_towerC1, Deg_towerC1, tube_innerR, tube_outerR, levelTaxis, levelPstart, iNO_towerC1_init);
+[iNO, iEL] = MGT_facade_C1(fileID, iNO, iEL, car_num, CoC_towerC1, Deg_towerC1, tube_innerR, facade_tower1_R, levelTaxis, levelPstart(1), iNO_towerC1_init, Arc_itvl);
 [iNO, iEL] = MGT_boundary(fileID, iNO, iEL, car_num, CoC_towerC1, Deg_towerC1, tube_innerR, tube_outerR, levelTaxis, levelPstart, Roof_boundary, iNO_towerC1_init, ...
                 CoC_towerS2, CoC_towerS3, CoC_elevator4, CoC_stair5, CoC_stair6,...
                 facade_tower2_R, facade_tower3_R, facade_ele4_R, facade_stair5_R, facade_stair6_R,...
