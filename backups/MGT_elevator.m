@@ -14,7 +14,7 @@ iNO_init = iNO;
 lengthlevelZaxis_f = length(levelZaxis_f(:));
 
 XYcoor_i = zeros(elevatorColu_num,2);   % 8个点(含电梯中间不落柱的1个点和圆心点)内筒XoY坐标第1(X)、2(Y)列。
-elevatorColu_o_num = elevatorColu_num; % 内筒8个点,外筒8个点
+elevatorColu_o_num = elevatorColu_num+4; % 内筒8个点,外筒12个点
 XYcoor_o3 = zeros(lengthlevelZaxis_f,elevatorColu_o_num,2);	% 12个点，外筒XoY坐标第1(X)、2(Y)列。注意这里是三维数组。(Z方向幕墙有变化)
 
 % 内筒点
@@ -28,10 +28,11 @@ end
 % 外筒elevatorXY2 % 外筒需要根据幕墙外表皮曲线定位 % 需有沿高度的循环(或向量化)
 for j = levelPstart1:lengthlevelZaxis_f
     elevatorXY_o_temp = sqrt(facade_ele_R(j)^2 - elevatorXYtemp^2); %
-    elevatorXY_o = [elevatorXY_o_temp,elevatorXYtemp; elevatorXYtemp,elevatorXY_o_temp;...
-        -elevatorXYtemp,elevatorXY_o_temp; -elevatorXY_o_temp,elevatorXYtemp;...
-        -elevatorXY_o_temp,-elevatorXYtemp; -elevatorXYtemp,-elevatorXY_o_temp;...
-        elevatorXYtemp,-elevatorXY_o_temp; elevatorXY_o_temp,-elevatorXYtemp];
+    elevatorXY_o_Rtemp = sqrt(facade_ele_R(j)^2/2); % 2/5/8/11 正方形四角
+    elevatorXY_o = [elevatorXY_o_temp,elevatorXYtemp; elevatorXY_o_Rtemp,elevatorXY_o_Rtemp; elevatorXYtemp,elevatorXY_o_temp;...
+        -elevatorXYtemp,elevatorXY_o_temp; -elevatorXY_o_Rtemp,elevatorXY_o_Rtemp; -elevatorXY_o_temp,elevatorXYtemp;...
+        -elevatorXY_o_temp,-elevatorXYtemp; -elevatorXY_o_Rtemp,-elevatorXY_o_Rtemp; -elevatorXYtemp,-elevatorXY_o_temp;...
+        elevatorXYtemp,-elevatorXY_o_temp; elevatorXY_o_Rtemp,-elevatorXY_o_Rtemp; elevatorXY_o_temp,-elevatorXYtemp];
     
     for i = 1:elevatorColu_o_num   % 尝试向量化
         [XYcoor_o3(j,i,:)] = coorTrans(elevatorXY_o(i,:), Deg_elevator); % 内筒
@@ -54,7 +55,7 @@ for i = 1:lengthlevelZaxis_f  % length(A(:)) A向量元素个数
         fprintf(fileID,'   %d, %.4f, %.4f, %.4f\n',...
             iNO,XYcoor_i(j,1),XYcoor_i(j,2),levelZaxis_f(i));
     end
-    for j = 1:elevatorColu_o_num % 外部8个柱子
+    for j = 1:elevatorColu_o_num % 外部12个柱子
         iNO = iNO+1;
         fprintf(fileID,'   %d, %.4f, %.4f, %.4f\n',...
             iNO,XYcoor_o3(i,j,1),XYcoor_o3(i,j,2),levelZaxis_f(i));
@@ -153,10 +154,10 @@ ELE_iPRO = 3;
 iNO = iNO_init; % 初始化iNO
 for i = levelPstart1:lengthlevelZaxis_f	%
     for j = 1:lengthXYcoor_i/2 % 内筒4个点
-        for k = 1:2 % 内筒每个柱悬挑2个梁
+        for k = 1:3 % 内筒每个柱悬挑三个梁
             iEL = iEL+1;
             iN1 = iNO + j + lengthXYcoor_all*(i-1); % 内筒4个角点
-            iN2 = iNO + k + 2*(j-1) + lengthXYcoor_i + lengthXYcoor_all*(i-1); % 外筒8个点
+            iN2 = iNO + k + 3*(j-1) + lengthXYcoor_i + lengthXYcoor_all*(i-1); % 外筒8个点
             fprintf(fileID,'   %d, %s, %d, %d, %d, %d, %d, %d\n',...
                 iEL, ELE_TYPE, ELE_iMAT, ELE_iPRO,...
                 iN1, iN2,...    % 梁单元的两个节点号
